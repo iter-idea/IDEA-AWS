@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "declaration": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "strict": true,
+    "strictNullChecks": false,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "sourceMap": false,
+    "target": "es6",
+    "rootDir": "./src",
+    "outDir": "./dist",
+  },
+  "exclude": [ "node_modules" ]
+}

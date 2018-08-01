@@ -1,0 +1,45 @@
+{
+  "name": "idea-aws",
+  "version": "1.0.0",
+  "description": "AWS wrappers to use in IDEA's back-ends",
+  "engines": {
+    "node": ">=6.0.0"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "./build.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uatisdeproblem/IDEA-AWS.git"
+  },
+  "keywords": [
+    "idea",
+    "aws",
+    "dynamo",
+    "ses",
+    "s3",
+    "sns"
+  ],
+  "author": "iter IDEA <info@iter-idea.com> (https://iter-idea.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/uatisdeproblem/IDEA-AWS/issues"
+  },
+  "homepage": "https://uatisdeproblem.github.io/IDEA-AWS",
+  "dependencies": {
+    "idea-toolbox": "^3.0.6",
+    "nodemailer": "^4.6.5",
+    "uuid": "^3.1.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.7",
+    "@types/node": "^10.5.2",
+    "@types/nodemailer": "^4.6.2",
+    "@types/showdown": "^1.7.5",
+    "@types/uuid": "^3.4.3",
+    "aws-sdk": "^2.284.1",
+    "typescript": "^2.9.2"
+  }
+}
