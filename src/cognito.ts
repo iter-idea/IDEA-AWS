@@ -81,8 +81,8 @@ export class Cognito {
    * @param {any} options
    ```
     {
-      noNotification??: boolean;  // if true, don't send the default Cognito email notification
-      temporaryPassword?: string; // if null, randomly generated
+      skipNotification?: boolean;   // if true, don't send the default Cognito email notification
+      temporaryPassword?: string;   // if null, randomly generated
     }
    ```
    * @return {Promise<string>} userId of the new user
@@ -95,7 +95,7 @@ export class Cognito {
       let params = <any> {
         UserPoolId: cognitoUserPoolId, Username: email, UserAttributes: attributes
       };
-      if(options.noNotification) params.MessageAction = 'SUPPRESS';
+      if(options.skipNotification) params.MessageAction = 'SUPPRESS';
       if(options.temporaryPassword) params.TemporaryPassword = options.temporaryPassword;
       new AWS.CognitoIdentityServiceProvider().adminCreateUser(params, (err: Error, data: any) => {
         IdeaX.logger('COGNITO CREATE USER', err, data);
