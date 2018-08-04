@@ -4,6 +4,7 @@
     "editor.rulers": [100],
     "editor.wordWrapColumn": 100,
     "editor.wordWrap": "bounded",
+    "files.eol": "\n",
     "files.exclude": {
         "**/.git": true,
         "**/.svn": true,
@@ -11,6 +12,7 @@
         "**/.DS_Store": true,
         "**/*.map": true,
         "node_modules": true,
+        "dist": true,
         "npm-debug.log": true,
         "api/**/*.js": true,
         "api/node_modules": true,
@@ -21,8 +23,7 @@
         "client/platforms": true,
         "client/plugins": true,
         "client/.sourcemaps": true,
-        "client/src/components/_models/*.js": true,
-        "client/src/components/_models/node_modules": true,
+        "client/src/components/_models": true,
         "www": true
     },
     "files.trimTrailingWhitespace": true,
