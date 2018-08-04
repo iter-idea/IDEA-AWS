@@ -914,6 +914,9 @@ img { max-width: 100%; }
 					<a href="cognito.html#constructor" class="tsd-kind-icon">constructor</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="cognito.html#createuser" class="tsd-kind-icon">create<wbr>User</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="cognito.html#getuserbyclaims" class="tsd-kind-icon">get<wbr>User<wbr>ByClaims</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -974,6 +977,7 @@ img { max-width: 100%; }
 					<section class="tsd-index-section ">
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="cognito.html#createuser" class="tsd-kind-icon">create<wbr>User</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="cognito.html#getuserbyclaims" class="tsd-kind-icon">get<wbr>User<wbr>ByClaims</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="cognito.html#getuserbyemail" class="tsd-kind-icon">get<wbr>User<wbr>ByEmail</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="cognito.html#getuserbysub" class="tsd-kind-icon">get<wbr>User<wbr>BySub</a></li>
@@ -994,7 +998,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in cognito.ts:6</li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/deb8d28/src/cognito.ts#L7">cognito.ts:7</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1010,6 +1014,44 @@ img { max-width: 100%; }
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Methods</h2>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="createuser" class="tsd-anchor"></a>
+				<h3>create<wbr>User</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">create<wbr>User<span class="tsd-signature-symbol">(</span>email<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, cognitoUserPoolId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/deb8d28/src/cognito.ts#L83">cognito.ts:83</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Create a new user (by its email) in the pool specified.</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>email: <span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>the email to login of the new user</p>
+								</div>
+							</li>
+							<li>
+								<h5>cognitoUserPoolId: <span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>the pool in which to create the user</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						<p>userId of the new user</p>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 				<a name="getuserbyclaims" class="tsd-anchor"></a>
 				<h3>get<wbr>User<wbr>ByClaims</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -1019,7 +1061,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in cognito.ts:17</li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/deb8d28/src/cognito.ts#L18">cognito.ts:18</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1054,7 +1096,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in cognito.ts:36</li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/deb8d28/src/cognito.ts#L37">cognito.ts:37</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1091,7 +1133,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in cognito.ts:59</li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/deb8d28/src/cognito.ts#L60">cognito.ts:60</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">

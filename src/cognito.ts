@@ -1,4 +1,5 @@
 import AWS = require('aws-sdk');
+import IdeaX = require('idea-toolbox');
 
 /**
  * A wrapper for AWS Cognito.
@@ -69,6 +70,27 @@ export class Cognito {
           data.Users[0].Attributes.forEach((a: any) => userAttributes[a.Name] = a.Value);
           resolve(userAttributes);
         }
+      });
+    });
+  }
+
+  /**
+   * Create a new user (by its email) in the pool specified.
+   * @param {string} email the email to login of the new user
+   * @param {string} cognitoUserPoolId the pool in which to create the user
+   * @return {Promise<string>} userId of the new user
+   */
+  public createUser(email: string, cognitoUserPoolId: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      let attributes = [{ Name: 'email', Value: email }, { Name: 'email_verified', Value: 'true' }];
+      new AWS.CognitoIdentityServiceProvider().adminCreateUser({
+        UserPoolId: cognitoUserPoolId, Username: email, UserAttributes: attributes
+      }, (err: Error, data: any) => {
+        IdeaX.logger('COGNITO CREATE USER', err, data);
+        if(err) return reject(err);
+        let userId = data.User.Attributes.find((attr: any) => attr.Name == 'sub').Value || null;
+        if(userId) resolve(userId);
+        else reject();
       });
     });
   }
