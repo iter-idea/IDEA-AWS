@@ -1,6 +1,5 @@
 import AWS = require('aws-sdk');
 import IdeaX = require('idea-toolbox');
-import Validator = require('validator');
 
 /**
  * A wrapper for AWS Cognito.
@@ -83,7 +82,7 @@ export class Cognito {
    */
   public createUser(email: string, cognitoUserPoolId: string): Promise<string> {
     return new Promise((resolve, reject) => {
-      if(!Validator.isEmail(email)) return reject(new Error(`E.COGNITO.INVALID_EMAIL`));
+      if(IdeaX.isEmpty(email, 'email')) return reject(new Error(`E.COGNITO.INVALID_EMAIL`));
       let attributes = [{ Name: 'email', Value: email }, { Name: 'email_verified', Value: 'true' }];
       new AWS.CognitoIdentityServiceProvider().adminCreateUser({
         UserPoolId: cognitoUserPoolId, Username: email, UserAttributes: attributes
