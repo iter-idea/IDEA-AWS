@@ -76,22 +76,41 @@ export class Cognito {
 
   /**
    * Create a new user (by its email) in the pool specified.
-   * @param {string} email the email to login of the new user
+   * @param {string} email the email to use as login
    * @param {string} cognitoUserPoolId the pool in which to create the user
+   * @param {any} options
+   ```
+    {
+      noNotification??: boolean;  // if true, don't send the default Cognito email notification
+      temporaryPassword?: string; // if null, randomly generated
+    }
+   ```
    * @return {Promise<string>} userId of the new user
    */
-  public createUser(email: string, cognitoUserPoolId: string): Promise<string> {
+  public createUser(email: string, cognitoUserPoolId: string, options? : any): Promise<string> {
     return new Promise((resolve, reject) => {
+      options = options || {};
       if(IdeaX.isEmpty(email, 'email')) return reject(new Error(`E.COGNITO.INVALID_EMAIL`));
       let attributes = [{ Name: 'email', Value: email }, { Name: 'email_verified', Value: 'true' }];
-      new AWS.CognitoIdentityServiceProvider().adminCreateUser({
+      let params = <any> {
         UserPoolId: cognitoUserPoolId, Username: email, UserAttributes: attributes
-      }, (err: Error, data: any) => {
+      };
+      if(options.noNotification) params.MessageAction = 'SUPPRESS';
+      if(options.temporaryPassword) params.TemporaryPassword = options.temporaryPassword;
+      new AWS.CognitoIdentityServiceProvider().adminCreateUser(params, (err: Error, data: any) => {
         IdeaX.logger('COGNITO CREATE USER', err, data);
-        if(err) return reject(err);
+        if(err) {
+          switch(err.name) {
+            case 'UsernameExistsException':
+              return reject(new Error(`E.COGNITO.USERNAME_ALREADY_EXISTS`));
+            case 'InvalidPasswordException':
+              return reject(new Error(`E.COGNITO.INVALID_PASSWORD`));
+            default: return reject(err);
+          }
+        }
         let userId = data.User.Attributes.find((attr: any) => attr.Name == 'sub').Value || null;
         if(userId) resolve(userId);
-        else reject(new Error(`E.COGNITO.INVALID_USER_ID`));
+        else reject(new Error(`E.COGNITO.CREATION_FAILED`));
       });
     });
   }
