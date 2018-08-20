@@ -114,4 +114,22 @@ export class Cognito {
       });
     });
   }
+
+  /**
+   * Delete a user by its email (username), in the pool specified.
+   * @param {string} email the email used as login
+   * @param {string} cognitoUserPoolId the pool in which the user is stored
+   * @return {Promise<void>}
+   */
+  public deleteUser(email: string, cognitoUserPoolId: string,): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if(IdeaX.isEmpty(email, 'email')) return reject(new Error(`E.COGNITO.INVALID_EMAIL`));
+      new AWS.CognitoIdentityServiceProvider()
+      .adminDeleteUser({ UserPoolId: cognitoUserPoolId, Username: email }, (err: Error) => {
+        IdeaX.logger('COGNITO DELETE USER', err, `${email} (${cognitoUserPoolId})`);
+        if(err) reject(new Error(`E.COGNITO.DELETION_FAILED`));
+        else resolve();
+      });
+    });
+  }
 }
