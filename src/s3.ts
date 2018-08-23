@@ -20,30 +20,30 @@ export class S3 {
   }
 
   /**
-   * Download a file through an S3 signed url.
-   * *Pratically*, it uploads the file on an S3 bucket (w/ automatic cleaning),
-   * it generates a signed url, returning it.
-   * @param {string} prefix a folder in which to put all the files of the same kind
-   * @param {string} key the unique filepath
-   * @param {any} dataToUpload usually a buffer
+   * Create a download link of a piece of data (through S3).
+   * *Pratically*, it uploads the file on an S3 bucket, generating and returning a url to it.
+   * @param {string} prefix the bucket folder (e.g. the project name)
+   * @param {string} key the unique filepath in which to store the file
+   * @param {any} data usually a buffer
    * @param {string} contentType e.g. application/json
-   * @param {string} bucket an alternative Downloads bucket to the default one
    * @param {number} secToExp seconds to url expiration
+   * @param {string} bucket an alternative Downloads bucket to IDEA's default one
    * @return {Promise<string>}
    */
-  public downloadThroughUrl(
-    prefix: string, key: string, dataToUpload: any, contentType: string,
-    bucket?: string, secToExp?: number
+  public createDownloadUrlFromData(
+    prefix: string, key: string, data: any, contentType?: string, secToExp?: number, bucket?: string
   ): Promise<string> {
     return new Promise((resolve, reject) => {
       key = `${prefix || this.DEFAULT_DOWNLOAD_BUCKET_PREFIX}/${key}`;
       bucket = bucket || this.DEFAULT_DOWNLOAD_BUCKET;
       secToExp = secToExp || this.DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP;
-      this.s3.upload({ Bucket: bucket, Key: key, Body: dataToUpload, ContentType: contentType },
+      this.s3.upload({ Bucket: bucket, Key: key, Body: data, ContentType: contentType },
       (err: Error, data: any) => {
         IdeaX.logger('S3 UPLOAD', err, data);
         if(err) reject(err);
-        else resolve(this.s3.getSignedUrl('getObject', { Bucket: bucket, Key: key, Expires: secToExp }));
+        else resolve(this.s3.getSignedUrl('getObject', {
+          Bucket: bucket, Key: key, Expires: secToExp
+        }));
       });
     });
   }
