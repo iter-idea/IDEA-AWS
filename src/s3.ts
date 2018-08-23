@@ -31,9 +31,9 @@ export class S3 {
     contentType?: string;  // e.g. application/json; default: _guessed_.
     secToExp?: number;     // seconds to URL expiration; default: `180`.
    ```
-   * @return {Promise<SignedUrl>}
+   * @return {Promise<SignedURL>}
    */
-  public createDownloadURLFromData(data: any, options?: any): Promise<SignedUrl> {
+  public createDownloadURLFromData(data: any, options?: any): Promise<SignedURL> {
     return new Promise((resolve, reject) => {
       // if needed, randomly generates the key
       if(!options.key)
@@ -62,9 +62,9 @@ export class S3 {
    * @param {string} bucket
    * @param {string} key
    * @param {number} expires seconds after which the signed URL expires
-   * @return {SignedUrl}
+   * @return {SignedURL}
    */
-  public signedURLPut(bucket: string, key: string, expires?: number): SignedUrl {
+  public signedURLPut(bucket: string, key: string, expires?: number): SignedURL {
     return {
       url: this.s3.getSignedUrl('putObject', {
           Bucket: bucket, Key: key, Expires: expires || this.DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP
@@ -77,9 +77,9 @@ export class S3 {
    * @param {string} bucket
    * @param {string} key
    * @param {number} expires seconds after which the signed URL expires
-   * @return {SignedUrl}
+   * @return {SignedURL}
    */
-  public signedURLGet(bucket: string, key: string, expires?: number): SignedUrl {
+  public signedURLGet(bucket: string, key: string, expires?: number): SignedURL {
     return {
       url: this.s3.getSignedUrl('getObject', {
         Bucket: bucket, Key: key, Expires: expires || this.DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP
@@ -91,6 +91,6 @@ export class S3 {
 /**
  * To return the URL as a JSON.
  */
-export interface SignedUrl {
+export interface SignedURL {
   url: string;
 }
