@@ -50,9 +50,7 @@ export class S3 {
       (err: Error, data: any) => {
         IdeaX.logger('S3 UPLOAD', err, data);
         if(err) reject(err);
-        else resolve(this.s3.getSignedURL('getObject', {
-          Bucket: options.bucket, Key: options.key, Expires: options.secToExp
-        }));
+        else resolve(this.signedURLGet(options.bucket, options.key, options.secToExp));
       });
     });
   }
