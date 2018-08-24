@@ -78,7 +78,7 @@ export class SES {
     return new Promise((resolve, reject) => {
       // set the mail options in Nodemailer's format
       let mailOptions: any = {};
-      mailOptions.from = sesParams.source;
+      mailOptions.from = `${sesParams.sourceName} <${sesParams.source}>`;
       mailOptions.to = emailData.toAddresses.join(',');
       if(emailData.ccAddresses) mailOptions.cc = emailData.ccAddresses.join(',');
       if(emailData.bccAddresses) mailOptions.bcc = emailData.bccAddresses.join(',');
