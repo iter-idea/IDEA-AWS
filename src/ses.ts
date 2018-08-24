@@ -33,6 +33,17 @@ export class SES {
    * @return {Promise<any>}
    */
   public sendEmail(emailData: any, sesParams: any): Promise<any> {
+    // if the email includes attachments, send through Nodemailer
+    if(emailData.attachments && emailData.attachments.length)
+      return this.sendEmailNodemailer(emailData, sesParams);
+    // otherwise via SES (more secure)
+    else
+      return this.sendEmailSES(emailData, sesParams);
+  }
+  /**
+   * @private helper
+   */
+  private sendEmailSES(emailData: any, sesParams: any): Promise<any> {
     return new Promise((resolve, reject) => {
       // prepare SES email data
       let sesData: any = {};
@@ -50,44 +61,37 @@ export class SES {
       sesData.ReplyToAddresses = emailData.replyToAddresses;
       sesData.Source = `${sesParams.sourceName} <${sesParams.source}>`;
       sesData.SourceArn = sesParams.sourceArn;
-      let ses = new AWS.SES({ region: sesParams.region });
+      IdeaX.logger('SES DATA PREPARATION', null, sesData);
       // send email
-      if(emailData.attachments && emailData.attachments.length) {
-        // including attachments, through Nodemailer
-        this.sendEmailNodemailer(ses, sesData, emailData.attachments)
-        .then(res => resolve(res))
-        .catch(err => reject(err));
-      } else {
-        // classic way, through SES
-        ses.sendEmail(sesData, (err: Error, data: any) => {
-          IdeaX.logger('SES SEND EMAIL', err, JSON.stringify(data));
-          if(err) reject(err);
-          else resolve(data);
-        });
-      }
+      new AWS.SES({ region: sesParams.region })
+      .sendEmail(sesData, (err: Error, data: any) => {
+        IdeaX.logger('SES SEND EMAIL', err, JSON.stringify(data));
+        if(err) reject(err);
+        else resolve(data);
+      });
     });
   }
-
   /**
    * @private helper
    */
-  private sendEmailNodemailer(ses: any, sesData: any, attachments: Array<any>): Promise<any> {
+  private sendEmailNodemailer(emailData: any, sesParams: any): Promise<any> {
     return new Promise((resolve, reject) => {
       // set the mail options in Nodemailer's format
       let mailOptions: any = {};
-      mailOptions.from = sesData.Source;
-      mailOptions.to = sesData.Destination.ToAddresses.join(',');
-      if(sesData.Destination.cc) mailOptions.cc = sesData.Destination.CcAddresses.join(',');
-      if(sesData.Destination.bcc) mailOptions.bcc = sesData.Destination.BccAddresses.join(',');
-      if(sesData.ReplyToAddresses) mailOptions.replyTo = sesData.ReplyToAddresses.join(',');
-      mailOptions.subject = sesData.Message.Subject.Data;
-      if(sesData.Message.Body.Html) mailOptions.html = sesData.Message.Body.Html.Data;
-      if(sesData.Message.Body.Text) mailOptions.text = sesData.Message.Body.Text.Data;
-      mailOptions.attachments = attachments;
-      // create Nodemailer SES transporter
-      let transporter = Nodemailer.createTransport({ SES: ses });
-      // send the email
-      transporter.sendMail(mailOptions, (err: Error, data: any) => {
+      mailOptions.from = sesParams.source;
+      mailOptions.to = emailData.toAddresses.join(',');
+      if(emailData.ccAddresses) mailOptions.cc = emailData.ccAddresses.join(',');
+      if(emailData.bccAddresses) mailOptions.bcc = emailData.bccAddresses.join(',');
+      if(emailData.replyToAddresses) mailOptions.replyTo = emailData.replyToAddresses.join(',');
+      mailOptions.subject = emailData.subject;
+      if(emailData.html) mailOptions.html = emailData.html;
+      if(emailData.text) mailOptions.text = emailData.text
+      mailOptions.attachments = emailData.attachments;
+      IdeaX.logger('NODEMAILER OPTION PREPARATION', null, mailOptions);
+      // create Nodemailer SES transporter and send the email
+      Nodemailer
+      .createTransport({ SES: new AWS.SES({ region: sesParams.region }) })
+      .sendMail(mailOptions, (err: Error, data: any) => {
         IdeaX.logger('SES SEND EMAIL (NODEMAILER)', err, data);
         if(err) reject(err);
         else resolve(data);
