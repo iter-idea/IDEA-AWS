@@ -989,7 +989,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/24384ca/src/ses.ts#L8">ses.ts:8</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/6ad6b68/src/ses.ts#L8">ses.ts:8</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1014,7 +1014,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/24384ca/src/ses.ts#L23">ses.ts:23</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/6ad6b68/src/ses.ts#L35">ses.ts:35</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1027,15 +1027,26 @@ img { max-width: 100%; }
 							<li>
 								<h5>emailData: <span class="tsd-signature-type">any</span></h5>
 								<div class="tsd-comment tsd-typography">
-									<p> toAddresses: Array<string>, ccAddresses?: Array<string>, bccAddresses?: Array<string>,
-													replyToAddresses: Array<string>, subject: string, html?: string, text?: string,
-									attachments?: Array<any> (<a href="https://community.nodemailer.com/using-attachments/">https://community.nodemailer.com/using-attachments/</a>)</p>
+									<p>structured as follows:</p>
+									<pre><code>toAddresses: <span class="hljs-built_in">Array</span>&lt;<span class="hljs-built_in">string</span>&gt;;
+ccAddresses?: <span class="hljs-built_in">Array</span>&lt;<span class="hljs-built_in">string</span>&gt;;
+bccAddresses?: <span class="hljs-built_in">Array</span>&lt;<span class="hljs-built_in">string</span>&gt;;
+replyToAddresses: <span class="hljs-built_in">Array</span>&lt;<span class="hljs-built_in">string</span>&gt;;
+subject: <span class="hljs-built_in">string</span>;
+html?: <span class="hljs-built_in">string</span>;
+text?: <span class="hljs-built_in">string</span>;
+attachments?: <span class="hljs-built_in">Array</span>&lt;<span class="hljs-built_in">any</span>&gt;; <span class="hljs-comment">// https://community.nodemailer.com/using-attachments/</span>
+</code></pre>
 								</div>
 							</li>
 							<li>
 								<h5>sesParams: <span class="tsd-signature-type">any</span></h5>
 								<div class="tsd-comment tsd-typography">
-									<p>region, source, sourceName, sourceArn</p>
+									<p>structured as follows</p>
+									<pre><code><span class="hljs-built_in">region</span>: <span class="hljs-built_in">string</span>;
+source: <span class="hljs-built_in">string</span>;
+sourceArn: <span class="hljs-built_in">string</span>;
+</code></pre>
 								</div>
 							</li>
 						</ul>

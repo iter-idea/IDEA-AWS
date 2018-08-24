@@ -13,11 +13,23 @@ export class SES {
 
   /**
    * Send an email through AWS Simple Email Service.
-   * @param {any} emailData
-   *  toAddresses: Array<string>, ccAddresses?: Array<string>, bccAddresses?: Array<string>,
-   *  replyToAddresses: Array<string>, subject: string, html?: string, text?: string,
-   *  attachments?: Array<any> (https://community.nodemailer.com/using-attachments/)
-   * @param {any} sesParams region, source, sourceName, sourceArn
+   * @param {any} emailData structured as follows:
+   ```
+    toAddresses: Array<string>;
+    ccAddresses?: Array<string>;
+    bccAddresses?: Array<string>;
+    replyToAddresses: Array<string>;
+    subject: string;
+    html?: string;
+    text?: string;
+    attachments?: Array<any>; // https://community.nodemailer.com/using-attachments/
+   ```
+   * @param {any} sesParams structured as follows
+   ```
+    region: string;
+    source: string;
+    sourceArn: string;
+   ```
    * @return {Promise<any>}
    */
   public sendEmail(emailData: any, sesParams: any): Promise<any> {
@@ -33,7 +45,8 @@ export class SES {
       sesData.Message.Body = {};
       if(emailData.html) sesData.Message.Body.Html = { Charset: 'UTF-8', Data: emailData.html };
       if(emailData.text) sesData.Message.Body.Text = { Charset: 'UTF-8', Data: emailData.text };
-      if(!emailData.html && !emailData.text) sesData.Message.Body.Text = { Charset: 'UTF-8', Data: '' };
+      if(!emailData.html && !emailData.text)
+        sesData.Message.Body.Text = { Charset: 'UTF-8', Data: '' };
       sesData.ReplyToAddresses = emailData.replyToAddresses;
       sesData.Source = `${sesParams.sourceName} <${sesParams.source}>`;
       sesData.SourceArn = sesParams.sourceArn;
@@ -64,10 +77,9 @@ export class SES {
       let mailOptions: any = {};
       mailOptions.from = sesData.Source;
       mailOptions.to = sesData.Destination.ToAddresses.join(',');
-      if(sesData.Message.Body.cc) mailOptions.cc = sesData.Destination.CcAddresses.join(',');
-      if(sesData.Message.Body.bcc) mailOptions.bcc = sesData.Destination.BccAddresses.join(',');
-      if(sesData.Message.Body.ReplyToAddresses)
-        mailOptions.replyTo = sesData.ReplyToAddresses.join(',');
+      if(sesData.Destination.cc) mailOptions.cc = sesData.Destination.CcAddresses.join(',');
+      if(sesData.Destination.bcc) mailOptions.bcc = sesData.Destination.BccAddresses.join(',');
+      if(sesData.ReplyToAddresses) mailOptions.replyTo = sesData.ReplyToAddresses.join(',');
       mailOptions.subject = sesData.Message.Subject.Data;
       if(sesData.Message.Body.Html) mailOptions.html = sesData.Message.Body.Html.Data;
       if(sesData.Message.Body.Text) mailOptions.text = sesData.Message.Body.Text.Data;
