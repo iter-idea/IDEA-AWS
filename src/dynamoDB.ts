@@ -197,7 +197,7 @@ export class DynamoDB {
    * @param {boolean} ignoreErr if true, ignore the errors and continue the bulk op.
    * @return {Promise<any>}
    */
-  protected batchDelete(table: string, keys: Array<any>, ignoreErr?: boolean): Promise<any> {
+  public batchDelete(table: string, keys: Array<any>, ignoreErr?: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
       if(keys.length == 0) {
         IdeaX.logger(`BATCH WRITE ${table}`, null, `No elements to write`);
