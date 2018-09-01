@@ -270,7 +270,7 @@ export class DynamoDB {
       items = items.concat(data.Items);
       if(data.LastEvaluatedKey) {
         params.ExclusiveStartKey = data.LastEvaluatedKey;
-        this.queryScanHelper(params, items, false, resolve, reject);
+        this.queryScanHelper(params, items, isQuery, resolve, reject);
       } else {
         IdeaX.logger(`${f.toUpperCase()} ${params.TableName}`, null, items.length.toString());
         resolve(items);
