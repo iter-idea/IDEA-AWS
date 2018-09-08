@@ -209,7 +209,7 @@ export class DynamoDB {
    * @private helper
    */
   protected batchWriteHelper(
-    t: string, items: Array<any>, iErr: boolean, isPut: boolean,
+    t: string, items: Array<any>, isPut: boolean, iErr: boolean,
     curr: number, size: number, resolve: any, reject: any
   ): void {
     // prepare the structure for the bulk operation
