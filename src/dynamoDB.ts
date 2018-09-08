@@ -229,7 +229,7 @@ export class DynamoDB {
       if(err && !iErr) reject(err);
       // if there are still chunks to manage, go on recursively
       else if(curr+size < items.length)
-        this.batchWriteHelper(t, items, iErr, isPut, curr+size, size, resolve, reject);
+        this.batchWriteHelper(t, items, isPut, iErr, curr+size, size, resolve, reject);
       // no more chunks to manage: we're done
       else resolve();
     });
