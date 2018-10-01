@@ -1,3 +1,4 @@
+import UUIDV4 = require('uuid/v4');
 import IdeaX = require('idea-toolbox');
 
 import { DynamoDB } from './dynamoDB';
@@ -5,6 +6,7 @@ import { Cognito } from './cognito';
 import { S3 } from './s3';
 import { SES } from './ses';
 import { SNS } from './sns';
+import { RequestLog } from './requestLog';
 
 /**
  * An abstract class to inherit to manage API requests (AWS API Gateway) in an
@@ -20,6 +22,7 @@ export abstract class ResourceController {
   protected httpMethod: string;
   protected body: any;
   protected queryParams: any;
+  protected resource: string;
   protected resourceId: string;
 
   protected tables: any;
@@ -47,6 +50,7 @@ export abstract class ResourceController {
     this.principalId = this.claims ? this.claims.sub : null;
 
     this.httpMethod = event.httpMethod;
+    this.resource = event.resource;
     this.resourceId = event.pathParameters && event.pathParameters[options.resourceId || 'proxy']
       ? decodeURIComponent(event.pathParameters[options.resourceId || 'proxy']) : '';
     this.queryParams = event.queryStringParameters || {};
@@ -110,6 +114,9 @@ export abstract class ResourceController {
    */
   protected done(err: Error, res?: any): any {
     IdeaX.logger(`DONE`, err, res, true);
+    // if the table `requestsLogs` has been specified, a log of the request will be stored in it
+    this.storeLog(!err);
+    // send the response
     this.callback(null, {
       statusCode: err ? '400' : '200',
       body: err ?  JSON.stringify({ message: err.message }) : JSON.stringify(res || {}),
@@ -227,6 +234,34 @@ export abstract class ResourceController {
   set sns(sns: SNS) {
     this._sns = sns;
   }
+
+///
+/// HELPERS
+///
+
+  /**
+   * Store the log associated to the request (no response/error handling).
+   */
+  protected storeLog(success: boolean): void {
+    if(!this.tables.requestsLogs) return;
+    // set the TTL of the log (1 month)
+    let expiresAt = new Date();
+    expiresAt.setMonth(expiresAt.getMonth()+1);
+    // insert the log and don't wait for response or errors
+    this.dynamoDB.put({ TableName: this.tables.requestsLogs, Item: <RequestLog> {
+      key: this.resource,
+      at: String(new Date().getTime()).concat('_'.concat(UUIDV4())),
+      expiresAt: Math.round(expiresAt.getTime()/1000),
+      userId: this.principalId,
+      resource: this.resource,
+      resourceId: this.resourceId,
+      method: this.httpMethod,
+      action: this.body && this.body.action ? this.body.action : null,
+      requestSucceeded: success
+    }})
+    .then(() => {})
+    .catch(() => {});
+  }
 }
 
 /**
@@ -234,8 +269,9 @@ export abstract class ResourceController {
  */
 export interface ResourceControllerOptions {
   /**
-   * The tables involved an their names in DynamoDB.
-   * e.g. { users: 'project_users' }
+   * The tables involved an their names in DynamoDB; e.g. { users: 'project_users' }.
+   *
+   * If the special table `requestsLogs` is specified, a log of the request will be stored in it.
    */
   tables?: any;
   /**

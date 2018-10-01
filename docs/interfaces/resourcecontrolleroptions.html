@@ -925,6 +925,9 @@ img { max-width: 100%; }
 		<li class=" tsd-kind-class">
 			<a href="../classes/sns.html" class="tsd-kind-icon">SNS</a>
 		</li>
+		<li class=" tsd-kind-interface">
+			<a href="requestlog.html" class="tsd-kind-icon">Request<wbr>Log</a>
+		</li>
 		<li class="current tsd-kind-interface">
 			<a href="resourcecontrolleroptions.html" class="tsd-kind-icon">Resource<wbr>Controller<wbr>Options</a>
 			<ul>
@@ -980,7 +983,7 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">resource<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/906f4e2/src/resourceController.ts#L244">resourceController.ts:244</a></li>
+						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/671a96b/src/resourceController.ts#L280">resourceController.ts:280</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -995,14 +998,14 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">tables<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/906f4e2/src/resourceController.ts#L240">resourceController.ts:240</a></li>
+						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/671a96b/src/resourceController.ts#L276">resourceController.ts:276</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>The tables involved an their names in DynamoDB.
-						e.g. { users: &#39;project_users&#39; }</p>
+						<p>The tables involved an their names in DynamoDB; e.g. { users: &#39;project_users&#39; }.</p>
 					</div>
+					<p>If the special table <code>requestsLogs</code> is specified, a log of the request will be stored in it.</p>
 				</div>
 			</section>
 		</section>
