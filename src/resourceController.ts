@@ -27,6 +27,8 @@ export abstract class ResourceController {
 
   protected tables: any;
 
+  protected logsKeys: Array<string>;
+
   protected _dynamoDB: DynamoDB;
   protected _cognito: Cognito;
   protected _s3: S3;
@@ -57,6 +59,8 @@ export abstract class ResourceController {
     this.body = JSON.parse(event.body) || {};
 
     this.tables = options.tables || {};
+
+    this.logsKeys = options.logsKeys || new Array<string>();
   }
 
 ///
@@ -114,8 +118,8 @@ export abstract class ResourceController {
    */
   protected done(err: Error, res?: any): any {
     IdeaX.logger(`DONE`, err, res, true);
-    // if the table `requestsLogs` has been specified, a log of the request will be stored in it
-    this.storeLog(!err);
+    // if configured, store one or more logs of the request
+    this.logsKeys.forEach(key => this.storeLog(key, !err));
     // send the response
     this.callback(null, {
       statusCode: err ? '400' : '200',
@@ -242,19 +246,19 @@ export abstract class ResourceController {
   /**
    * Store the log associated to the request (no response/error handling).
    */
-  protected storeLog(success: boolean): void {
-    if(!this.tables.requestsLogs) return;
+  protected storeLog(key: string, success: boolean): void {
+    if(!key || !this.tables.requestsLogs) return;
     // set the TTL of the log (1 month)
     let expiresAt = new Date();
     expiresAt.setMonth(expiresAt.getMonth()+1);
     // insert the log and don't wait for response or errors
     this.dynamoDB.put({ TableName: this.tables.requestsLogs, Item: <RequestLog> {
-      key: this.resource,
+      key: key,
       at: String(new Date().getTime()).concat('_'.concat(UUIDV4())),
       expiresAt: Math.round(expiresAt.getTime()/1000),
-      userId: this.principalId,
+      userId: this.principalId || null,
       resource: this.resource,
-      resourceId: this.resourceId,
+      resourceId: this.resourceId || null,
       method: this.httpMethod,
       action: this.body && this.body.action ? this.body.action : null,
       requestSucceeded: success
@@ -270,12 +274,15 @@ export abstract class ResourceController {
 export interface ResourceControllerOptions {
   /**
    * The tables involved an their names in DynamoDB; e.g. { users: 'project_users' }.
-   *
-   * If the special table `requestsLogs` is specified, a log of the request will be stored in it.
    */
   tables?: any;
   /**
    * The resourceId of the API request, to specify if different from "proxy".
    */
   resourceId?: string;
+  /**
+   * If one or more keys are specified, insert a log for each of those keys.
+   * Note well: the the special table `requestsLogs` must be specified.
+   */
+  logsKeys?: Array<string>;
 }

@@ -932,6 +932,9 @@ img { max-width: 100%; }
 			<a href="resourcecontrolleroptions.html" class="tsd-kind-icon">Resource<wbr>Controller<wbr>Options</a>
 			<ul>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
+					<a href="resourcecontrolleroptions.html#logskeys" class="tsd-kind-icon">logs<wbr>Keys</a>
+				</li>
+				<li class=" tsd-kind-property tsd-parent-kind-interface">
 					<a href="resourcecontrolleroptions.html#resourceid" class="tsd-kind-icon">resource<wbr>Id</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
@@ -968,6 +971,7 @@ img { max-width: 100%; }
 					<section class="tsd-index-section ">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="resourcecontrolleroptions.html#logskeys" class="tsd-kind-icon">logs<wbr>Keys</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="resourcecontrolleroptions.html#resourceid" class="tsd-kind-icon">resource<wbr>Id</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="resourcecontrolleroptions.html#tables" class="tsd-kind-icon">tables</a></li>
 						</ul>
@@ -978,12 +982,28 @@ img { max-width: 100%; }
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Properties</h2>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+				<a name="logskeys" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> logs<wbr>Keys</h3>
+				<div class="tsd-signature tsd-kind-icon">logs<wbr>Keys<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/a2be76d/src/resourceController.ts#L287">resourceController.ts:287</a></li>
+					</ul>
+				</aside>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>If one or more keys are specified, insert a log for each of those keys.
+						Note well: the the special table <code>requestsLogs</code> must be specified.</p>
+					</div>
+				</div>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="resourceid" class="tsd-anchor"></a>
 				<h3><span class="tsd-flag ts-flagOptional">Optional</span> resource<wbr>Id</h3>
 				<div class="tsd-signature tsd-kind-icon">resource<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/671a96b/src/resourceController.ts#L280">resourceController.ts:280</a></li>
+						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/a2be76d/src/resourceController.ts#L282">resourceController.ts:282</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -998,14 +1018,13 @@ img { max-width: 100%; }
 				<div class="tsd-signature tsd-kind-icon">tables<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/671a96b/src/resourceController.ts#L276">resourceController.ts:276</a></li>
+						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/a2be76d/src/resourceController.ts#L278">resourceController.ts:278</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
 						<p>The tables involved an their names in DynamoDB; e.g. { users: &#39;project_users&#39; }.</p>
 					</div>
-					<p>If the special table <code>requestsLogs</code> is specified, a log of the request will be stored in it.</p>
 				</div>
 			</section>
 		</section>
