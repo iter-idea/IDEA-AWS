@@ -52,7 +52,7 @@ export abstract class ResourceController {
     this.principalId = this.claims ? this.claims.sub : null;
 
     this.httpMethod = event.httpMethod;
-    this.resource = event.resource;
+    this.resource = (event.resource || '').replace('+', ''); // {proxy+} -> {proxy}
     this.resourceId = event.pathParameters && event.pathParameters[options.resourceId || 'proxy']
       ? decodeURIComponent(event.pathParameters[options.resourceId || 'proxy']) : '';
     this.queryParams = event.queryStringParameters || {};
