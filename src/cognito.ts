@@ -116,6 +116,39 @@ export class Cognito {
   }
 
   /**
+   * Resend the password to a user who never logged in.
+   * @param {string} email the email to use as login
+   * @param {string} cognitoUserPoolId the pool in which to create the user
+   * @param {any} options
+   ```
+    {
+      temporaryPassword?: string;   // if null, randomly generated
+    }
+   ```
+   * @return {Promise<void>}
+   */
+  public resendPassword(email: string, cognitoUserPoolId: string, options? : any): Promise<void> {
+    return new Promise((resolve, reject) => {
+      options = options || {};
+      if(IdeaX.isEmpty(email, 'email')) return reject(new Error(`E.COGNITO.INVALID_EMAIL`));
+      let params = <any> {
+        UserPoolId: cognitoUserPoolId, Username: email, MessageAction: 'RESEND'
+      };
+      if(options.temporaryPassword) params.TemporaryPassword = options.temporaryPassword;
+      new AWS.CognitoIdentityServiceProvider().adminCreateUser(params, (err: Error, data: any) => {
+        IdeaX.logger('COGNITO RESEND PASSWORD', err, data);
+        if(err) {
+          switch(err.name) {
+            case 'UnsupportedUserStateException':
+              return reject(new Error(`E.COGNITO.USER_ALREADY_CONFIRMED_PASSWORD`));
+            default: return reject(err);
+          }
+        } else resolve();
+      });
+    });
+  }
+
+  /**
    * Delete a user by its email (username), in the pool specified.
    * @param {string} email the email used as login
    * @param {string} cognitoUserPoolId the pool in which the user is stored
