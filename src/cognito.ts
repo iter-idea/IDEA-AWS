@@ -215,7 +215,7 @@ export class Cognito {
         IdeaX.logger('COGNITO UPDATE EMAIL', err, newEmail);
         if(err) reject(err);
         // sign out the user from all its devices and resolve
-        else this.globalSignOut(email, cognitoUserPoolId)
+        else this.globalSignOut(newEmail, cognitoUserPoolId)
         .then(() => resolve())
         .catch(err => reject(err));
       });
