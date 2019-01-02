@@ -154,7 +154,7 @@ export class Cognito {
    * @param {string} cognitoUserPoolId the pool in which the user is stored
    * @return {Promise<void>}
    */
-  public deleteUser(email: string, cognitoUserPoolId: string,): Promise<void> {
+  public deleteUser(email: string, cognitoUserPoolId: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if(IdeaX.isEmpty(email, 'email')) return reject(new Error(`E.COGNITO.INVALID_EMAIL`));
       new AWS.CognitoIdentityServiceProvider()
@@ -163,6 +163,94 @@ export class Cognito {
         if(err) reject(new Error(`E.COGNITO.DELETION_FAILED`));
         else resolve();
       });
+    });
+  }
+
+  /**
+   * Sign in a user of a specific pool through username and password.
+   * @param {string} email the email used as login
+   * @param {string} password the password to authenticate the user
+   * @param {string} cognitoUserPoolId the pool in which the user is stored
+   * @param {string} cognitoUserPoolClientId the client id to access the user pool
+   *  (`ADMIN_NO_SRP_AUTH` must be enabled)
+   * @return {Promise<AWS.CognitoIdentityServiceProvider.AuthenticationResultType>}
+   */
+  public signIn(
+    email: string, password: string, cognitoUserPoolId: string, cognitoUserPoolClientId: string
+  ): Promise<AWS.CognitoIdentityServiceProvider.AuthenticationResultType> {
+    return new Promise((resolve, reject) => {
+      new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' })
+      .adminInitiateAuth({
+        UserPoolId: cognitoUserPoolId,
+        ClientId: cognitoUserPoolClientId,
+        AuthFlow: 'ADMIN_NO_SRP_AUTH',
+        AuthParameters: { 'USERNAME': email, 'PASSWORD': password }
+      }, (err: Error, data: AWS.CognitoIdentityServiceProvider.AdminInitiateAuthResponse) => {
+        IdeaX.logger('COGNITO SIGN IN', err, data ? JSON.stringify(data.toString) : null);
+        if(err || !data.AuthenticationResult) reject(err);
+        else resolve(data.AuthenticationResult);
+      });
+    });
+  }
+
+  /**
+   * Change the email address (== username) associated to a user.
+   * @param {string} email the email currently used to login
+   * @param {string} newEmail the new email to set
+   * @param {string} cognitoUserPoolId the pool in which the user is stored
+   * @return {Promise<void>}
+   */
+  public updateEmail(email: string, newEmail: string, cognitoUserPoolId: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if(IdeaX.isEmpty(newEmail, 'email')) return reject(new Error('E.COGNITO.INVALID_NEW_EMAIL'));
+      new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' })
+      .adminUpdateUserAttributes({
+        UserPoolId: cognitoUserPoolId,
+        Username: email,
+        UserAttributes: [
+          { Name: 'email', Value: newEmail },
+          { Name: 'email_verified', Value: 'true' }
+        ]
+      }, (err: Error, _: any) => {
+        IdeaX.logger('COGNITO UPDATE EMAIL', err, newEmail);
+        if(err) reject(err);
+        else resolve();
+      });
+    });
+  }
+
+  /**
+   * Change the password to sign in for a user.
+   * @param {string} email the email currently used to login
+   * @param {string} oldPassword the password to authenticate the user
+   * @param {string} newPassword the new password to set
+   * @param {string} cognitoUserPoolId the pool in which the user is stored
+   * @param {string} cognitoUserPoolClientId the client id to access the user pool
+   *  (`ADMIN_NO_SRP_AUTH` must be enabled)
+   * @return {Promise<void>}
+   */
+  public updatePassword(
+    email: string, oldPassword: string, newPassword: string,
+    cognitoUserPoolId: string, cognitoUserPoolClientId: string
+  ): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if(newPassword.length < 8) return reject(new Error('E.COGNITO.INVALID_NEW_PASSWORD'));
+      // get a token to run the password change
+      this.signIn(email, oldPassword, cognitoUserPoolId, cognitoUserPoolClientId)
+      .then((data: AWS.CognitoIdentityServiceProvider.AuthenticationResultType) => {
+        // request the password change
+        new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' })
+        .changePassword({
+          AccessToken: data.AccessToken,
+          PreviousPassword: oldPassword,
+          ProposedPassword: newPassword
+        }, (err: Error, _: any) => {
+          IdeaX.logger('COGNITO UPDATE PASSWORD', err, '*******');
+          if(err) reject(err);
+          else resolve();
+        });
+      })
+      .catch((err) => reject(err));
     });
   }
 }
