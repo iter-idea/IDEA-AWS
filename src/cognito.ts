@@ -214,7 +214,10 @@ export class Cognito {
       }, (err: Error, _: any) => {
         IdeaX.logger('COGNITO UPDATE EMAIL', err, newEmail);
         if(err) reject(err);
-        else resolve();
+        // sign out the user from all its devices and resolve
+        else this.globalSignOut(email, cognitoUserPoolId)
+        .then(() => resolve())
+        .catch(err => reject(err));
       });
     });
   }
@@ -251,6 +254,26 @@ export class Cognito {
         });
       })
       .catch((err) => reject(err));
+    });
+  }
+
+  /**
+   * Sign out the user from all devices.
+   * @param {string} email the email currently used to login
+   * @param {string} cognitoUserPoolId the pool in which the user is stored
+   * @return {Promise<void>}
+   */
+  public globalSignOut(email: string, cognitoUserPoolId: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' })
+      .adminUserGlobalSignOut({
+        Username: email,
+        UserPoolId: cognitoUserPoolId
+      }, (err: Error, _: any) => {
+        IdeaX.logger('COGNITO GLOBAL SIGN OUT', err, email);
+        if(err) reject(err);
+        else resolve();
+      });
     });
   }
 }
