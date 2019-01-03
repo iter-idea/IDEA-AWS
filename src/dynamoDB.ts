@@ -281,15 +281,15 @@ export class DynamoDB {
 
   /**
    * Execute a series of max 10 write operations in a single transaction.
-   * @param {Array<AWS.DynamoDB.TransactWriteItem>} operations the ops to execute in the transaction
+   * @param {Array<AWS.DynamoDB.TransactWriteItem>} ops the operations to execute in the transaction
    * @return {Promise<any>}
    */
-  public transactWrites(operations: Array<AWS.DynamoDB.TransactWriteItem>): Promise<any> {
+  public transactWrites(ops: Array<AWS.DynamoDB.DocumentClient.TransactWriteItem>): Promise<any> {
     return new Promise((resolve, reject) => {
-      if(operations.length == 0) {
+      if(ops.length == 0) {
         IdeaX.logger(`TRANSACTION WRITES`, null, `No elements to write`);
         resolve();
-      } else this.dynamo.transactWrite({ TransactItems: operations.slice(0, 10) }, (err: Error) => {
+      } else this.dynamo.transactWrite({ TransactItems: ops.slice(0, 10) }, (err: Error) => {
         IdeaX.logger(`TRANSACTION WRITES`, err, null);
         if(err) reject(err);
         else resolve();
