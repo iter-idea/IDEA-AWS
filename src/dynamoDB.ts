@@ -284,13 +284,13 @@ export class DynamoDB {
    * @param {Array<AWS.DynamoDB.TransactWriteItem>} operations the ops to execute in the transaction
    * @return {Promise<any>}
    */
-  public batchWriteTransaction(operations: Array<AWS.DynamoDB.TransactWriteItem>): Promise<any> {
+  public transactWrites(operations: Array<AWS.DynamoDB.TransactWriteItem>): Promise<any> {
     return new Promise((resolve, reject) => {
       if(operations.length == 0) {
-        IdeaX.logger(`BATCH TRANSACTION WRITE`, null, `No elements to write`);
+        IdeaX.logger(`TRANSACTION WRITES`, null, `No elements to write`);
         resolve();
       } else this.dynamo.transactWrite({ TransactItems: operations.slice(0, 10) }, (err: Error) => {
-        IdeaX.logger(`BATCH TRANSACTION WRITE`, err, null);
+        IdeaX.logger(`TRANSACTION WRITES`, err, null);
         if(err) reject(err);
         else resolve();
       });
