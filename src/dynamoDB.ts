@@ -184,7 +184,7 @@ export class DynamoDB {
   public batchPut(table: string, items: Array<any>, ignoreErr?: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
       if(items.length == 0) {
-        IdeaX.logger(`BATCH WRITE ${table}`, null, `No elements to write`);
+        IdeaX.logger(`BATCH WRITE (PUT) ${table}`, null, `No elements to write`);
         resolve();
       } else this.batchWriteHelper(table, items, true, Boolean(ignoreErr), 0, 25, resolve, reject);
     });
@@ -200,7 +200,7 @@ export class DynamoDB {
   public batchDelete(table: string, keys: Array<any>, ignoreErr?: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
       if(keys.length == 0) {
-        IdeaX.logger(`BATCH WRITE ${table}`, null, `No elements to write`);
+        IdeaX.logger(`BATCH WRITE (DELETE) ${table}`, null, `No elements to write`);
         resolve();
       } else this.batchWriteHelper(table, keys, false, Boolean(ignoreErr), 0, 25, resolve, reject);
     });
@@ -225,7 +225,8 @@ export class DynamoDB {
     }
     // execute the bulk operation
     this.dynamo.batchWrite(batch, (err: Error) => {
-      IdeaX.logger(`BATCH WRITE ${t}`, err, `${curr} of ${items.length}`);
+      IdeaX.logger(`BATCH WRITE (${isPut ? 'PUT' : 'DELETE'}) ${t}`, err,
+        `${curr} of ${items.length}`);
       if(err && !iErr) reject(err);
       // if there are still chunks to manage, go on recursively
       else if(curr+size < items.length)
@@ -275,6 +276,24 @@ export class DynamoDB {
         IdeaX.logger(`${f.toUpperCase()} ${params.TableName}`, null, items.length.toString());
         resolve(items);
       }
+    });
+  }
+
+  /**
+   * Execute a series of max 10 write operations in a single transaction.
+   * @param {Array<AWS.DynamoDB.TransactWriteItem>} operations the ops to execute in the transaction
+   * @return {Promise<any>}
+   */
+  public batchWriteTransaction(operations: Array<AWS.DynamoDB.TransactWriteItem>): Promise<any> {
+    return new Promise((resolve, reject) => {
+      if(operations.length == 0) {
+        IdeaX.logger(`BATCH TRANSACTION WRITE`, null, `No elements to write`);
+        resolve();
+      } else this.dynamo.transactWrite({ TransactItems: operations.slice(0, 10) }, (err: Error) => {
+        IdeaX.logger(`BATCH TRANSACTION WRITE`, err, null);
+        if(err) reject(err);
+        else resolve();
+      });
     });
   }
 }
