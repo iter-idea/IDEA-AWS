@@ -22,12 +22,12 @@ export class SNS {
    * @return {Promise<string>} platform endpoint ARN
    */
   public createPushPlatormEndpoint(
-    platform: string, deviceId: string, snsParams:any
+    platform: string, deviceId: string, snsParams: any
   ): Promise<string> {
     return new Promise((resolve, reject) => {
       let platformARN;
       // identify the platform ARN
-      switch(platform) {
+      switch (platform) {
         case 'APNS': platformARN = snsParams.pushiOS; break;
         case 'FCM': platformARN = snsParams.pushAndroid; break;
         default: return reject(new Error(`UNSUPPORTED_PLATFORM`));
@@ -36,7 +36,7 @@ export class SNS {
       this.sns.createPlatformEndpoint({ PlatformApplicationArn: platformARN, Token: deviceId },
       (err: Error, data: any) => {
         IdeaX.logger('SNS ADD PLATFORM ENDPOINT', err, data);
-        if(err || !data.EndpointArn) reject(err);
+        if (err || !data.EndpointArn) reject(err);
         else resolve(data.EndpointArn);
       });
     });
@@ -52,7 +52,7 @@ export class SNS {
   public publishSNSPush(message: string, platform: string, endpoint: string): Promise<any> {
     return new Promise((resolve, reject) => {
       let structuredMessage;
-      switch(platform) {
+      switch (platform) {
         case 'APNS':
           structuredMessage = { APNS: JSON.stringify({ aps: { alert: message } }) };
         break;
@@ -65,7 +65,7 @@ export class SNS {
         MessageStructure: 'json', Message: JSON.stringify(structuredMessage), TargetArn: endpoint
       }, (err: Error, data: any) => {
         IdeaX.logger('SNS PUSH NOTIFICATION', err, data);
-        if(err) reject(err);
+        if (err) reject(err);
         else resolve(data);
       });
     });

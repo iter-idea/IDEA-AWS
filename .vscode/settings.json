@@ -1,8 +1,8 @@
 // Place your settings in this file to overwrite the default settings
 {
     "editor.tabSize": 2,
-    "editor.rulers": [100],
-    "editor.wordWrapColumn": 100,
+    "editor.rulers": [120],
+    "editor.wordWrapColumn": 120,
     "editor.wordWrap": "bounded",
     "files.eol": "\n",
     "files.exclude": {
@@ -12,7 +12,6 @@
         "**/.DS_Store": true,
         "**/*.map": true,
         "node_modules": true,
-        "dist": true,
         "npm-debug.log": true,
         "api/**/*.js": true,
         "api/node_modules": true,
@@ -24,14 +23,14 @@
         "client/plugins": true,
         "client/.sourcemaps": true,
         "client/src/components/_models": true,
-        "www": true
+        "www": true,
+        ".vs": true
     },
     "files.trimTrailingWhitespace": true,
     "git.confirmSync": false,
     "editor.renderIndentGuides": true,
     "editor.renderLineHighlight": "all",
     "workbench.iconTheme": "vs-seti",
-    "workbench.startupEditor": "welcomePage",
     "window.zoomLevel": 0,
     "extensions.ignoreRecommendations": false
   }

@@ -7,10 +7,10 @@ import IdeaX = require('idea-toolbox');
 export class S3 {
   protected s3: any;
 
-  protected DEFAULT_DOWNLOAD_BUCKET_PREFIX: string = 'common';
-  protected DEFAULT_DOWNLOAD_BUCKET: string = 'idea-downloads';
-  protected DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP: number = 180;
-  protected DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP: number = 300;
+  protected DEFAULT_DOWNLOAD_BUCKET_PREFIX = 'common';
+  protected DEFAULT_DOWNLOAD_BUCKET = 'idea-downloads';
+  protected DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP = 180;
+  protected DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP = 300;
 
   /**
    * Initialize a new S3 helper object.
@@ -36,8 +36,7 @@ export class S3 {
   public createDownloadURLFromData(data: any, options?: any): Promise<SignedURL> {
     return new Promise((resolve, reject) => {
       // if needed, randomly generates the key
-      if(!options.key)
-        options.key = new Date().getTime().toString().concat(Math.random().toString(36).slice(2));
+      if (!options.key) options.key = new Date().getTime().toString().concat(Math.random().toString(36).slice(2));
       // add the prefix to the key
       options.key = `${options.prefix || this.DEFAULT_DOWNLOAD_BUCKET_PREFIX}/${options.key}`;
       // set the other parameters
@@ -47,9 +46,9 @@ export class S3 {
       this.s3.upload({
         Bucket: options.bucket, Key: options.key, Body: data, ContentType: options.contentType
       },
-      (err: Error, data: any) => {
-        IdeaX.logger('S3 UPLOAD', err, data);
-        if(err) reject(err);
+      (err: Error, d: any) => {
+        IdeaX.logger('S3 UPLOAD', err, d);
+        if (err) reject(err);
         else resolve(this.signedURLGet(options.bucket, options.key, options.secToExp));
       });
     });

@@ -75,7 +75,7 @@ export abstract class ResourceController {
     this.checkAuthBeforeRequest()
     .then(() => {
       let request;
-      if(this.resourceId) switch(this.httpMethod) {
+      if (this.resourceId) switch (this.httpMethod) {
         // resource/{resourceId}
         case 'GET': request = this.getResource(); break;
         case 'POST': request = this.postResource(); break;
@@ -83,8 +83,8 @@ export abstract class ResourceController {
         case 'DELETE': request = this.deleteResource(); break;
         case 'PATCH': request = this.patchResource(); break;
         case 'HEAD': request = this.headResource(); break;
-        default: /* nope */;
-      } else switch(this.httpMethod) {
+        default: /* nope */
+      } else switch (this.httpMethod) {
         // resource
         case 'GET': request = this.getResources(); break;
         case 'POST': request = this.postResources(); break;
@@ -92,10 +92,10 @@ export abstract class ResourceController {
         case 'DELETE': request = this.deleteResources(); break;
         case 'PATCH': request = this.patchResources(); break;
         case 'HEAD': request = this.headResources(); break;
-        default: /* nope */;
+        default: /* nope */
       }
       // execute the API request
-      if(!request) this.done(new Error(`E.COMMON.UNSUPPORTED_ACTION`));
+      if (!request) this.done(new Error(`E.COMMON.UNSUPPORTED_ACTION`));
       else {
         IdeaX.logger('REQUEST', null, this.httpMethod, true);
         request
@@ -110,7 +110,7 @@ export abstract class ResourceController {
    */
   protected checkAuthBeforeRequest(): Promise<void> {
     return new Promise(resolve => resolve());
-  };
+  }
   /**
    * Default callback for IDEA's API resource controllers.
    * @param {Error} err if not null, it contains the error raised
@@ -125,114 +125,114 @@ export abstract class ResourceController {
       statusCode: err ? '400' : '200',
       body: err ?  JSON.stringify({ message: err.message }) : JSON.stringify(res || {}),
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
-    })
+    });
   }
   /**
    * To @override
    */
   protected getResource(): Promise<any> {
     return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
-  };
+  }
   /**
    * To @override
    */
   protected postResource(): Promise<any> {
     return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
-  };
+  }
   /**
    * To @override
    */
   protected putResource(): Promise<any> {
     return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
-  };
+  }
   /**
    * To @override
    */
   protected deleteResource(): Promise<any> {
     return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
-  };
+  }
   /**
    * To @override
    */
   protected headResource(): Promise<any> {
     return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
-  };
+  }
   /**
    * To @override
    */
   protected getResources(): Promise<any> {
     return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
-  };
+  }
   /**
    * To @override
    */
   protected postResources(): Promise<any> {
     return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
-  };
+  }
   /**
    * To @override
    */
   protected putResources(): Promise<any> {
     return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
-  };
+  }
   /**
    * To @override
    */
   protected patchResource(): Promise<any> {
     return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
-  };
+  }
   /**
    * To @override
    */
   protected patchResources(): Promise<any> {
     return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
-  };
+  }
   /**
    * To @override
    */
   protected deleteResources(): Promise<any> {
     return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
-  };
+  }
   /**
    * To @override
    */
   protected headResources(): Promise<any> {
     return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
-  };
+  }
 
 ///
 /// AWS SERVICES
 ///
   get dynamoDB(): DynamoDB {
-    if(!this._dynamoDB) this._dynamoDB = new DynamoDB();
+    if (!this._dynamoDB) this._dynamoDB = new DynamoDB();
     return this._dynamoDB;
   }
   set dynamoDB(dynamoDB: DynamoDB) {
     this._dynamoDB = dynamoDB;
   }
   get cognito(): Cognito {
-    if(!this._cognito) this._cognito = new Cognito();
+    if (!this._cognito) this._cognito = new Cognito();
     return this._cognito;
   }
   set cognito(cognito: Cognito) {
     this._cognito = cognito;
   }
   get s3(): S3 {
-    if(!this._s3) this._s3 = new S3();
+    if (!this._s3) this._s3 = new S3();
     return this._s3;
   }
   set s3(s3: S3) {
     this._s3 = s3;
   }
   get ses(): SES {
-    if(!this._ses) this._ses = new SES();
+    if (!this._ses) this._ses = new SES();
     return this._ses;
   }
   set ses(ses: SES) {
     this._ses = ses;
   }
   get sns(): SNS {
-    if(!this._sns) this._sns = new SNS();
+    if (!this._sns) this._sns = new SNS();
     return this._sns;
   }
   set sns(sns: SNS) {
@@ -247,15 +247,15 @@ export abstract class ResourceController {
    * Store the log associated to the request (no response/error handling).
    */
   protected storeLog(key: string, success: boolean): void {
-    if(!key || !this.tables.requestsLogs) return;
+    if (!key || !this.tables.requestsLogs) return;
     // set the TTL of the log (1 month)
-    let expiresAt = new Date();
-    expiresAt.setMonth(expiresAt.getMonth()+1);
+    const expiresAt = new Date();
+    expiresAt.setMonth(expiresAt.getMonth() + 1);
     // insert the log and don't wait for response or errors
     this.dynamoDB.put({ TableName: this.tables.requestsLogs, Item: <RequestLog> {
       key: key,
       at: String(new Date().getTime()).concat('_'.concat(UUIDV4())),
-      expiresAt: Math.round(expiresAt.getTime()/1000),
+      expiresAt: Math.round(expiresAt.getTime() / 1000),
       userId: this.principalId || null,
       resource: this.resource,
       resourceId: this.resourceId || null,

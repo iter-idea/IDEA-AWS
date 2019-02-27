@@ -33,6 +33,12 @@ $RECYCLE.BIN/
 Thumbs.db
 UserInterfaceState.xcuserstate
 
-# CUSTOM
+# @idea custom
+api/**/_out
 api/**/*.zip
+api/**/index.js
+api/_models/**/*.js
+api/**/connectors/*.js
+client/src/components/_models
 *.map
+.vs
