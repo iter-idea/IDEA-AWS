@@ -83,6 +83,28 @@ export class S3 {
       })
     };
   }
+
+  /**
+   * Make a copy of an object of the bucket.
+   * @param {any} options strucuted as follows
+   ```
+    copySource: string;   // the source path (complete with the bucket name).
+    bucket: string;       // the bucket in which to copy the file.
+    key; string;          // the complete filepath of the bucket in which to copy the file
+   ```
+   * @return {Promise<void>}
+   */
+  public copyObject(options?: any): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.s3.copyObject({
+        CopySource: options.copySource, Bucket: options.bucket, Key: options.key
+      }, (err: Error, d: any) => {
+        IdeaX.logger('S3 COPY OBJECT', err, d);
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  }
 }
 
 /**
