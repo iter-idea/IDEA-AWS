@@ -1,5 +1,6 @@
 import AWS = require('aws-sdk');
 import UUIDV4 = require('uuid/v4');
+import ShortID = require('shortid');
 import IdeaX = require('idea-toolbox');
 
 /**
@@ -32,15 +33,12 @@ export class DynamoDB {
   /**
    * @private helper
    */
-  protected iuidHelper(
-    project: string, attempt: number, maxAttempts: number, resolve: any, reject: any
-  ): void {
+  protected iuidHelper(project: string, attempt: number, maxAttempts: number, resolve: any, reject: any) {
     if (attempt > maxAttempts) reject();
     else {
-      const id = UUIDV4();
+      const id = ShortID.generate();
       this.put({
-        TableName: 'idea_IUID',
-        Item: { project: project, id: id },
+        TableName: 'idea_IUID', Item: { project: project, id: id },
         ConditionExpression: 'NOT (#p = :project AND #id = :id)',
         ExpressionAttributeNames: { '#p': 'project', '#id': 'id' },
         ExpressionAttributeValues: { ':project': project, ':id': id }
@@ -48,6 +46,39 @@ export class DynamoDB {
       .then(() => resolve(`${project}_${id}`))
       .catch(() => // ID exists, try again
         this.iuidHelper(project, attempt + 1, maxAttempts, resolve, reject));
+    }
+  }
+
+  /**
+   * Returns an ISID: IDEA's Short IDentifier, which is a short, unique id through all IDEA's projects.
+   * Note: there's no need of an authorization check for extrernal uses: the permissions depend
+   * from the context in which it's executed.
+   * @param {string} project project code
+   * @return {Promise<string>} the ISID
+   */
+  public ISID(project: string): Promise<string> {
+    const MAX_ATTEMPTS = 3;
+    return new Promise((resolve, reject) => {
+      if (!project) reject();
+      else this.isidHelper(project, 0, MAX_ATTEMPTS, resolve, reject);
+    });
+  }
+  /**
+   * @private helper
+   */
+  protected isidHelper(project: string, attempt: number, maxAttempts: number, resolve: any, reject: any) {
+    if (attempt > maxAttempts) reject();
+    else {
+      const id = UUIDV4();
+      this.put({
+        TableName: 'idea_ISID', Item: { project: project, id: id },
+        ConditionExpression: 'NOT (#p = :project AND #id = :id)',
+        ExpressionAttributeNames: { '#p': 'project', '#id': 'id' },
+        ExpressionAttributeValues: { ':project': project, ':id': id }
+      })
+      .then(() => resolve(`${project}_${id}`))
+      .catch(() => // ID exists, try again
+        this.isidHelper(project, attempt + 1, maxAttempts, resolve, reject));
     }
   }
 
@@ -80,8 +111,7 @@ export class DynamoDB {
     return new Promise((resolve, reject) => {
       this.dynamo.get(params, (err: Error, data: any) => {
         IdeaX.logger(`GET ${params.IndexName
-          ? `${params.TableName} (${params.IndexName})`
-          : params.TableName}`, err, data);
+          ? `${params.TableName} (${params.IndexName})` : params.TableName}`, err, data);
         if (err || !data.Item) reject(err);
         else resolve(data.Item);
       });
@@ -155,7 +185,7 @@ export class DynamoDB {
   protected batchGetHelper(
     t: string, keys: Array<any>, elements: Array<any>, iErr: boolean, curr: number, size: number,
     resolve: any, reject: any
-  ): void {
+  ) {
     // prepare the structure for the bulk operation
     const batch: any = { RequestItems: {} };
     batch.RequestItems[t] = { Keys: [] };
@@ -209,9 +239,8 @@ export class DynamoDB {
    * @private helper
    */
   protected batchWriteHelper(
-    t: string, items: Array<any>, isPut: boolean, iErr: boolean,
-    curr: number, size: number, resolve: any, reject: any
-  ): void {
+    t: string, items: Array<any>, isPut: boolean, iErr: boolean, curr: number, size: number, resolve: any, reject: any
+  ) {
     // prepare the structure for the bulk operation
     const batch: any = { RequestItems: {} };
     if (isPut) {
