@@ -36,7 +36,7 @@ export class DynamoDB {
   protected iuidHelper(project: string, attempt: number, maxAttempts: number, resolve: any, reject: any) {
     if (attempt > maxAttempts) reject();
     else {
-      const id = ShortID.generate();
+      const id = UUIDV4();
       this.put({
         TableName: 'idea_IUID', Item: { project: project, id: id },
         ConditionExpression: 'NOT (#p = :project AND #id = :id)',
@@ -69,7 +69,7 @@ export class DynamoDB {
   protected isidHelper(project: string, attempt: number, maxAttempts: number, resolve: any, reject: any) {
     if (attempt > maxAttempts) reject();
     else {
-      const id = UUIDV4();
+      const id = ShortID.generate();
       this.put({
         TableName: 'idea_ISID', Item: { project: project, id: id },
         ConditionExpression: 'NOT (#p = :project AND #id = :id)',
