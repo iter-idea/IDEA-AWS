@@ -50,7 +50,7 @@ export class DynamoDB {
   }
 
   /**
-   * Returns an ISID: IDEA's Short IDentifier, which is a short, unique id through all IDEA's projects.
+   * Returns an ISID: IDEA's Short IDentifier, which is a short, unique id through a single project.
    * Note: there's no need of an authorization check for extrernal uses: the permissions depend
    * from the context in which it's executed.
    * @param {string} project project code
@@ -76,7 +76,7 @@ export class DynamoDB {
         ExpressionAttributeNames: { '#p': 'project', '#id': 'id' },
         ExpressionAttributeValues: { ':project': project, ':id': id }
       })
-      .then(() => resolve(`${project}_${id}`))
+      .then(() => resolve(id))
       .catch(() => // ID exists, try again
         this.isidHelper(project, attempt + 1, maxAttempts, resolve, reject));
     }
