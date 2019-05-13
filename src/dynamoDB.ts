@@ -292,9 +292,7 @@ export class DynamoDB {
   /**
    * @private helper
    */
-  protected queryScanHelper(
-    params: any, items: Array<any>, isQuery: boolean, resolve: any, reject: any
-  ): void {
+  protected queryScanHelper(params: any, items: Array<any>, isQuery: boolean, resolve: any, reject: any) {
     const f = isQuery ? 'query' : 'scan';
     (<any>this.dynamo)[f](params, (err: Error, data: any) => {
       if (err || !data || !data.Items) {
@@ -309,6 +307,38 @@ export class DynamoDB {
         IdeaX.logger(`${f.toUpperCase()} ${params.TableName}`, null, items.length.toString());
         resolve(items);
       }
+    });
+  }
+
+  /**
+   * Query a DynamoDb table in the traditional way (no pagination or data mapping).
+   * @param {any} params the params to apply to DynamoDB's function
+   * @return {Promise<Array<any>>}
+   */
+  public queryClassic(params: any): Promise<Array<any>> {
+    return new Promise((resolve, reject) => {
+      this.queryScanClassicHelper(params, true, resolve, reject);
+    });
+  }
+  /**
+   * Scan a DynamoDb table in the traditional way (no pagination or data mapping).
+   * @param {any} params the params to apply to DynamoDB's function
+   * @return {Promise<Array<any>>}
+   */
+  public scanClassic(params: any): Promise<Array<any>> {
+    return new Promise((resolve, reject) => {
+      this.queryScanClassicHelper(params, false, resolve, reject);
+    });
+  }
+  /**
+   * @private helper
+   */
+  protected queryScanClassicHelper(params: any, isQuery: boolean, resolve: any, reject: any) {
+    const f = isQuery ? 'query' : 'scan';
+    (<any>this.dynamo)[f](params, (err: Error, data: any) => {
+      IdeaX.logger(`${f.toUpperCase()} classic ${params.TableName}`, err, data);
+      if (err || !data) reject(err);
+      else resolve(data);
     });
   }
 
