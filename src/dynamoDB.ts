@@ -336,7 +336,7 @@ export class DynamoDB {
   protected queryScanClassicHelper(params: any, isQuery: boolean, resolve: any, reject: any) {
     const f = isQuery ? 'query' : 'scan';
     (<any>this.dynamo)[f](params, (err: Error, data: any) => {
-      IdeaX.logger(`${f.toUpperCase()} classic ${params.TableName}`, err, data);
+      IdeaX.logger(`${f.toUpperCase()} classic ${params.TableName}`, err, data && data.Items ? data.Items.length : 0);
       if (err || !data) reject(err);
       else resolve(data);
     });
