@@ -272,4 +272,28 @@ export class Cognito {
       });
     });
   }
+
+  /**
+   * Confirm and conclude a registration, usign a confirmation code.
+   * @param {string} email the email currently used to login
+   * @param {string} confirmationCode the password to authenticate the user
+   * @param {string} cognitoUserPoolClientId the client id to access the user pool
+   *  (`ADMIN_NO_SRP_AUTH` must be enabled)
+   * @return {Promise<void>}
+   */
+  public confirmSignUp(email: string, confirmationCode: string, cognitoUserPoolClientId: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (!email) return reject(new Error('E.COGNITO.INVALID_EMAIL'));
+      if (!confirmationCode) return reject(new Error('E.COGNITO.INVALID_CONFIRMATION_CODE'));
+      if (!cognitoUserPoolClientId) return reject(new Error('E.COGNITO.INVALID_CLIENT_ID'));
+      // conclude the registration (sign-up) flow, using a provided confirmation code
+      new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' })
+      .confirmSignUp({ Username: email, ConfirmationCode: confirmationCode, ClientId: cognitoUserPoolClientId },
+      (err: Error, _: any) => {
+        IdeaX.logger('COGNITO CONFIRM SIGN UP', err, `${email} ${confirmationCode}`);
+        if (err) reject(err);
+        else resolve();
+      });
+    });
+  }
 }
