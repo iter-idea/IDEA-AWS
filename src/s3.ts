@@ -96,12 +96,35 @@ export class S3 {
    */
   public copyObject(options?: any): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.s3.copyObject({
-        CopySource: options.copySource, Bucket: options.bucket, Key: options.key
-      }, (err: Error, d: any) => {
+      this.s3.copyObject({ CopySource: options.copySource, Bucket: options.bucket, Key: options.key },
+      (err: Error, d: any) => {
         IdeaX.logger('S3 COPY OBJECT', err, d);
         if (err) reject(err);
         else resolve();
+      });
+    });
+  }
+
+  /**
+   * Get an object from an S3 bucket.
+   * @param {any} options strucuted as follows
+   ```
+    bucket: string;       // the bucket in which to copy the file.
+    key; string;          // the complete filepath of the bucket in which to copy the file
+    type: string;         // enum: JSON; useful to cast the result
+   ```
+   * @return {Promise<any>}
+   */
+  public getObject(options?: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.s3.getObject({ Bucket: options.bucket, Key: options.key },
+      (err: Error, d: any) => {
+        IdeaX.logger('S3 GET OBJECT', err, d);
+        if (err) reject(err);
+        else switch (options.type) {
+          case 'JSON': resolve(JSON.parse(d.Body.toString('utf-8'))); break;
+          default: resolve(d);
+        }
       });
     });
   }

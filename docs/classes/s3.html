@@ -929,6 +929,9 @@ img { max-width: 100%; }
 					<a href="s3.html#createdownloadurlfromdata" class="tsd-kind-icon">create<wbr>DownloadURLFrom<wbr>Data</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="s3.html#getobject" class="tsd-kind-icon">get<wbr>Object</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="s3.html#signedurlget" class="tsd-kind-icon">signedURLGet</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -985,6 +988,7 @@ img { max-width: 100%; }
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="s3.html#copyobject" class="tsd-kind-icon">copy<wbr>Object</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="s3.html#createdownloadurlfromdata" class="tsd-kind-icon">create<wbr>DownloadURLFrom<wbr>Data</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="s3.html#getobject" class="tsd-kind-icon">get<wbr>Object</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="s3.html#signedurlget" class="tsd-kind-icon">signedURLGet</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="s3.html#signedurlput" class="tsd-kind-icon">signedURLPut</a></li>
 						</ul>
@@ -1004,7 +1008,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/1f3b41f/src/s3.ts#L13">s3.ts:13</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/a7f5fe6/src/s3.ts#L13">s3.ts:13</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1029,7 +1033,7 @@ img { max-width: 100%; }
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/1f3b41f/src/s3.ts#L97">s3.ts:97</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/a7f5fe6/src/s3.ts#L97">s3.ts:97</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1064,7 +1068,7 @@ bucket: <span class="hljs-keyword">string</span>;       <span class="hljs-commen
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/1f3b41f/src/s3.ts#L36">s3.ts:36</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/a7f5fe6/src/s3.ts#L36">s3.ts:36</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1099,6 +1103,41 @@ secToExp?: number;     <span class="hljs-comment">// seconds to URL expiration; 
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="getobject" class="tsd-anchor"></a>
+				<h3>get<wbr>Object</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">get<wbr>Object<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/a7f5fe6/src/s3.ts#L118">s3.ts:118</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Get an object from an S3 bucket.</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <span class="tsd-signature-type">any</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>strucuted as follows</p>
+									<pre><code>bucket: <span class="hljs-keyword">string</span>;       <span class="hljs-comment">// the bucket in which to copy the file.</span>
+<span class="hljs-built_in">key</span>; <span class="hljs-keyword">string</span>;          <span class="hljs-comment">// the complete filepath of the bucket in which to copy the file</span>
+<span class="hljs-built_in">type</span>: <span class="hljs-keyword">string</span>;         <span class="hljs-comment">// enum: JSON; useful to cast the result</span>
+</code></pre>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 				<a name="signedurlget" class="tsd-anchor"></a>
 				<h3>signedURLGet</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -1108,7 +1147,7 @@ secToExp?: number;     <span class="hljs-comment">// seconds to URL expiration; 
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/1f3b41f/src/s3.ts#L79">s3.ts:79</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/a7f5fe6/src/s3.ts#L79">s3.ts:79</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -1145,7 +1184,7 @@ secToExp?: number;     <span class="hljs-comment">// seconds to URL expiration; 
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/1f3b41f/src/s3.ts#L64">s3.ts:64</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/a7f5fe6/src/s3.ts#L64">s3.ts:64</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
