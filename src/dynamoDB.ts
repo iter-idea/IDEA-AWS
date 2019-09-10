@@ -38,14 +38,17 @@ export class DynamoDB {
     else {
       const id = UUIDV4();
       this.put({
-        TableName: 'idea_IUID', Item: { project: project, id: id },
+        TableName: 'idea_IUID',
+        Item: { project: project, id: id },
         ConditionExpression: 'NOT (#p = :project AND #id = :id)',
         ExpressionAttributeNames: { '#p': 'project', '#id': 'id' },
         ExpressionAttributeValues: { ':project': project, ':id': id }
       })
-      .then(() => resolve(`${project}_${id}`))
-      .catch(() => // ID exists, try again
-        this.iuidHelper(project, attempt + 1, maxAttempts, resolve, reject));
+        .then(() => resolve(`${project}_${id}`))
+        .catch(() =>
+          // ID exists, try again
+          this.iuidHelper(project, attempt + 1, maxAttempts, resolve, reject)
+        );
     }
   }
 
@@ -71,14 +74,17 @@ export class DynamoDB {
     else {
       const id = ShortID.generate();
       this.put({
-        TableName: 'idea_ISID', Item: { project: project, id: id },
+        TableName: 'idea_ISID',
+        Item: { project: project, id: id },
         ConditionExpression: 'NOT (#p = :project AND #id = :id)',
         ExpressionAttributeNames: { '#p': 'project', '#id': 'id' },
         ExpressionAttributeValues: { ':project': project, ':id': id }
       })
-      .then(() => resolve(id))
-      .catch(() => // ID exists, try again
-        this.isidHelper(project, attempt + 1, maxAttempts, resolve, reject));
+        .then(() => resolve(id))
+        .catch(() =>
+          // ID exists, try again
+          this.isidHelper(project, attempt + 1, maxAttempts, resolve, reject)
+        );
     }
   }
 
@@ -92,13 +98,14 @@ export class DynamoDB {
     return new Promise((resolve, reject) => {
       IdeaX.logger('GET ATOMIC COUNTER', null, key);
       this.update({
-        TableName: 'idea_atomicCounters', Key: { key: key },
+        TableName: 'idea_atomicCounters',
+        Key: { key: key },
         UpdateExpression: 'ADD atomicCounter :increment',
         ExpressionAttributeValues: { ':increment': 1 },
         ReturnValues: 'UPDATED_NEW'
       })
-      .then((data: any) => resolve(data.Attributes.atomicCounter))
-      .catch(err => reject(err));
+        .then((data: any) => resolve(data.Attributes.atomicCounter))
+        .catch(err => reject(err));
     });
   }
 
@@ -110,8 +117,11 @@ export class DynamoDB {
   public get(params: any): Promise<any> {
     return new Promise((resolve, reject) => {
       this.dynamo.get(params, (err: Error, data: any) => {
-        IdeaX.logger(`GET ${params.IndexName
-          ? `${params.TableName} (${params.IndexName})` : params.TableName}`, err, data);
+        IdeaX.logger(
+          `GET ${params.IndexName ? `${params.TableName} (${params.IndexName})` : params.TableName}`,
+          err,
+          data
+        );
         if (err || !data.Item) reject(err);
         else resolve(data.Item);
       });
@@ -183,8 +193,14 @@ export class DynamoDB {
    * @private helper
    */
   protected batchGetHelper(
-    t: string, keys: Array<any>, elements: Array<any>, iErr: boolean, curr: number, size: number,
-    resolve: any, reject: any
+    t: string,
+    keys: Array<any>,
+    elements: Array<any>,
+    iErr: boolean,
+    curr: number,
+    size: number,
+    resolve: any,
+    reject: any
   ) {
     // prepare the structure for the bulk operation
     const batch: any = { RequestItems: {} };
@@ -197,8 +213,7 @@ export class DynamoDB {
       // concat the results
       elements = elements.concat(data.Responses[t]);
       // if there are still chunks to manage, go on recursively
-      if (curr + size < keys.length)
-        this.batchGetHelper(t, keys, elements, iErr, curr + size, size, resolve, reject);
+      if (curr + size < keys.length) this.batchGetHelper(t, keys, elements, iErr, curr + size, size, resolve, reject);
       // no more chunks to manage: we're done
       else resolve(elements);
     });
@@ -239,27 +254,30 @@ export class DynamoDB {
    * @private helper
    */
   protected batchWriteHelper(
-    t: string, items: Array<any>, isPut: boolean, iErr: boolean, curr: number, size: number, resolve: any, reject: any
+    t: string,
+    items: Array<any>,
+    isPut: boolean,
+    iErr: boolean,
+    curr: number,
+    size: number,
+    resolve: any,
+    reject: any
   ) {
     // prepare the structure for the bulk operation
     const batch: any = { RequestItems: {} };
     if (isPut) {
-      batch.RequestItems[t] = items
-      .slice(curr, curr + size)
-      .map(i => {
+      batch.RequestItems[t] = items.slice(curr, curr + size).map(i => {
         return { PutRequest: { Item: i } };
       });
-    } else { // isDelete
-      batch.RequestItems[t] = items
-      .slice(curr, curr + size)
-      .map(k => {
+    } else {
+      // isDelete
+      batch.RequestItems[t] = items.slice(curr, curr + size).map(k => {
         return { DeleteRequest: { Key: k } };
       });
     }
     // execute the bulk operation
     this.dynamo.batchWrite(batch, (err: Error) => {
-      IdeaX.logger(`BATCH WRITE (${isPut ? 'PUT' : 'DELETE'}) ${t}`, err,
-        `${curr} of ${items.length}`);
+      IdeaX.logger(`BATCH WRITE (${isPut ? 'PUT' : 'DELETE'}) ${t}`, err, `${curr} of ${items.length}`);
       if (err && !iErr) reject(err);
       // if there are still chunks to manage, go on recursively
       else if (curr + size < items.length)
@@ -352,11 +370,12 @@ export class DynamoDB {
       if (ops.length === 0) {
         IdeaX.logger(`TRANSACTION WRITES`, null, `No elements to write`);
         resolve();
-      } else this.dynamo.transactWrite({ TransactItems: ops.slice(0, 10) }, (err: Error) => {
-        IdeaX.logger(`TRANSACTION WRITES`, err, null);
-        if (err) reject(err);
-        else resolve();
-      });
+      } else
+        this.dynamo.transactWrite({ TransactItems: ops.slice(0, 10) }, (err: Error) => {
+          IdeaX.logger(`TRANSACTION WRITES`, err, null);
+          if (err) reject(err);
+          else resolve();
+        });
     });
   }
 }

@@ -19,4 +19,4 @@ Documentation generated with TypeDoc: [link](https://uatisdeproblem.github.io/ID
 ## Notes
 
 - The AWS-SDK is a back-end only package, which is already pre-installed in any Lambda Function;
-therefore, we included it only as devDependency.
+  therefore, we included it only as devDependency.

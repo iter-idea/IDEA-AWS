@@ -5,4 +5,4 @@ rm -r ./dist
 # compile Typescript
 tsc
 # generate documentation
-typedoc --out ./docs ./src --theme minimal --mode file --exclude /**/index.ts --excludePrivate  --excludeProtected --excludeExternals
+npx typedoc --out ./docs ./src --theme minimal --mode file --exclude /**/index.ts --excludePrivate  --excludeProtected --excludeExternals

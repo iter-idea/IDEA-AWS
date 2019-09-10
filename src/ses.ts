@@ -34,11 +34,9 @@ export class SES {
    */
   public sendEmail(emailData: any, sesParams: any): Promise<any> {
     // if the email includes attachments, send through Nodemailer
-    if (emailData.attachments && emailData.attachments.length)
-      return this.sendEmailNodemailer(emailData, sesParams);
+    if (emailData.attachments && emailData.attachments.length) return this.sendEmailNodemailer(emailData, sesParams);
     // otherwise via SES (more secure)
-    else
-      return this.sendEmailSES(emailData, sesParams);
+    else return this.sendEmailSES(emailData, sesParams);
   }
   /**
    * @private helper
@@ -56,15 +54,13 @@ export class SES {
       sesData.Message.Body = {};
       if (emailData.html) sesData.Message.Body.Html = { Charset: 'UTF-8', Data: emailData.html };
       if (emailData.text) sesData.Message.Body.Text = { Charset: 'UTF-8', Data: emailData.text };
-      if (!emailData.html && !emailData.text)
-        sesData.Message.Body.Text = { Charset: 'UTF-8', Data: '' };
+      if (!emailData.html && !emailData.text) sesData.Message.Body.Text = { Charset: 'UTF-8', Data: '' };
       sesData.ReplyToAddresses = emailData.replyToAddresses;
       sesData.Source = `${sesParams.sourceName} <${sesParams.source}>`;
       sesData.SourceArn = sesParams.sourceArn;
       IdeaX.logger('SES DATA PREPARATION', null, sesData);
       // send email
-      new AWS.SES({ region: sesParams.region })
-      .sendEmail(sesData, (err: Error, data: any) => {
+      new AWS.SES({ region: sesParams.region }).sendEmail(sesData, (err: Error, data: any) => {
         IdeaX.logger('SES SEND EMAIL', err, JSON.stringify(data));
         if (err) reject(err);
         else resolve(data);
@@ -89,13 +85,14 @@ export class SES {
       mailOptions.attachments = emailData.attachments;
       IdeaX.logger('NODEMAILER OPTION PREPARATION', null, mailOptions);
       // create Nodemailer SES transporter and send the email
-      Nodemailer
-      .createTransport({ SES: new AWS.SES({ region: sesParams.region }) })
-      .sendMail(mailOptions, (err: Error, data: any) => {
-        IdeaX.logger('SES SEND EMAIL (NODEMAILER)', err, data);
-        if (err) reject(err);
-        else resolve(data);
-      });
+      Nodemailer.createTransport({ SES: new AWS.SES({ region: sesParams.region }) }).sendMail(
+        mailOptions,
+        (err: Error, data: any) => {
+          IdeaX.logger('SES SEND EMAIL (NODEMAILER)', err, data);
+          if (err) reject(err);
+          else resolve(data);
+        }
+      );
     });
   }
 }

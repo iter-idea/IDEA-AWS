@@ -37,17 +37,18 @@ export class Cognito {
   public getUserByEmail(email: string, cognitoUserPoolId: string): Promise<any> {
     return new Promise((resolve, reject) => {
       // find the user by the email
-      new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' })
-      .listUsers({ UserPoolId: cognitoUserPoolId, Filter: `email = "${email}"`, Limit: 1},
-      (err: Error, data: any) => {
-        if (err || !data || !data.Users || !data.Users[0]) reject();
-        else {
-          // convert and return the attributes
-          const userAttributes: any = {};
-          data.Users[0].Attributes.forEach((a: any) => userAttributes[a.Name] = a.Value);
-          resolve(userAttributes);
+      new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' }).listUsers(
+        { UserPoolId: cognitoUserPoolId, Filter: `email = "${email}"`, Limit: 1 },
+        (err: Error, data: any) => {
+          if (err || !data || !data.Users || !data.Users[0]) reject();
+          else {
+            // convert and return the attributes
+            const userAttributes: any = {};
+            data.Users[0].Attributes.forEach((a: any) => (userAttributes[a.Name] = a.Value));
+            resolve(userAttributes);
+          }
         }
-      });
+      );
     });
   }
 
@@ -60,17 +61,18 @@ export class Cognito {
   public getUserBySub(sub: string, cognitoUserPoolId: string): Promise<any> {
     return new Promise((resolve, reject) => {
       // find the user by the sub
-      new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' })
-      .listUsers({ UserPoolId: cognitoUserPoolId, Filter: `sub = "${sub}"`, Limit: 1},
-      (err: Error, data: any) => {
-        if (err || !data || !data.Users || !data.Users[0]) reject();
-        else {
-          // convert and return the attributes
-          const userAttributes: any = {};
-          data.Users[0].Attributes.forEach((a: any) => userAttributes[a.Name] = a.Value);
-          resolve(userAttributes);
+      new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' }).listUsers(
+        { UserPoolId: cognitoUserPoolId, Filter: `sub = "${sub}"`, Limit: 1 },
+        (err: Error, data: any) => {
+          if (err || !data || !data.Users || !data.Users[0]) reject();
+          else {
+            // convert and return the attributes
+            const userAttributes: any = {};
+            data.Users[0].Attributes.forEach((a: any) => (userAttributes[a.Name] = a.Value));
+            resolve(userAttributes);
+          }
         }
-      });
+      );
     });
   }
 
@@ -92,20 +94,24 @@ export class Cognito {
       options = options || {};
       if (IdeaX.isEmpty(email, 'email')) return reject(new Error(`E.COGNITO.INVALID_EMAIL`));
       const attributes = [{ Name: 'email', Value: email }, { Name: 'email_verified', Value: 'true' }];
-      const params = <any> {
-        UserPoolId: cognitoUserPoolId, Username: email, UserAttributes: attributes
+      const params = <any>{
+        UserPoolId: cognitoUserPoolId,
+        Username: email,
+        UserAttributes: attributes
       };
       if (options.skipNotification) params.MessageAction = 'SUPPRESS';
       if (options.temporaryPassword) params.TemporaryPassword = options.temporaryPassword;
       new AWS.CognitoIdentityServiceProvider().adminCreateUser(params, (err: Error, data: any) => {
         IdeaX.logger('COGNITO CREATE USER', err, data);
-        if (err) switch (err.name) {
-          case 'UsernameExistsException':
-            return reject(new Error(`E.COGNITO.USERNAME_ALREADY_EXISTS`));
-          case 'InvalidPasswordException':
-            return reject(new Error(`E.COGNITO.INVALID_PASSWORD`));
-          default: return reject(err);
-        }
+        if (err)
+          switch (err.name) {
+            case 'UsernameExistsException':
+              return reject(new Error(`E.COGNITO.USERNAME_ALREADY_EXISTS`));
+            case 'InvalidPasswordException':
+              return reject(new Error(`E.COGNITO.INVALID_PASSWORD`));
+            default:
+              return reject(err);
+          }
         const userId = data.User.Attributes.find((attr: any) => attr.Name === 'sub').Value || null;
         if (userId) resolve(userId);
         else reject(new Error(`E.COGNITO.CREATION_FAILED`));
@@ -129,17 +135,22 @@ export class Cognito {
     return new Promise((resolve, reject) => {
       options = options || {};
       if (IdeaX.isEmpty(email, 'email')) return reject(new Error(`E.COGNITO.INVALID_EMAIL`));
-      const params = <any> {
-        UserPoolId: cognitoUserPoolId, Username: email, MessageAction: 'RESEND'
+      const params = <any>{
+        UserPoolId: cognitoUserPoolId,
+        Username: email,
+        MessageAction: 'RESEND'
       };
       if (options.temporaryPassword) params.TemporaryPassword = options.temporaryPassword;
       new AWS.CognitoIdentityServiceProvider().adminCreateUser(params, (err: Error, data: any) => {
         IdeaX.logger('COGNITO RESEND PASSWORD', err, data);
-        if (err) switch (err.name) {
-          case 'UnsupportedUserStateException':
-            return reject(new Error(`E.COGNITO.USER_ALREADY_CONFIRMED_PASSWORD`));
-          default: return reject(err);
-        } else resolve();
+        if (err)
+          switch (err.name) {
+            case 'UnsupportedUserStateException':
+              return reject(new Error(`E.COGNITO.USER_ALREADY_CONFIRMED_PASSWORD`));
+            default:
+              return reject(err);
+          }
+        else resolve();
       });
     });
   }
@@ -153,12 +164,14 @@ export class Cognito {
   public deleteUser(email: string, cognitoUserPoolId: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (IdeaX.isEmpty(email, 'email')) return reject(new Error(`E.COGNITO.INVALID_EMAIL`));
-      new AWS.CognitoIdentityServiceProvider()
-      .adminDeleteUser({ UserPoolId: cognitoUserPoolId, Username: email }, (err: Error) => {
-        IdeaX.logger('COGNITO DELETE USER', err, `${email} (${cognitoUserPoolId})`);
-        if (err) reject(new Error(`E.COGNITO.DELETION_FAILED`));
-        else resolve();
-      });
+      new AWS.CognitoIdentityServiceProvider().adminDeleteUser(
+        { UserPoolId: cognitoUserPoolId, Username: email },
+        (err: Error) => {
+          IdeaX.logger('COGNITO DELETE USER', err, `${email} (${cognitoUserPoolId})`);
+          if (err) reject(new Error(`E.COGNITO.DELETION_FAILED`));
+          else resolve();
+        }
+      );
     });
   }
 
@@ -172,20 +185,25 @@ export class Cognito {
    * @return {Promise<AWS.CognitoIdentityServiceProvider.AuthenticationResultType>}
    */
   public signIn(
-    email: string, password: string, cognitoUserPoolId: string, cognitoUserPoolClientId: string
+    email: string,
+    password: string,
+    cognitoUserPoolId: string,
+    cognitoUserPoolClientId: string
   ): Promise<AWS.CognitoIdentityServiceProvider.AuthenticationResultType> {
     return new Promise((resolve, reject) => {
-      new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' })
-      .adminInitiateAuth({
-        UserPoolId: cognitoUserPoolId,
-        ClientId: cognitoUserPoolClientId,
-        AuthFlow: 'ADMIN_NO_SRP_AUTH',
-        AuthParameters: { 'USERNAME': email, 'PASSWORD': password }
-      }, (err: Error, data: AWS.CognitoIdentityServiceProvider.AdminInitiateAuthResponse) => {
-        IdeaX.logger('COGNITO SIGN IN', err, data ? JSON.stringify(data.toString) : null);
-        if (err || !data.AuthenticationResult) reject(err);
-        else resolve(data.AuthenticationResult);
-      });
+      new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' }).adminInitiateAuth(
+        {
+          UserPoolId: cognitoUserPoolId,
+          ClientId: cognitoUserPoolClientId,
+          AuthFlow: 'ADMIN_NO_SRP_AUTH',
+          AuthParameters: { USERNAME: email, PASSWORD: password }
+        },
+        (err: Error, data: AWS.CognitoIdentityServiceProvider.AdminInitiateAuthResponse) => {
+          IdeaX.logger('COGNITO SIGN IN', err, data ? JSON.stringify(data.toString) : null);
+          if (err || !data.AuthenticationResult) reject(err);
+          else resolve(data.AuthenticationResult);
+        }
+      );
     });
   }
 
@@ -199,22 +217,22 @@ export class Cognito {
   public updateEmail(email: string, newEmail: string, cognitoUserPoolId: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (IdeaX.isEmpty(newEmail, 'email')) return reject(new Error('E.COGNITO.INVALID_NEW_EMAIL'));
-      new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' })
-      .adminUpdateUserAttributes({
-        UserPoolId: cognitoUserPoolId,
-        Username: email,
-        UserAttributes: [
-          { Name: 'email', Value: newEmail },
-          { Name: 'email_verified', Value: 'true' }
-        ]
-      }, (err: Error, _: any) => {
-        IdeaX.logger('COGNITO UPDATE EMAIL', err, newEmail);
-        if (err) reject(err);
-        // sign out the user from all its devices and resolve
-        else this.globalSignOut(newEmail, cognitoUserPoolId)
-        .then(() => resolve())
-        .catch(e => reject(e));
-      });
+      new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' }).adminUpdateUserAttributes(
+        {
+          UserPoolId: cognitoUserPoolId,
+          Username: email,
+          UserAttributes: [{ Name: 'email', Value: newEmail }, { Name: 'email_verified', Value: 'true' }]
+        },
+        (err: Error, _: any) => {
+          IdeaX.logger('COGNITO UPDATE EMAIL', err, newEmail);
+          if (err) reject(err);
+          // sign out the user from all its devices and resolve
+          else
+            this.globalSignOut(newEmail, cognitoUserPoolId)
+              .then(() => resolve())
+              .catch(e => reject(e));
+        }
+      );
     });
   }
 
@@ -229,27 +247,32 @@ export class Cognito {
    * @return {Promise<void>}
    */
   public updatePassword(
-    email: string, oldPassword: string, newPassword: string,
-    cognitoUserPoolId: string, cognitoUserPoolClientId: string
+    email: string,
+    oldPassword: string,
+    newPassword: string,
+    cognitoUserPoolId: string,
+    cognitoUserPoolClientId: string
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       if (newPassword.length < 8) return reject(new Error('E.COGNITO.INVALID_NEW_PASSWORD'));
       // get a token to run the password change
       this.signIn(email, oldPassword, cognitoUserPoolId, cognitoUserPoolClientId)
-      .then((data: AWS.CognitoIdentityServiceProvider.AuthenticationResultType) => {
-        // request the password change
-        new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' })
-        .changePassword({
-          AccessToken: data.AccessToken,
-          PreviousPassword: oldPassword,
-          ProposedPassword: newPassword
-        }, (err: Error, _: any) => {
-          IdeaX.logger('COGNITO UPDATE PASSWORD', err, '*******');
-          if (err) reject(err);
-          else resolve();
-        });
-      })
-      .catch((err) => reject(err));
+        .then((data: AWS.CognitoIdentityServiceProvider.AuthenticationResultType) => {
+          // request the password change
+          new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' }).changePassword(
+            {
+              AccessToken: data.AccessToken,
+              PreviousPassword: oldPassword,
+              ProposedPassword: newPassword
+            },
+            (err: Error, _: any) => {
+              IdeaX.logger('COGNITO UPDATE PASSWORD', err, '*******');
+              if (err) reject(err);
+              else resolve();
+            }
+          );
+        })
+        .catch(err => reject(err));
     });
   }
 
@@ -261,15 +284,17 @@ export class Cognito {
    */
   public globalSignOut(email: string, cognitoUserPoolId: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' })
-      .adminUserGlobalSignOut({
-        Username: email,
-        UserPoolId: cognitoUserPoolId
-      }, (err: Error, _: any) => {
-        IdeaX.logger('COGNITO GLOBAL SIGN OUT', err, email);
-        if (err) reject(err);
-        else resolve();
-      });
+      new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' }).adminUserGlobalSignOut(
+        {
+          Username: email,
+          UserPoolId: cognitoUserPoolId
+        },
+        (err: Error, _: any) => {
+          IdeaX.logger('COGNITO GLOBAL SIGN OUT', err, email);
+          if (err) reject(err);
+          else resolve();
+        }
+      );
     });
   }
 
@@ -287,13 +312,14 @@ export class Cognito {
       if (!confirmationCode) return reject(new Error('E.COGNITO.INVALID_CONFIRMATION_CODE'));
       if (!cognitoUserPoolClientId) return reject(new Error('E.COGNITO.INVALID_CLIENT_ID'));
       // conclude the registration (sign-up) flow, using a provided confirmation code
-      new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' })
-      .confirmSignUp({ Username: email, ConfirmationCode: confirmationCode, ClientId: cognitoUserPoolClientId },
-      (err: Error, _: any) => {
-        IdeaX.logger('COGNITO CONFIRM SIGN UP', err, `${email} ${confirmationCode}`);
-        if (err) reject(err);
-        else resolve();
-      });
+      new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' }).confirmSignUp(
+        { Username: email, ConfirmationCode: confirmationCode, ClientId: cognitoUserPoolClientId },
+        (err: Error, _: any) => {
+          IdeaX.logger('COGNITO CONFIRM SIGN UP', err, `${email} ${confirmationCode}`);
+          if (err) reject(err);
+          else resolve();
+        }
+      );
     });
   }
 }

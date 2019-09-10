@@ -42,7 +42,7 @@ export abstract class ResourceController {
    * @param {ResourceControllerOptions} options
    */
   constructor(event: any, callback: any, options?: ResourceControllerOptions) {
-    options = options || <ResourceControllerOptions> {};
+    options = options || <ResourceControllerOptions>{};
     IdeaX.logger('START', null, event, true);
 
     this.callback = callback;
@@ -53,8 +53,10 @@ export abstract class ResourceController {
 
     this.httpMethod = event.httpMethod;
     this.resource = (event.resource || '').replace('+', ''); // {proxy+} -> {proxy}
-    this.resourceId = event.pathParameters && event.pathParameters[options.resourceId || 'proxy']
-      ? decodeURIComponent(event.pathParameters[options.resourceId || 'proxy']) : '';
+    this.resourceId =
+      event.pathParameters && event.pathParameters[options.resourceId || 'proxy']
+        ? decodeURIComponent(event.pathParameters[options.resourceId || 'proxy'])
+        : '';
     this.queryParams = event.queryStringParameters || {};
     this.body = JSON.parse(event.body) || {};
 
@@ -63,9 +65,9 @@ export abstract class ResourceController {
     this.logsKeys = options.logsKeys || new Array<string>();
   }
 
-///
-/// REQUEST HANDLERS
-///
+  ///
+  /// REQUEST HANDLERS
+  ///
 
   /**
    * The main function, that handle an API request redirected to a Lambda function.
@@ -73,37 +75,62 @@ export abstract class ResourceController {
   public handleRequest = (): void => {
     // check the authorizations and prepare the API request
     this.checkAuthBeforeRequest()
-    .then(() => {
-      let request;
-      if (this.resourceId) switch (this.httpMethod) {
-        // resource/{resourceId}
-        case 'GET': request = this.getResource(); break;
-        case 'POST': request = this.postResource(); break;
-        case 'PUT': request = this.putResource(); break;
-        case 'DELETE': request = this.deleteResource(); break;
-        case 'PATCH': request = this.patchResource(); break;
-        case 'HEAD': request = this.headResource(); break;
-        default: /* nope */
-      } else switch (this.httpMethod) {
-        // resource
-        case 'GET': request = this.getResources(); break;
-        case 'POST': request = this.postResources(); break;
-        case 'PUT': request = this.putResources(); break;
-        case 'DELETE': request = this.deleteResources(); break;
-        case 'PATCH': request = this.patchResources(); break;
-        case 'HEAD': request = this.headResources(); break;
-        default: /* nope */
-      }
-      // execute the API request
-      if (!request) this.done(new Error(`E.COMMON.UNSUPPORTED_ACTION`));
-      else {
-        IdeaX.logger('REQUEST', null, this.httpMethod, true);
-        request
-        .then((res: any) => this.done(null, res))
-        .catch((err: Error) => this.done(err));
-      }
-    })
-    .catch(() => this.done(new Error(`E.COMMON.UNAUTHORIZED`)));
+      .then(() => {
+        let request;
+        if (this.resourceId)
+          switch (this.httpMethod) {
+            // resource/{resourceId}
+            case 'GET':
+              request = this.getResource();
+              break;
+            case 'POST':
+              request = this.postResource();
+              break;
+            case 'PUT':
+              request = this.putResource();
+              break;
+            case 'DELETE':
+              request = this.deleteResource();
+              break;
+            case 'PATCH':
+              request = this.patchResource();
+              break;
+            case 'HEAD':
+              request = this.headResource();
+              break;
+            default: /* nope */
+          }
+        else
+          switch (this.httpMethod) {
+            // resource
+            case 'GET':
+              request = this.getResources();
+              break;
+            case 'POST':
+              request = this.postResources();
+              break;
+            case 'PUT':
+              request = this.putResources();
+              break;
+            case 'DELETE':
+              request = this.deleteResources();
+              break;
+            case 'PATCH':
+              request = this.patchResources();
+              break;
+            case 'HEAD':
+              request = this.headResources();
+              break;
+            default: /* nope */
+          }
+        // execute the API request
+        if (!request) this.done(new Error(`E.COMMON.UNSUPPORTED_ACTION`));
+        else {
+          IdeaX.logger('REQUEST', null, this.httpMethod, true);
+          request.then((res: any) => this.done(null, res)).catch((err: Error) => this.done(err));
+        }
+      })
+      .catch(() => this.done(new Error(`E.COMMON.UNAUTHORIZED`)));
   }
   /**
    * To @override
@@ -123,7 +150,7 @@ export abstract class ResourceController {
     // send the response
     this.callback(null, {
       statusCode: err ? '400' : '200',
-      body: err ?  JSON.stringify({ message: err.message }) : JSON.stringify(res || {}),
+      body: err ? JSON.stringify({ message: err.message }) : JSON.stringify(res || {}),
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
   }
@@ -131,78 +158,78 @@ export abstract class ResourceController {
    * To @override
    */
   protected getResource(): Promise<any> {
-    return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
+    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
   }
   /**
    * To @override
    */
   protected postResource(): Promise<any> {
-    return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
+    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
   }
   /**
    * To @override
    */
   protected putResource(): Promise<any> {
-    return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
+    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
   }
   /**
    * To @override
    */
   protected deleteResource(): Promise<any> {
-    return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
+    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
   }
   /**
    * To @override
    */
   protected headResource(): Promise<any> {
-    return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
+    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
   }
   /**
    * To @override
    */
   protected getResources(): Promise<any> {
-    return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
+    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
   }
   /**
    * To @override
    */
   protected postResources(): Promise<any> {
-    return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
+    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
   }
   /**
    * To @override
    */
   protected putResources(): Promise<any> {
-    return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
+    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
   }
   /**
    * To @override
    */
   protected patchResource(): Promise<any> {
-    return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
+    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
   }
   /**
    * To @override
    */
   protected patchResources(): Promise<any> {
-    return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
+    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
   }
   /**
    * To @override
    */
   protected deleteResources(): Promise<any> {
-    return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
+    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
   }
   /**
    * To @override
    */
   protected headResources(): Promise<any> {
-    return new Promise((resolve, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
+    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_ACTION`)));
   }
 
-///
-/// AWS SERVICES
-///
+  ///
+  /// AWS SERVICES
+  ///
   get dynamoDB(): DynamoDB {
     if (!this._dynamoDB) this._dynamoDB = new DynamoDB();
     return this._dynamoDB;
@@ -239,9 +266,9 @@ export abstract class ResourceController {
     this._sns = sns;
   }
 
-///
-/// HELPERS
-///
+  ///
+  /// HELPERS
+  ///
 
   /**
    * Store the log associated to the request (no response/error handling).
@@ -252,19 +279,23 @@ export abstract class ResourceController {
     const expiresAt = new Date();
     expiresAt.setMonth(expiresAt.getMonth() + 1);
     // insert the log and don't wait for response or errors
-    this.dynamoDB.put({ TableName: this.tables.requestsLogs, Item: <RequestLog> {
-      key: key,
-      at: String(new Date().getTime()).concat('_'.concat(UUIDV4())),
-      expiresAt: Math.round(expiresAt.getTime() / 1000),
-      userId: this.principalId || null,
-      resource: this.resource,
-      resourceId: this.resourceId || null,
-      method: this.httpMethod,
-      action: this.body && this.body.action ? this.body.action : null,
-      requestSucceeded: success
-    }})
-    .then(() => {})
-    .catch(() => {});
+    this.dynamoDB
+      .put({
+        TableName: this.tables.requestsLogs,
+        Item: <RequestLog>{
+          key: key,
+          at: String(new Date().getTime()).concat('_'.concat(UUIDV4())),
+          expiresAt: Math.round(expiresAt.getTime() / 1000),
+          userId: this.principalId || null,
+          resource: this.resource,
+          resourceId: this.resourceId || null,
+          method: this.httpMethod,
+          action: this.body && this.body.action ? this.body.action : null,
+          requestSucceeded: success
+        }
+      })
+      .then(() => {})
+      .catch(() => {});
   }
 }
 

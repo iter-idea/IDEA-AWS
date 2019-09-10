@@ -5,7 +5,7 @@ import IdeaX = require('idea-toolbox');
  * A wrapper for AWS Simple Storage Service.
  */
 export class S3 {
-  protected s3: any;
+  protected s3: AWS.S3;
 
   protected DEFAULT_DOWNLOAD_BUCKET_PREFIX = 'common';
   protected DEFAULT_DOWNLOAD_BUCKET = 'idea-downloads';
@@ -36,21 +36,34 @@ export class S3 {
   public createDownloadURLFromData(data: any, options?: any): Promise<SignedURL> {
     return new Promise((resolve, reject) => {
       // if needed, randomly generates the key
-      if (!options.key) options.key = new Date().getTime().toString().concat(Math.random().toString(36).slice(2));
+      if (!options.key)
+        options.key = new Date()
+          .getTime()
+          .toString()
+          .concat(
+            Math.random()
+              .toString(36)
+              .slice(2)
+          );
       // add the prefix to the key
       options.key = `${options.prefix || this.DEFAULT_DOWNLOAD_BUCKET_PREFIX}/${options.key}`;
       // set the other parameters
       options.bucket = options.bucket || this.DEFAULT_DOWNLOAD_BUCKET;
       options.secToExp = options.secToExp || this.DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP;
       // upload the file to the downloads bucket
-      this.s3.upload({
-        Bucket: options.bucket, Key: options.key, Body: data, ContentType: options.contentType
-      },
-      (err: Error, d: any) => {
-        IdeaX.logger('S3 UPLOAD', err, d);
-        if (err) reject(err);
-        else resolve(this.signedURLGet(options.bucket, options.key, options.secToExp));
-      });
+      this.s3.upload(
+        {
+          Bucket: options.bucket,
+          Key: options.key,
+          Body: data,
+          ContentType: options.contentType
+        },
+        (err: Error, d: any) => {
+          IdeaX.logger('S3 UPLOAD', err, d);
+          if (err) reject(err);
+          else resolve(this.signedURLGet(options.bucket, options.key, options.secToExp));
+        }
+      );
     });
   }
 
@@ -64,7 +77,9 @@ export class S3 {
   public signedURLPut(bucket: string, key: string, expires?: number): SignedURL {
     return {
       url: this.s3.getSignedUrl('putObject', {
-          Bucket: bucket, Key: key, Expires: expires || this.DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP
+        Bucket: bucket,
+        Key: key,
+        Expires: expires || this.DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP
       })
     };
   }
@@ -79,7 +94,9 @@ export class S3 {
   public signedURLGet(bucket: string, key: string, expires?: number): SignedURL {
     return {
       url: this.s3.getSignedUrl('getObject', {
-        Bucket: bucket, Key: key, Expires: expires || this.DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP
+        Bucket: bucket,
+        Key: key,
+        Expires: expires || this.DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP
       })
     };
   }
@@ -96,17 +113,19 @@ export class S3 {
    */
   public copyObject(options?: any): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.s3.copyObject({ CopySource: options.copySource, Bucket: options.bucket, Key: options.key },
-      (err: Error, d: any) => {
-        IdeaX.logger('S3 COPY OBJECT', err, d);
-        if (err) reject(err);
-        else resolve();
-      });
+      this.s3.copyObject(
+        { CopySource: options.copySource, Bucket: options.bucket, Key: options.key },
+        (err: Error, d: any) => {
+          IdeaX.logger('S3 COPY OBJECT', err, d);
+          if (err) reject(err);
+          else resolve();
+        }
+      );
     });
   }
 
   /**
-   * Get an object from an S3 bucket.
+   * Get an object from a S3 bucket.
    * @param {any} options strucuted as follows
    ```
     bucket: string;       // the bucket in which to copy the file.
@@ -117,14 +136,44 @@ export class S3 {
    */
   public getObject(options?: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.s3.getObject({ Bucket: options.bucket, Key: options.key },
-      (err: Error, d: any) => {
+      this.s3.getObject({ Bucket: options.bucket, Key: options.key }, (err: Error, d: any) => {
         IdeaX.logger('S3 GET OBJECT', err, d);
         if (err) reject(err);
-        else switch (options.type) {
-          case 'JSON': resolve(JSON.parse(d.Body.toString('utf-8'))); break;
-          default: resolve(d);
-        }
+        else
+          switch (options.type) {
+            case 'JSON':
+              resolve(JSON.parse(d.Body.toString('utf-8')));
+              break;
+            default:
+              resolve(d);
+          }
+      });
+    });
+  }
+
+  /**
+   * Put an object in a S3 bucket.
+   * @param {any} options strucuted as follows
+   ```
+    bucket: string;         // the bucket in which to copy the file.
+    key; string;            // the complete filepath of the bucket in which to copy the file
+    body: any;              // the content of the file
+    contentType?: string;   // content type (e.g. image/png)
+    acl?: string;           // access-control list (e.g. public-read)
+    metadata?: any;         // a set of metadata as attributes
+   ```
+   * @return {Promise<any>}
+   */
+  public putObject(options?: any): Promise<any> {
+    return new Promise((resolve, reject) => {
+      const params: any = { Bucket: options.bucket, Key: options.key, Body: options.body };
+      if (options.contentType) params.ContentType = options.contentType;
+      if (options.acl) params.ACL = options.acl;
+      if (options.metadata) params.Metadata = options.metadata;
+      this.s3.putObject(params, (err: Error, d: any) => {
+        IdeaX.logger('S3 PUT OBJECT', err, d);
+        if (err) reject(err);
+        else resolve(d);
       });
     });
   }

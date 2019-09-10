@@ -1,6 +1,6 @@
 {
   "name": "idea-aws",
-  "version": "2.5.0",
+  "version": "2.6.0",
   "description": "AWS wrappers to use in IDEA's back-ends",
   "engines": {
     "node": ">=6.0.0"
@@ -45,6 +45,7 @@
     "@types/uuid": "^3.4.4",
     "aws-sdk": "^2.411.0",
     "tslint": "^5.13.0",
+    "typedoc": "^0.15.0",
     "typescript": "^2.9.2",
     "typescript-tslint-plugin": "^0.3.1"
   }

@@ -11,10 +11,12 @@
     "sourceMap": false,
     "target": "es6",
     "rootDir": "./src",
-    "outDir": "./dist",
+    "outDir": "./dist"
   },
-  "exclude": [ "node_modules", "dist" ],
-  "plugins": [{
-    "name": "typescript-tslint-plugin"
-  }]
+  "exclude": ["node_modules", "dist"],
+  "plugins": [
+    {
+      "name": "typescript-tslint-plugin"
+    }
+  ]
 }
