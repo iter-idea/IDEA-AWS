@@ -59,7 +59,7 @@ export abstract class ResourceController {
         ? decodeURIComponent(event.pathParameters[options.resourceId || 'proxy'])
         : '';
     this.queryParams = event.queryStringParameters || {};
-    this.body = JSON.parse(event.body) || {};
+    this.body = (event.body ? JSON.parse(event.body) : {}) || {};
 
     this.tables = options.tables || {};
 
