@@ -47,11 +47,12 @@ export abstract class ResourceController {
 
     this.callback = callback;
 
-    this.authorization = event.headers.Authorization;
-    this.claims = event.requestContext.authorizer ? event.requestContext.authorizer.claims : null;
+    this.authorization = event.headers ? event.headers.Authorization : null;
+    this.claims =
+      event.requestContext && event.requestContext.authorizer ? event.requestContext.authorizer.claims : null;
     this.principalId = this.claims ? this.claims.sub : null;
 
-    this.httpMethod = event.httpMethod;
+    this.httpMethod = event.httpMethod || null;
     this.resource = (event.resource || '').replace('+', ''); // {proxy+} -> {proxy}
     this.resourceId =
       event.pathParameters && event.pathParameters[options.resourceId || 'proxy']
