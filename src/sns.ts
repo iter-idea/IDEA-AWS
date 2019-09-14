@@ -84,14 +84,15 @@ export class SNS {
 
   /**
    * Publish a JSON message (object) in a endpoint.
-   * @param {Object} message the message to send (an object)
+   * @param {any} message the message to send (an object)
    * @param {string} endpoint endpoint of a topic or a subscription
    * @return {Promise<AWS.SNS.PublishResponse>}
    */
-  public publish(message: Object, endpoint: string): Promise<AWS.SNS.PublishResponse> {
+  public publish(message: any, endpoint: string): Promise<AWS.SNS.PublishResponse> {
     return new Promise((resolve, reject) => {
+      // note: the object must contain at least a top-level JSON key of "default" with a value that is a string
       this.sns.publish(
-        { MessageStructure: 'json', Message: JSON.stringify(message), TargetArn: endpoint },
+        { MessageStructure: 'json', Message: JSON.stringify({ default: message }), TargetArn: endpoint },
         (err: Error, data: AWS.SNS.PublishResponse) => {
           IdeaX.logger('SNS PUBLISH IN TOPIC', err, JSON.stringify(data));
           if (err) reject(err);
