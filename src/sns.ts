@@ -5,7 +5,7 @@ import IdeaX = require('idea-toolbox');
  * A wrapper for AWS Simple Notification Service.
  */
 export class SNS {
-  protected sns: any;
+  protected sns: AWS.SNS;
 
   /**
    * Initialize a new SNS helper object.
@@ -38,8 +38,8 @@ export class SNS {
       // create a new endpoint in the platform
       this.sns.createPlatformEndpoint(
         { PlatformApplicationArn: platformARN, Token: deviceId },
-        (err: Error, data: any) => {
-          IdeaX.logger('SNS ADD PLATFORM ENDPOINT', err, data);
+        (err: Error, data: AWS.SNS.CreateEndpointResponse) => {
+          IdeaX.logger('SNS ADD PLATFORM ENDPOINT', err, JSON.stringify(data));
           if (err || !data.EndpointArn) reject(err);
           else resolve(data.EndpointArn);
         }
@@ -52,9 +52,9 @@ export class SNS {
    * @param {string} message the message to send
    * @param {string} platform enum: APNS, FCM
    * @param {string} endpoint endpoint to a specific device
-   * @return {Promise<any>}
+   * @return {Promise<AWS.SNS.PublishResponse>}
    */
-  public publishSNSPush(message: string, platform: string, endpoint: string): Promise<any> {
+  public publishSNSPush(message: string, platform: string, endpoint: string): Promise<AWS.SNS.PublishResponse> {
     return new Promise((resolve, reject) => {
       let structuredMessage;
       switch (platform) {
@@ -73,8 +73,27 @@ export class SNS {
           Message: JSON.stringify(structuredMessage),
           TargetArn: endpoint
         },
-        (err: Error, data: any) => {
-          IdeaX.logger('SNS PUSH NOTIFICATION', err, data);
+        (err: Error, data: AWS.SNS.PublishResponse) => {
+          IdeaX.logger('SNS PUSH NOTIFICATION', err, JSON.stringify(data));
+          if (err) reject(err);
+          else resolve(data);
+        }
+      );
+    });
+  }
+
+  /**
+   * Publish a JSON message (object) in a endpoint.
+   * @param {Object} message the message to send (an object)
+   * @param {string} endpoint endpoint of a topic or a subscription
+   * @return {Promise<AWS.SNS.PublishResponse>}
+   */
+  public publish(message: Object, endpoint: string): Promise<AWS.SNS.PublishResponse> {
+    return new Promise((resolve, reject) => {
+      this.sns.publish(
+        { MessageStructure: 'json', Message: JSON.stringify(message), TargetArn: endpoint },
+        (err: Error, data: AWS.SNS.PublishResponse) => {
+          IdeaX.logger('SNS PUBLISH IN TOPIC', err, JSON.stringify(data));
           if (err) reject(err);
           else resolve(data);
         }
