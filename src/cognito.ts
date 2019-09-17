@@ -12,8 +12,8 @@ export class Cognito {
 
   /**
    * Get the attributes of the user, from the authorizer claims.
-   * @param {any} claims authorizer claims
-   * @return {any | null} user's data
+   * @param claims authorizer claims
+   * @return user's data
    */
   public getUserByClaims(claims: any): any | null {
     if (!claims) return null;
@@ -30,9 +30,8 @@ export class Cognito {
 
   /**
    * Identify a user by its email address, returning its attributes.
-   * @param {string} email user's email
-   * @param {string} cognitoUserPoolId the pool in which to search
-   * @return {Promise<any>}
+   * @param email user's email
+   * @param cognitoUserPoolId the pool in which to search
    */
   public getUserByEmail(email: string, cognitoUserPoolId: string): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -54,9 +53,8 @@ export class Cognito {
 
   /**
    * Identify a user by its sub, returning its attributes.
-   * @param {string} sub user's sub (userId)
-   * @param {string} cognitoUserPoolId the pool in which to search
-   * @return {Promise<any>}
+   * @param sub user's sub (userId)
+   * @param cognitoUserPoolId the pool in which to search
    */
   public getUserBySub(sub: string, cognitoUserPoolId: string): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -78,27 +76,27 @@ export class Cognito {
 
   /**
    * Create a new user (by its email) in the pool specified.
-   * @param {string} email the email to use as login
-   * @param {string} cognitoUserPoolId the pool in which to create the user
-   * @param {any} options
-   ```
-    {
-      skipNotification?: boolean;   // if true, don't send the default Cognito email notification
-      temporaryPassword?: string;   // if null, randomly generated
-    }
-   ```
-   * @return {Promise<string>} userId of the new user
+   * @param email the email to use as login
+   * @param cognitoUserPoolId the pool in which to create the user
+   * @param options
+   * ```
+   * {
+   *   skipNotification?: boolean;   // if true, don't send the default Cognito email notification
+   *   temporaryPassword?: string;   // if null, randomly generated
+   * }
+   * ```
+   * @return userId of the new user
    */
   public createUser(email: string, cognitoUserPoolId: string, options?: any): Promise<string> {
     return new Promise((resolve, reject) => {
       options = options || {};
       if (IdeaX.isEmpty(email, 'email')) return reject(new Error(`E.COGNITO.INVALID_EMAIL`));
       const attributes = [{ Name: 'email', Value: email }, { Name: 'email_verified', Value: 'true' }];
-      const params = <any>{
+      const params = {
         UserPoolId: cognitoUserPoolId,
         Username: email,
         UserAttributes: attributes
-      };
+      } as any;
       if (options.skipNotification) params.MessageAction = 'SUPPRESS';
       if (options.temporaryPassword) params.TemporaryPassword = options.temporaryPassword;
       new AWS.CognitoIdentityServiceProvider().adminCreateUser(params, (err: Error, data: any) => {
@@ -121,21 +119,20 @@ export class Cognito {
 
   /**
    * Resend the password to a user who never logged in.
-   * @param {string} email the email to use as login
-   * @param {string} cognitoUserPoolId the pool in which to create the user
-   * @param {any} options
-   ```
-    {
-      temporaryPassword?: string;   // if null, randomly generated
-    }
-   ```
-   * @return {Promise<void>}
+   * @param email the email to use as login
+   * @param cognitoUserPoolId the pool in which to create the user
+   * @param options
+   * ```
+   * {
+   *   temporaryPassword?: string;   // if null, randomly generated
+   * }
+   * ```
    */
   public resendPassword(email: string, cognitoUserPoolId: string, options?: any): Promise<void> {
     return new Promise((resolve, reject) => {
       options = options || {};
       if (IdeaX.isEmpty(email, 'email')) return reject(new Error(`E.COGNITO.INVALID_EMAIL`));
-      const params = <any>{
+      const params: any = {
         UserPoolId: cognitoUserPoolId,
         Username: email,
         MessageAction: 'RESEND'
@@ -157,9 +154,8 @@ export class Cognito {
 
   /**
    * Delete a user by its email (username), in the pool specified.
-   * @param {string} email the email used as login
-   * @param {string} cognitoUserPoolId the pool in which the user is stored
-   * @return {Promise<void>}
+   * @param email the email used as login
+   * @param cognitoUserPoolId the pool in which the user is stored
    */
   public deleteUser(email: string, cognitoUserPoolId: string): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -177,12 +173,10 @@ export class Cognito {
 
   /**
    * Sign in a user of a specific pool through username and password.
-   * @param {string} email the email used as login
-   * @param {string} password the password to authenticate the user
-   * @param {string} cognitoUserPoolId the pool in which the user is stored
-   * @param {string} cognitoUserPoolClientId the client id to access the user pool
-   *  (`ADMIN_NO_SRP_AUTH` must be enabled)
-   * @return {Promise<AWS.CognitoIdentityServiceProvider.AuthenticationResultType>}
+   * @param email the email used as login
+   * @param password the password to authenticate the user
+   * @param cognitoUserPoolId the pool in which the user is stored
+   * @param cognitoUserPoolClientId the client id to access the user pool (`ADMIN_NO_SRP_AUTH` must be enabled)
    */
   public signIn(
     email: string,
@@ -209,10 +203,9 @@ export class Cognito {
 
   /**
    * Change the email address (== username) associated to a user.
-   * @param {string} email the email currently used to login
-   * @param {string} newEmail the new email to set
-   * @param {string} cognitoUserPoolId the pool in which the user is stored
-   * @return {Promise<void>}
+   * @param email the email currently used to login
+   * @param newEmail the new email to set
+   * @param cognitoUserPoolId the pool in which the user is stored
    */
   public updateEmail(email: string, newEmail: string, cognitoUserPoolId: string): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -238,13 +231,11 @@ export class Cognito {
 
   /**
    * Change the password to sign in for a user.
-   * @param {string} email the email currently used to login
-   * @param {string} oldPassword the password to authenticate the user
-   * @param {string} newPassword the new password to set
-   * @param {string} cognitoUserPoolId the pool in which the user is stored
-   * @param {string} cognitoUserPoolClientId the client id to access the user pool
-   *  (`ADMIN_NO_SRP_AUTH` must be enabled)
-   * @return {Promise<void>}
+   * @param email the email currently used to login
+   * @param oldPassword the password to authenticate the user
+   * @param newPassword the new password to set
+   * @param cognitoUserPoolId the pool in which the user is stored
+   * @param cognitoUserPoolClientId the client id to access the user pool (`ADMIN_NO_SRP_AUTH` must be enabled)
    */
   public updatePassword(
     email: string,
@@ -278,17 +269,13 @@ export class Cognito {
 
   /**
    * Sign out the user from all devices.
-   * @param {string} email the email currently used to login
-   * @param {string} cognitoUserPoolId the pool in which the user is stored
-   * @return {Promise<void>}
+   * @param email the email currently used to login
+   * @param cognitoUserPoolId the pool in which the user is stored
    */
   public globalSignOut(email: string, cognitoUserPoolId: string): Promise<void> {
     return new Promise((resolve, reject) => {
       new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' }).adminUserGlobalSignOut(
-        {
-          Username: email,
-          UserPoolId: cognitoUserPoolId
-        },
+        { Username: email, UserPoolId: cognitoUserPoolId },
         (err: Error, _: any) => {
           IdeaX.logger('COGNITO GLOBAL SIGN OUT', err, email);
           if (err) reject(err);
@@ -300,11 +287,9 @@ export class Cognito {
 
   /**
    * Confirm and conclude a registration, usign a confirmation code.
-   * @param {string} email the email currently used to login
-   * @param {string} confirmationCode the password to authenticate the user
-   * @param {string} cognitoUserPoolClientId the client id to access the user pool
-   *  (`ADMIN_NO_SRP_AUTH` must be enabled)
-   * @return {Promise<void>}
+   * @param email the email currently used to login
+   * @param confirmationCode the password to authenticate the user
+   * @param cognitoUserPoolClientId the client id to access the user pool (`ADMIN_NO_SRP_AUTH` must be enabled)
    */
   public confirmSignUp(email: string, confirmationCode: string, cognitoUserPoolClientId: string): Promise<void> {
     return new Promise((resolve, reject) => {

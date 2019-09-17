@@ -37,12 +37,11 @@ export abstract class ResourceController {
 
   /**
    * Initialize a new ResourceController helper object.
-   * @param {any} event the event that invoked the AWS lambda function
-   * @param {any} callback the callback to resolve or reject the execution
-   * @param {ResourceControllerOptions} options
+   * @param event the event that invoked the AWS lambda function
+   * @param callback the callback to resolve or reject the execution
    */
   constructor(event: any, callback: any, options?: ResourceControllerOptions) {
-    options = options || <ResourceControllerOptions>{};
+    options = options || ({} as ResourceControllerOptions);
     IdeaX.logger('START', null, event, true);
 
     this.callback = callback;
@@ -141,8 +140,8 @@ export abstract class ResourceController {
   }
   /**
    * Default callback for IDEA's API resource controllers.
-   * @param {Error} err if not null, it contains the error raised
-   * @param {any} res if err, the error string, otherwise the result (a JSON to parse)
+   * @param err if not null, it contains the error raised
+   * @param res if err, the error string, otherwise the result (a JSON to parse)
    */
   protected done(err: Error, res?: any): any {
     IdeaX.logger(`DONE`, err, res, true);
@@ -283,8 +282,8 @@ export abstract class ResourceController {
     this.dynamoDB
       .put({
         TableName: this.tables.requestsLogs,
-        Item: <RequestLog>{
-          key: key,
+        Item: {
+          key,
           at: String(new Date().getTime()).concat('_'.concat(UUIDV4())),
           expiresAt: Math.round(expiresAt.getTime() / 1000),
           userId: this.principalId || null,
@@ -293,7 +292,7 @@ export abstract class ResourceController {
           method: this.httpMethod,
           action: this.body && this.body.action ? this.body.action : null,
           requestSucceeded: success
-        }
+        } as RequestLog
       })
       .then(() => {})
       .catch(() => {});

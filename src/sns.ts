@@ -16,10 +16,10 @@ export class SNS {
 
   /**
    * Create a new endpoint in the SNS platform specified.
-   * @param {string} platform enum: APNS, FCM
-   * @param {string} deviceId registrationId
-   * @param {any} snsParams to identify the SNS resources
-   * @return {Promise<string>} platform endpoint ARN
+   * @param platform enum: APNS, FCM
+   * @param deviceId registrationId
+   * @param snsParams to identify the SNS resources
+   * @return platform endpoint ARN
    */
   public createPushPlatormEndpoint(platform: string, deviceId: string, snsParams: any): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -49,10 +49,9 @@ export class SNS {
 
   /**
    * Send a push notification through a SNS endpoint.
-   * @param {string} message the message to send
-   * @param {string} platform enum: APNS, FCM
-   * @param {string} endpoint endpoint to a specific device
-   * @return {Promise<AWS.SNS.PublishResponse>}
+   * @param message the message to send
+   * @param platform enum: APNS, FCM
+   * @param endpoint endpoint to a specific device
    */
   public publishSNSPush(message: string, platform: string, endpoint: string): Promise<AWS.SNS.PublishResponse> {
     return new Promise((resolve, reject) => {
@@ -62,7 +61,7 @@ export class SNS {
           structuredMessage = { APNS: JSON.stringify({ aps: { alert: message } }) };
           break;
         case 'FCM':
-          structuredMessage = { GCM: JSON.stringify({ data: { message: message } }) };
+          structuredMessage = { GCM: JSON.stringify({ data: { message } }) };
           break;
         default:
           return reject(new Error(`UNSUPPORTED_PLATFORM`));
@@ -84,11 +83,10 @@ export class SNS {
 
   /**
    * Publish a JSON message (object) in a SNS endpoint.
-   * @param {any} object the JSON object to send
-   * @param {string} endpoint SNS endpoint
-   * @return {Promise<AWS.SNS.PublishResponse>}
+   * @param object the JSON object to send
+   * @param endpoint SNS endpoint
    */
-  public publishJSON(object: Object, endpoint: string): Promise<AWS.SNS.PublishResponse> {
+  public publishJSON(object: object, endpoint: string): Promise<AWS.SNS.PublishResponse> {
     return new Promise((resolve, reject) => {
       this.sns.publish(
         { MessageStructure: 'json', Message: JSON.stringify({ default: JSON.stringify(object) }), TargetArn: endpoint },

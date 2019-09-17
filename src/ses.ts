@@ -13,24 +13,23 @@ export class SES {
 
   /**
    * Send an email through AWS Simple Email Service.
-   * @param {any} emailData structured as follows:
-   ```
-    toAddresses: Array<string>;
-    ccAddresses?: Array<string>;
-    bccAddresses?: Array<string>;
-    replyToAddresses: Array<string>;
-    subject: string;
-    html?: string;
-    text?: string;
-    attachments?: Array<any>; // https://community.nodemailer.com/using-attachments/
-   ```
-   * @param {any} sesParams structured as follows
-   ```
-    region: string;
-    source: string;
-    sourceArn: string;
-   ```
-   * @return {Promise<any>}
+   * @param emailData structured as follows:
+   * ```
+   * toAddresses: Array<string>;
+   * ccAddresses?: Array<string>;
+   * bccAddresses?: Array<string>;
+   * replyToAddresses: Array<string>;
+   * subject: string;
+   * html?: string;
+   * text?: string;
+   * attachments?: Array<any>; // https://community.nodemailer.com/using-attachments/
+   * ```
+   * @param sesParams structured as follows
+   * ```
+   * region: string;
+   * source: string;
+   * sourceArn: string;
+   * ```
    */
   public sendEmail(emailData: any, sesParams: any): Promise<any> {
     // if the email includes attachments, send through Nodemailer
@@ -38,9 +37,6 @@ export class SES {
     // otherwise via SES (more secure)
     else return this.sendEmailSES(emailData, sesParams);
   }
-  /**
-   * @private helper
-   */
   private sendEmailSES(emailData: any, sesParams: any): Promise<any> {
     return new Promise((resolve, reject) => {
       // prepare SES email data
@@ -67,9 +63,6 @@ export class SES {
       });
     });
   }
-  /**
-   * @private helper
-   */
   private sendEmailNodemailer(emailData: any, sesParams: any): Promise<any> {
     return new Promise((resolve, reject) => {
       // set the mail options in Nodemailer's format

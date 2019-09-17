@@ -20,8 +20,8 @@ export class DynamoDB {
    * Returns an IUID: IDEA's Unique IDentifier, which is an id unique through all IDEA's projects.
    * Note: there's no need of an authorization check for extrernal uses: the permissions depend
    * from the context in which it's executed.
-   * @param {string} project project code
-   * @return {Promise<string>} the IUID
+   * @param project project code
+   * @return the IUID
    */
   public IUID(project: string): Promise<string> {
     const MAX_ATTEMPTS = 3;
@@ -30,16 +30,13 @@ export class DynamoDB {
       else this.iuidHelper(project, 0, MAX_ATTEMPTS, resolve, reject);
     });
   }
-  /**
-   * @private helper
-   */
   protected iuidHelper(project: string, attempt: number, maxAttempts: number, resolve: any, reject: any) {
     if (attempt > maxAttempts) reject();
     else {
       const id = UUIDV4();
       this.put({
         TableName: 'idea_IUID',
-        Item: { project: project, id: id },
+        Item: { project, id },
         ConditionExpression: 'NOT (#p = :project AND #id = :id)',
         ExpressionAttributeNames: { '#p': 'project', '#id': 'id' },
         ExpressionAttributeValues: { ':project': project, ':id': id }
@@ -56,8 +53,8 @@ export class DynamoDB {
    * Returns an ISID: IDEA's Short IDentifier, which is a short, unique id through a single project.
    * Note: there's no need of an authorization check for extrernal uses: the permissions depend
    * from the context in which it's executed.
-   * @param {string} project project code
-   * @return {Promise<string>} the ISID
+   * @param project project code
+   * @return the ISID
    */
   public ISID(project: string): Promise<string> {
     const MAX_ATTEMPTS = 3;
@@ -66,16 +63,13 @@ export class DynamoDB {
       else this.isidHelper(project, 0, MAX_ATTEMPTS, resolve, reject);
     });
   }
-  /**
-   * @private helper
-   */
   protected isidHelper(project: string, attempt: number, maxAttempts: number, resolve: any, reject: any) {
     if (attempt > maxAttempts) reject();
     else {
       const id = ShortID.generate();
       this.put({
         TableName: 'idea_ISID',
-        Item: { project: project, id: id },
+        Item: { project, id },
         ConditionExpression: 'NOT (#p = :project AND #id = :id)',
         ExpressionAttributeNames: { '#p': 'project', '#id': 'id' },
         ExpressionAttributeValues: { ':project': project, ':id': id }
@@ -91,15 +85,14 @@ export class DynamoDB {
   /**
    * Manage atomic counters (atomic autoincrement values) in IDEA's projects.
    * They key of an atomic counter should be composed as the following: `DynamoDBTableName_uniqueKey`.
-   * @param {string} key the key of the counter
-   * @return {Promise<number>}
+   * @param key the key of the counter
    */
   public getAtomicCounterByKey(key: string): Promise<number> {
     return new Promise((resolve, reject) => {
       IdeaX.logger('GET ATOMIC COUNTER', null, key);
       this.update({
         TableName: 'idea_atomicCounters',
-        Key: { key: key },
+        Key: { key },
         UpdateExpression: 'ADD atomicCounter :increment',
         ExpressionAttributeValues: { ':increment': 1 },
         ReturnValues: 'UPDATED_NEW'
@@ -111,8 +104,7 @@ export class DynamoDB {
 
   /**
    * Get an item of a DynamoDB table.
-   * @param {any} params the params to apply to DynamoDB's function
-   * @return {Promise<any>}
+   * @param params the params to apply to DynamoDB's function
    */
   public get(params: any): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -130,8 +122,7 @@ export class DynamoDB {
 
   /**
    * Put an item in a DynamoDB table.
-   * @param {any} params the params to apply to DynamoDB's function
-   * @return {Promise<any>}
+   * @param params the params to apply to DynamoDB's function
    */
   public put(params: any): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -145,8 +136,7 @@ export class DynamoDB {
 
   /**
    * Update an item of a DynamoDB table.
-   * @param {any} params the params to apply to DynamoDB's function
-   * @return {Promise<any>}
+   * @param params the params to apply to DynamoDB's function
    */
   public update(params: any): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -160,8 +150,7 @@ export class DynamoDB {
 
   /**
    * Delete an item of a DynamoDB table.
-   * @param {any} params The params to apply to DynamoDB's function
-   * @return {Promise<any>}
+   * @param params The params to apply to DynamoDB's function
    */
   public delete(params: any): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -176,10 +165,9 @@ export class DynamoDB {
   /**
    * Get group of items based on their keys from DynamoDb table,
    * avoiding the limits of DynamoDB's BatchGetItem.
-   * @param {string} table DynamoDB table on which to operate
-   * @param {Array<any>} keys the keys of items to get
-   * @param {boolean} ignoreErr if true, ignore the errors and continue the bulk op.
-   * @return {Promise<Array<any>>}
+   * @param table DynamoDB table on which to operate
+   * @param keys the keys of items to get
+   * @param ignoreErr if true, ignore the errors and continue the bulk op.
    */
   public batchGet(table: string, keys: Array<any>, ignoreErr?: boolean): Promise<Array<any>> {
     return new Promise((resolve, reject) => {
@@ -189,9 +177,6 @@ export class DynamoDB {
       } else this.batchGetHelper(table, keys, [], Boolean(ignoreErr), 0, 100, resolve, reject);
     });
   }
-  /**
-   * @private helper
-   */
   protected batchGetHelper(
     t: string,
     keys: Array<any>,
@@ -221,10 +206,9 @@ export class DynamoDB {
 
   /**
    * Put an array of items in a DynamoDb table, avoiding the limits of DynamoDB's BatchWriteItem.
-   * @param {string} table DynamoDB table on which to operate
-   * @param {Array<any>} items the items to put
-   * @param {boolean} ignoreErr if true, ignore the errors and continue the bulk op.
-   * @return {Promise<any>}
+   * @param table DynamoDB table on which to operate
+   * @param items the items to put
+   * @param ignoreErr if true, ignore the errors and continue the bulk op
    */
   public batchPut(table: string, items: Array<any>, ignoreErr?: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -237,10 +221,9 @@ export class DynamoDB {
   /**
    * Delete an array of items from a DynamoDb table,
    * avoiding the limits of DynamoDB's BatchWriteItem.
-   * @param {string} table DynamoDB table on which to operate
-   * @param {Array<any>} keys the keys of items to delete
-   * @param {boolean} ignoreErr if true, ignore the errors and continue the bulk op.
-   * @return {Promise<any>}
+   * @param table DynamoDB table on which to operate
+   * @param keys the keys of items to delete
+   * @param ignoreErr if true, ignore the errors and continue the bulk op.
    */
   public batchDelete(table: string, keys: Array<any>, ignoreErr?: boolean): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -250,9 +233,6 @@ export class DynamoDB {
       } else this.batchWriteHelper(table, keys, false, Boolean(ignoreErr), 0, 25, resolve, reject);
     });
   }
-  /**
-   * @private helper
-   */
   protected batchWriteHelper(
     t: string,
     items: Array<any>,
@@ -289,8 +269,7 @@ export class DynamoDB {
 
   /**
    * Query a DynamoDb table, avoiding the limits of DynamoDB's Query.
-   * @param {any} params the params to apply to DynamoDB's function
-   * @return {Promise<Array<any>>}
+   * @param params the params to apply to DynamoDB's function
    */
   public query(params: any): Promise<Array<any>> {
     return new Promise((resolve, reject) => {
@@ -299,20 +278,16 @@ export class DynamoDB {
   }
   /**
    * Scan a DynamoDb table, avoiding the limits of DynamoDB's Query.
-   * @param {any} params the params to apply to DynamoDB's function
-   * @return {Promise<Array<any>>}
+   * @param params the params to apply to DynamoDB's function
    */
   public scan(params: any): Promise<Array<any>> {
     return new Promise((resolve, reject) => {
       this.queryScanHelper(params, [], false, resolve, reject);
     });
   }
-  /**
-   * @private helper
-   */
   protected queryScanHelper(params: any, items: Array<any>, isQuery: boolean, resolve: any, reject: any) {
     const f = isQuery ? 'query' : 'scan';
-    (<any>this.dynamo)[f](params, (err: Error, data: any) => {
+    (this.dynamo as any)[f](params, (err: Error, data: any) => {
       if (err || !data || !data.Items) {
         IdeaX.logger(`${f.toUpperCase()} ${params.TableName}`, err, data);
         return reject(err);
@@ -330,8 +305,7 @@ export class DynamoDB {
 
   /**
    * Query a DynamoDb table in the traditional way (no pagination or data mapping).
-   * @param {any} params the params to apply to DynamoDB's function
-   * @return {Promise<Array<any>>}
+   * @param params the params to apply to DynamoDB's function
    */
   public queryClassic(params: any): Promise<Array<any>> {
     return new Promise((resolve, reject) => {
@@ -340,20 +314,16 @@ export class DynamoDB {
   }
   /**
    * Scan a DynamoDb table in the traditional way (no pagination or data mapping).
-   * @param {any} params the params to apply to DynamoDB's function
-   * @return {Promise<Array<any>>}
+   * @param params the params to apply to DynamoDB's function
    */
   public scanClassic(params: any): Promise<Array<any>> {
     return new Promise((resolve, reject) => {
       this.queryScanClassicHelper(params, false, resolve, reject);
     });
   }
-  /**
-   * @private helper
-   */
   protected queryScanClassicHelper(params: any, isQuery: boolean, resolve: any, reject: any) {
     const f = isQuery ? 'query' : 'scan';
-    (<any>this.dynamo)[f](params, (err: Error, data: any) => {
+    (this.dynamo as any)[f](params, (err: Error, data: any) => {
       IdeaX.logger(`${f.toUpperCase()} classic ${params.TableName}`, err, data && data.Items ? data.Items.length : 0);
       if (err || !data) reject(err);
       else resolve(data);
@@ -362,8 +332,7 @@ export class DynamoDB {
 
   /**
    * Execute a series of max 10 write operations in a single transaction.
-   * @param {Array<AWS.DynamoDB.TransactWriteItem>} ops the operations to execute in the transaction
-   * @return {Promise<any>}
+   * @param ops the operations to execute in the transaction
    */
   public transactWrites(ops: Array<AWS.DynamoDB.DocumentClient.TransactWriteItem>): Promise<any> {
     return new Promise((resolve, reject) => {

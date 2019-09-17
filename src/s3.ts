@@ -22,16 +22,15 @@ export class S3 {
   /**
    * Create a download link of a piece of data (through S3).
    * *Pratically*, it uploads the file on an S3 bucket, generating and returning a url to it.
-   * @param {any} data usually a buffer
-   * @param {any} options strucuted as follows
-   ```
-    bucket?: string;       // downloads bucket; default: `idea-downloads`.
-    prefix?: string;       // folder (e.g. the project name); default: `common`.
-    key?; string;          // the unique filepath in which to store the file; default: _random_.
-    contentType?: string;  // e.g. application/json; default: _guessed_.
-    secToExp?: number;     // seconds to URL expiration; default: `180`.
-   ```
-   * @return {Promise<SignedURL>}
+   * @param data usually a buffer
+   * @param options strucuted as follows
+   * ```
+   * bucket?: string;       // downloads bucket; default: `idea-downloads`.
+   * prefix?: string;       // folder (e.g. the project name); default: `common`.
+   * key?; string;          // the unique filepath in which to store the file; default: _random_.
+   * contentType?: string;  // e.g. application/json; default: _guessed_.
+   * secToExp?: number;     // seconds to URL expiration; default: `180`.
+   * ```
    */
   public createDownloadURLFromData(data: any, options?: any): Promise<SignedURL> {
     return new Promise((resolve, reject) => {
@@ -69,10 +68,7 @@ export class S3 {
 
   /**
    * Get a signed URL to put a file on a S3 bucket.
-   * @param {string} bucket
-   * @param {string} key
-   * @param {number} expires seconds after which the signed URL expires
-   * @return {SignedURL}
+   * @param expires seconds after which the signed URL expires
    */
   public signedURLPut(bucket: string, key: string, expires?: number): SignedURL {
     return {
@@ -86,10 +82,7 @@ export class S3 {
 
   /**
    * Get a signed URL to get a file on a S3 bucket.
-   * @param {string} bucket
-   * @param {string} key
-   * @param {number} expires seconds after which the signed URL expires
-   * @return {SignedURL}
+   * @param expires seconds after which the signed URL expires
    */
   public signedURLGet(bucket: string, key: string, expires?: number): SignedURL {
     return {
@@ -103,13 +96,12 @@ export class S3 {
 
   /**
    * Make a copy of an object of the bucket.
-   * @param {any} options strucuted as follows
-   ```
-    copySource: string;   // the source path (complete with the bucket name).
-    bucket: string;       // the bucket in which to copy the file.
-    key; string;          // the complete filepath of the bucket in which to copy the file
-   ```
-   * @return {Promise<void>}
+   * @param options strucuted as follows
+   * ```
+   * copySource: string;   // the source path (complete with the bucket name).
+   * bucket: string;       // the bucket in which to copy the file.
+   * key; string;          // the complete filepath of the bucket in which to copy the file
+   * ```
    */
   public copyObject(options?: any): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -126,13 +118,12 @@ export class S3 {
 
   /**
    * Get an object from a S3 bucket.
-   * @param {any} options strucuted as follows
-   ```
-    bucket: string;       // the bucket in which to copy the file.
-    key; string;          // the complete filepath of the bucket in which to copy the file
-    type: string;         // enum: JSON; useful to cast the result
-   ```
-   * @return {Promise<any>}
+   * @param options strucuted as follows
+   * ```
+   * bucket: string;       // the bucket in which to copy the file.
+   * key; string;          // the complete filepath of the bucket in which to copy the file
+   * type: string;         // enum: JSON; useful to cast the result
+   * ```
    */
   public getObject(options?: any): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -153,16 +144,15 @@ export class S3 {
 
   /**
    * Put an object in a S3 bucket.
-   * @param {any} options strucuted as follows
-   ```
-    bucket: string;         // the bucket in which to copy the file.
-    key; string;            // the complete filepath of the bucket in which to copy the file
-    body: any;              // the content of the file
-    contentType?: string;   // content type (e.g. image/png)
-    acl?: string;           // access-control list (e.g. public-read)
-    metadata?: any;         // a set of metadata as attributes
-   ```
-   * @return {Promise<any>}
+   * @param options strucuted as follows
+   * ```
+   * bucket: string;         // the bucket in which to copy the file.
+   * key; string;            // the complete filepath of the bucket in which to copy the file
+   * body: any;              // the content of the file
+   * contentType?: string;   // content type (e.g. image/png)
+   * acl?: string;           // access-control list (e.g. public-read)
+   * metadata?: any;         // a set of metadata as attributes
+   * ```
    */
   public putObject(options?: any): Promise<any> {
     return new Promise((resolve, reject) => {
