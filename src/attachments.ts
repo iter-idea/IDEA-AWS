@@ -18,6 +18,7 @@ export class Attachments {
    * The bucket where from to retrieve the attachments. Fallback to IDEA's default one.
    */
   protected S3_ATTACHMENTS_BUCKET = process.env['S3_ATTACHMENTS_BUCKET'] || 'idea-attachments';
+  protected IUID_ATTACHMENTS_PREFIX = process.env['IUID_ATTACHMENTS_PREFIX'] || 'ATT';
 
   constructor() {
     this.dynamo = new DynamoDB();
@@ -33,8 +34,17 @@ export class Attachments {
   public put(project: string, teamId: string): Promise<IdeaX.SignedURL> {
     return new Promise((resolve, reject) => {
       this.dynamo
-        .IUID(project.concat('_').concat(teamId))
-        .then(attachmentId => resolve(this.s3.signedURLPut(this.S3_ATTACHMENTS_BUCKET, attachmentId)))
+        .IUID(
+          this.IUID_ATTACHMENTS_PREFIX.concat('_')
+            .concat(project)
+            .concat('_')
+            .concat(teamId)
+        )
+        .then(attachmentId => {
+          const signedURL = this.s3.signedURLPut(this.S3_ATTACHMENTS_BUCKET, attachmentId);
+          signedURL.id = attachmentId;
+          resolve(signedURL);
+        })
         .catch(err => reject(err));
     });
   }
@@ -45,6 +55,8 @@ export class Attachments {
    * @return the URL to download the attachment
    */
   public get(attachmentId: string): IdeaX.SignedURL {
-    return this.s3.signedURLPut(this.S3_ATTACHMENTS_BUCKET, attachmentId);
+    const signedURL = this.s3.signedURLGet(this.S3_ATTACHMENTS_BUCKET, attachmentId);
+    signedURL.id = attachmentId;
+    return signedURL;
   }
 }
