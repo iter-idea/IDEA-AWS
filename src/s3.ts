@@ -32,7 +32,7 @@ export class S3 {
    * secToExp?: number;     // seconds to URL expiration; default: `180`.
    * ```
    */
-  public createDownloadURLFromData(data: any, options?: any): Promise<SignedURL> {
+  public createDownloadURLFromData(data: any, options?: any): Promise<IdeaX.SignedURL> {
     return new Promise((resolve, reject) => {
       // if needed, randomly generates the key
       if (!options.key)
@@ -70,7 +70,7 @@ export class S3 {
    * Get a signed URL to put a file on a S3 bucket.
    * @param expires seconds after which the signed URL expires
    */
-  public signedURLPut(bucket: string, key: string, expires?: number): SignedURL {
+  public signedURLPut(bucket: string, key: string, expires?: number): IdeaX.SignedURL {
     return {
       url: this.s3.getSignedUrl('putObject', {
         Bucket: bucket,
@@ -84,7 +84,7 @@ export class S3 {
    * Get a signed URL to get a file on a S3 bucket.
    * @param expires seconds after which the signed URL expires
    */
-  public signedURLGet(bucket: string, key: string, expires?: number): SignedURL {
+  public signedURLGet(bucket: string, key: string, expires?: number): IdeaX.SignedURL {
     return {
       url: this.s3.getSignedUrl('getObject', {
         Bucket: bucket,
@@ -167,11 +167,4 @@ export class S3 {
       });
     });
   }
-}
-
-/**
- * To return the URL as a JSON.
- */
-export interface SignedURL {
-  url: string;
 }
