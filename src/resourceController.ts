@@ -7,6 +7,7 @@ import { S3 } from './s3';
 import { SES } from './ses';
 import { SNS } from './sns';
 import { RequestLog } from './requestLog';
+import { Attachments } from './attachments';
 
 /**
  * An abstract class to inherit to manage API requests (AWS API Gateway) in an
@@ -34,6 +35,7 @@ export abstract class ResourceController {
   protected _s3: S3;
   protected _ses: SES;
   protected _sns: SNS;
+  protected _attachments: Attachments;
 
   /**
    * Initialize a new ResourceController helper object.
@@ -270,6 +272,16 @@ export abstract class ResourceController {
   /// HELPERS
   ///
 
+  /**
+   * Manage attachments (through SignedURLs).
+   */
+  get attachments(): Attachments {
+    if (!this._attachments) this._attachments = new Attachments();
+    return this._attachments;
+  }
+  set attachments(attachments: Attachments) {
+    this._attachments = attachments;
+  }
   /**
    * Store the log associated to the request (no response/error handling).
    */
