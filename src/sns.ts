@@ -7,6 +7,8 @@ import IdeaX = require('idea-toolbox');
 export class SNS {
   protected sns: AWS.SNS;
 
+  protected IDEA_DEFAULT_SNS_ENDPOINT = 'arn:aws:sns:eu-west-2:854501414358:idea_notifications';
+
   /**
    * Initialize a new SNS helper object.
    */
@@ -84,10 +86,11 @@ export class SNS {
   /**
    * Publish a JSON message (object) in a SNS endpoint.
    * @param object the JSON object to send
-   * @param endpoint SNS endpoint
+   * @param endpoint SNS endpoint (default: IDEA's endpoint)
    */
-  public publishJSON(object: object, endpoint: string): Promise<AWS.SNS.PublishResponse> {
+  public publishJSON(object: object, endpoint?: string): Promise<AWS.SNS.PublishResponse> {
     return new Promise((resolve, reject) => {
+      endpoint = endpoint || this.IDEA_DEFAULT_SNS_ENDPOINT;
       this.sns.publish(
         { MessageStructure: 'json', Message: JSON.stringify({ default: JSON.stringify(object) }), TargetArn: endpoint },
         (err: Error, data: AWS.SNS.PublishResponse) => {
