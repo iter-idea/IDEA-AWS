@@ -39,7 +39,7 @@ export class Cognito {
       new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' }).listUsers(
         { UserPoolId: cognitoUserPoolId, Filter: `email = "${email}"`, Limit: 1 },
         (err: Error, data: any) => {
-          if (err || !data || !data.Users || !data.Users[0]) reject();
+          if (err || !data || !data.Users || !data.Users[0]) reject(err);
           else {
             // convert and return the attributes
             const userAttributes: any = {};
@@ -62,7 +62,7 @@ export class Cognito {
       new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' }).listUsers(
         { UserPoolId: cognitoUserPoolId, Filter: `sub = "${sub}"`, Limit: 1 },
         (err: Error, data: any) => {
-          if (err || !data || !data.Users || !data.Users[0]) reject();
+          if (err || !data || !data.Users || !data.Users[0]) reject(err);
           else {
             // convert and return the attributes
             const userAttributes: any = {};
