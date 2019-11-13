@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
-    "declaration": false,
+    "declaration": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "strict": true,
@@ -9,10 +9,11 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "sourceMap": false,
-    "target": "es6"
+    "target": "es6",
+    "rootDir": "./src",
+    "outDir": "./dist"
   },
-  "include": ["./_models/*.model.ts"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "dist"],
   "plugins": [
     {
       "name": "typescript-tslint-plugin"
