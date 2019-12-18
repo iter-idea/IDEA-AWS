@@ -8,6 +8,7 @@ import { SES } from './ses';
 import { SNS } from './sns';
 import { RequestLog } from './requestLog';
 import { Attachments } from './attachments';
+import { HTML2PDF } from './html2pdf';
 
 /**
  * An abstract class to inherit to manage API requests (AWS API Gateway) in an
@@ -36,6 +37,7 @@ export abstract class ResourceController {
   protected _ses: SES;
   protected _sns: SNS;
   protected _attachments: Attachments;
+  protected _html2pdf: HTML2PDF;
 
   /**
    * Initialize a new ResourceController helper object.
@@ -133,7 +135,7 @@ export abstract class ResourceController {
         }
       })
       .catch(() => this.done(new Error(`E.COMMON.UNAUTHORIZED`)));
-  }
+  };
   /**
    * To @override
    */
@@ -281,6 +283,16 @@ export abstract class ResourceController {
   }
   set attachments(attachments: Attachments) {
     this._attachments = attachments;
+  }
+  /**
+   * Manage PDF creation from HTML source.
+   */
+  get html2pdf(): HTML2PDF {
+    if (!this._html2pdf) this._html2pdf = new HTML2PDF();
+    return this._html2pdf;
+  }
+  set html2pdf(html2pdf: HTML2PDF) {
+    this._html2pdf = html2pdf;
   }
   /**
    * Store the log associated to the request (no response/error handling).
