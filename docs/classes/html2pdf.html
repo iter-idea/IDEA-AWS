@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ResourceController | idea-aws</title>
+	<title>HTML2PDF | idea-aws</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
@@ -2384,40 +2384,22 @@ img {
 		<li class=" tsd-kind-class">
 			<a href="dynamodb.html" class="tsd-kind-icon">DynamoDB</a>
 		</li>
-		<li class=" tsd-kind-class">
-			<a href="html2pdf.html" class="tsd-kind-icon">HTML2PDF</a>
-		</li>
 		<li class="current tsd-kind-class">
-			<a href="resourcecontroller.html" class="tsd-kind-icon">Resource<wbr>Controller</a>
+			<a href="html2pdf.html" class="tsd-kind-icon">HTML2PDF</a>
 			<ul>
 				<li class=" tsd-kind-constructor tsd-parent-kind-class">
-					<a href="resourcecontroller.html#constructor" class="tsd-kind-icon">constructor</a>
-				</li>
-				<li class=" tsd-kind-accessor tsd-parent-kind-class">
-					<a href="resourcecontroller.html#attachments" class="tsd-kind-icon">attachments</a>
-				</li>
-				<li class=" tsd-kind-accessor tsd-parent-kind-class">
-					<a href="resourcecontroller.html#cognito" class="tsd-kind-icon">cognito</a>
-				</li>
-				<li class=" tsd-kind-accessor tsd-parent-kind-class">
-					<a href="resourcecontroller.html#dynamodb" class="tsd-kind-icon">dynamoDB</a>
-				</li>
-				<li class=" tsd-kind-accessor tsd-parent-kind-class">
-					<a href="resourcecontroller.html#html2pdf" class="tsd-kind-icon">html2pdf</a>
-				</li>
-				<li class=" tsd-kind-accessor tsd-parent-kind-class">
-					<a href="resourcecontroller.html#s3" class="tsd-kind-icon">s3</a>
-				</li>
-				<li class=" tsd-kind-accessor tsd-parent-kind-class">
-					<a href="resourcecontroller.html#ses" class="tsd-kind-icon">ses</a>
-				</li>
-				<li class=" tsd-kind-accessor tsd-parent-kind-class">
-					<a href="resourcecontroller.html#sns" class="tsd-kind-icon">sns</a>
+					<a href="html2pdf.html#constructor" class="tsd-kind-icon">constructor</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="resourcecontroller.html#handlerequest" class="tsd-kind-icon">handle<wbr>Request</a>
+					<a href="html2pdf.html#create" class="tsd-kind-icon">create</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="html2pdf.html#createlink" class="tsd-kind-icon">create<wbr>Link</a>
 				</li>
 			</ul>
+		</li>
+		<li class=" tsd-kind-class">
+			<a href="resourcecontroller.html" class="tsd-kind-icon">Resource<wbr>Controller</a>
 		</li>
 		<li class=" tsd-kind-class">
 			<a href="s3.html" class="tsd-kind-icon">S3</a>
@@ -2444,8 +2426,7 @@ img {
 		<section class="tsd-panel tsd-comment">
 			<div class="tsd-comment tsd-typography">
 				<div class="lead">
-					<p>An abstract class to inherit to manage API requests (AWS API Gateway) in an
-					AWS Lambda function.</p>
+					<p>A custom class that takes advantage of the <code>idea_html2pdf</code> Lambda function to easily manage the creation of PDFs.</p>
 				</div>
 			</div>
 		</section>
@@ -2453,7 +2434,7 @@ img {
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
 				<li>
-					<span class="target">ResourceController</span>
+					<span class="target">HTML2PDF</span>
 				</li>
 			</ul>
 		</section>
@@ -2464,25 +2445,14 @@ img {
 					<section class="tsd-index-section ">
 						<h3>Constructors</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="resourcecontroller.html#constructor" class="tsd-kind-icon">constructor</a></li>
-						</ul>
-					</section>
-					<section class="tsd-index-section ">
-						<h3>Accessors</h3>
-						<ul class="tsd-index-list">
-							<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="resourcecontroller.html#attachments" class="tsd-kind-icon">attachments</a></li>
-							<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="resourcecontroller.html#cognito" class="tsd-kind-icon">cognito</a></li>
-							<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="resourcecontroller.html#dynamodb" class="tsd-kind-icon">dynamoDB</a></li>
-							<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="resourcecontroller.html#html2pdf" class="tsd-kind-icon">html2pdf</a></li>
-							<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="resourcecontroller.html#s3" class="tsd-kind-icon">s3</a></li>
-							<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="resourcecontroller.html#ses" class="tsd-kind-icon">ses</a></li>
-							<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="resourcecontroller.html#sns" class="tsd-kind-icon">sns</a></li>
+							<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="html2pdf.html#constructor" class="tsd-kind-icon">constructor</a></li>
 						</ul>
 					</section>
 					<section class="tsd-index-section ">
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="resourcecontroller.html#handlerequest" class="tsd-kind-icon">handle<wbr>Request</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="html2pdf.html#create" class="tsd-kind-icon">create</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="html2pdf.html#createlink" class="tsd-kind-icon">create<wbr>Link</a></li>
 						</ul>
 					</section>
 				</div>
@@ -2494,158 +2464,101 @@ img {
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
 				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">new <wbr>Resource<wbr>Controller<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/resourcecontrolleroptions.html" class="tsd-signature-type">ResourceControllerOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="resourcecontroller.html" class="tsd-signature-type">ResourceController</a></li>
+					<li class="tsd-signature tsd-kind-icon">new HTML2PDF<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="html2pdf.html" class="tsd-signature-type">HTML2PDF</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/edd75fe/src/resourceController.ts#L40">resourceController.ts:40</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/edd75fe/src/html2pdf.ts#L20">html2pdf.ts:20</a></li>
 							</ul>
 						</aside>
-						<div class="tsd-comment tsd-typography">
-							<div class="lead">
-								<p>Initialize a new ResourceController helper object.</p>
-							</div>
-						</div>
-						<h4 class="tsd-parameters-title">Parameters</h4>
-						<ul class="tsd-parameters">
-							<li>
-								<h5>event: <span class="tsd-signature-type">any</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<div class="lead">
-										<p>the event that invoked the AWS lambda function</p>
-									</div>
-								</div>
-							</li>
-							<li>
-								<h5>callback: <span class="tsd-signature-type">any</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<div class="lead">
-										<p>the callback to resolve or reject the execution</p>
-									</div>
-								</div>
-							</li>
-							<li>
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../interfaces/resourcecontrolleroptions.html" class="tsd-signature-type">ResourceControllerOptions</a></h5>
-							</li>
-						</ul>
-						<h4 class="tsd-returns-title">Returns <a href="resourcecontroller.html" class="tsd-signature-type">ResourceController</a></h4>
+						<h4 class="tsd-returns-title">Returns <a href="html2pdf.html" class="tsd-signature-type">HTML2PDF</a></h4>
 					</li>
 				</ul>
 			</section>
 		</section>
 		<section class="tsd-panel-group tsd-member-group ">
-			<h2>Accessors</h2>
-			<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-				<a name="attachments" class="tsd-anchor"></a>
-				<h3>attachments</h3>
-				<div class="tsd-signature tsd-kind-icon">attachments<span class="tsd-signature-symbol">:</span> </div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/edd75fe/src/resourceController.ts#L280">resourceController.ts:280</a></li>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/edd75fe/src/resourceController.ts#L284">resourceController.ts:284</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Manage attachments (through SignedURLs).</p>
-					</div>
-				</div>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-				<a name="cognito" class="tsd-anchor"></a>
-				<h3>cognito</h3>
-				<div class="tsd-signature tsd-kind-icon">cognito<span class="tsd-signature-symbol">:</span> </div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/edd75fe/src/resourceController.ts#L244">resourceController.ts:244</a></li>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/edd75fe/src/resourceController.ts#L248">resourceController.ts:248</a></li>
-					</ul>
-				</aside>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-				<a name="dynamodb" class="tsd-anchor"></a>
-				<h3>dynamoDB</h3>
-				<div class="tsd-signature tsd-kind-icon">dynamoDB<span class="tsd-signature-symbol">:</span> </div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/edd75fe/src/resourceController.ts#L237">resourceController.ts:237</a></li>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/edd75fe/src/resourceController.ts#L241">resourceController.ts:241</a></li>
-					</ul>
-				</aside>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-				<a name="html2pdf" class="tsd-anchor"></a>
-				<h3>html2pdf</h3>
-				<div class="tsd-signature tsd-kind-icon">html2pdf<span class="tsd-signature-symbol">:</span> </div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/edd75fe/src/resourceController.ts#L290">resourceController.ts:290</a></li>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/edd75fe/src/resourceController.ts#L294">resourceController.ts:294</a></li>
-					</ul>
-				</aside>
-				<div class="tsd-comment tsd-typography">
-					<div class="lead">
-						<p>Manage PDF creation from HTML source.</p>
-					</div>
-				</div>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-				<a name="s3" class="tsd-anchor"></a>
-				<h3>s3</h3>
-				<div class="tsd-signature tsd-kind-icon">s3<span class="tsd-signature-symbol">:</span> </div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/edd75fe/src/resourceController.ts#L251">resourceController.ts:251</a></li>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/edd75fe/src/resourceController.ts#L255">resourceController.ts:255</a></li>
-					</ul>
-				</aside>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-				<a name="ses" class="tsd-anchor"></a>
-				<h3>ses</h3>
-				<div class="tsd-signature tsd-kind-icon">ses<span class="tsd-signature-symbol">:</span> </div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/edd75fe/src/resourceController.ts#L258">resourceController.ts:258</a></li>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/edd75fe/src/resourceController.ts#L262">resourceController.ts:262</a></li>
-					</ul>
-				</aside>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-				<a name="sns" class="tsd-anchor"></a>
-				<h3>sns</h3>
-				<div class="tsd-signature tsd-kind-icon">sns<span class="tsd-signature-symbol">:</span> </div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/edd75fe/src/resourceController.ts#L265">resourceController.ts:265</a></li>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/edd75fe/src/resourceController.ts#L269">resourceController.ts:269</a></li>
-					</ul>
-				</aside>
-			</section>
-		</section>
-		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Methods</h2>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="handlerequest" class="tsd-anchor"></a>
-				<h3>handle<wbr>Request</h3>
+				<a name="create" class="tsd-anchor"></a>
+				<h3>create</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">handle<wbr>Request<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
+					<li class="tsd-signature tsd-kind-icon">create<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">: </span><a href="../interfaces/html2pdfparameters.html" class="tsd-signature-type">HTML2PDFParameters</a>, alternativeLambda<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/edd75fe/src/resourceController.ts#L79">resourceController.ts:79</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/edd75fe/src/html2pdf.ts#L33">html2pdf.ts:33</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
 							<div class="lead">
-								<p>The main function, that handle an API request redirected to a Lambda function.</p>
+								<p>Create a new PDF created by an HTML source.</p>
 							</div>
 						</div>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>params: <a href="../interfaces/html2pdfparameters.html" class="tsd-signature-type">HTML2PDFParameters</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>the parameters to create the PDF</p>
+								</div>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> alternativeLambda: <span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>an alternative lambda function to use to generate the PDF</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						<p>the PDF data (buffer)</p>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="createlink" class="tsd-anchor"></a>
+				<h3>create<wbr>Link</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">create<wbr>Link<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">: </span><a href="../interfaces/html2pdfparameters.html" class="tsd-signature-type">HTML2PDFParameters</a>, alternativeLambda<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span>, downloadOptions<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">SignedURL</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/edd75fe/src/html2pdf.ts#L59">html2pdf.ts:59</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Create the signedURL to a new PDF created by an HTML source.</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>params: <a href="../interfaces/html2pdfparameters.html" class="tsd-signature-type">HTML2PDFParameters</a></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>the parameters to create the PDF</p>
+								</div>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> alternativeLambda: <span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>an alternative lambda function to use to generate the PDF</p>
+								</div>
+							</li>
+							<li>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> downloadOptions: <span class="tsd-signature-type">any</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>the parameters create the download link</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">SignedURL</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						<p>the URL to download the PDF</p>
 					</li>
 				</ul>
 			</section>
