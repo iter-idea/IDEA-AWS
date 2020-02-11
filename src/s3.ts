@@ -71,13 +71,13 @@ export class S3 {
    * @param expires seconds after which the signed URL expires
    */
   public signedURLPut(bucket: string, key: string, expires?: number): IdeaX.SignedURL {
-    return {
+    return new IdeaX.SignedURL({
       url: this.s3.getSignedUrl('putObject', {
         Bucket: bucket,
         Key: key,
         Expires: expires || this.DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP
       })
-    };
+    });
   }
 
   /**
@@ -85,13 +85,13 @@ export class S3 {
    * @param expires seconds after which the signed URL expires
    */
   public signedURLGet(bucket: string, key: string, expires?: number): IdeaX.SignedURL {
-    return {
+    return new IdeaX.SignedURL({
       url: this.s3.getSignedUrl('getObject', {
         Bucket: bucket,
         Key: key,
         Expires: expires || this.DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP
       })
-    };
+    });
   }
 
   /**
