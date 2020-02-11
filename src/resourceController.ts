@@ -6,13 +6,11 @@ import { Cognito } from './cognito';
 import { S3 } from './s3';
 import { SES } from './ses';
 import { SNS } from './sns';
-import { RequestLog } from './requestLog';
 import { Attachments } from './attachments';
 import { HTML2PDF } from './html2pdf';
 
 /**
- * An abstract class to inherit to manage API requests (AWS API Gateway) in an
- * AWS Lambda function.
+ * An abstract class to inherit to manage API requests (AWS API Gateway) in an AWS Lambda function.
  */
 export abstract class ResourceController {
   protected callback: any;
@@ -25,11 +23,12 @@ export abstract class ResourceController {
   protected body: any;
   protected queryParams: any;
   protected resource: string;
+  protected path: string;
   protected resourceId: string;
 
   protected tables: any;
 
-  protected logsKeys: Array<string>;
+  protected logRequestsWithKey: string;
 
   protected _dynamoDB: DynamoDB;
   protected _cognito: Cognito;
@@ -57,6 +56,7 @@ export abstract class ResourceController {
 
     this.httpMethod = event.httpMethod || null;
     this.resource = (event.resource || '').replace('+', ''); // {proxy+} -> {proxy}
+    this.path = event.path || '';
     this.resourceId =
       event.pathParameters && event.pathParameters[options.resourceId || 'proxy']
         ? decodeURIComponent(event.pathParameters[options.resourceId || 'proxy'])
@@ -66,7 +66,7 @@ export abstract class ResourceController {
 
     this.tables = options.tables || {};
 
-    this.logsKeys = options.logsKeys || new Array<string>();
+    this.logRequestsWithKey = options.logRequestsWithKey;
   }
 
   ///
@@ -76,7 +76,7 @@ export abstract class ResourceController {
   /**
    * The main function, that handle an API request redirected to a Lambda function.
    */
-  public handleRequest = (): void => {
+  public handleRequest = () => {
     // check the authorizations and prepare the API request
     this.checkAuthBeforeRequest()
       .then(() => {
@@ -149,8 +149,8 @@ export abstract class ResourceController {
    */
   protected done(err: Error, res?: any): any {
     IdeaX.logger(`DONE`, err, res, true);
-    // if configured, store one or more logs of the request
-    this.logsKeys.forEach(key => this.storeLog(key, !err));
+    // if configured, store the log of the request
+    if (this.logRequestsWithKey) this.storeLog(!err);
     // send the response
     this.callback(null, {
       statusCode: err ? '400' : '200',
@@ -297,29 +297,21 @@ export abstract class ResourceController {
   /**
    * Store the log associated to the request (no response/error handling).
    */
-  protected storeLog(key: string, success: boolean): void {
-    if (!key || !this.tables.requestsLogs) return;
-    // set the TTL of the log (1 month)
-    const expiresAt = new Date();
-    expiresAt.setMonth(expiresAt.getMonth() + 1);
+  protected storeLog(succeeded: boolean) {
+    // create the log
+    const log = new IdeaX.APIRequestLog({
+      logId: this.logRequestsWithKey,
+      userId: this.principalId,
+      resource: this.resource,
+      path: this.path,
+      resourceId: this.resourceId,
+      method: this.httpMethod,
+      succeeded
+    });
+    // optionally add a track of the action
+    if (this.httpMethod === 'PATCH' && this.body && this.body.action) log.action = this.body.action;
     // insert the log and don't wait for response or errors
-    this.dynamoDB
-      .put({
-        TableName: this.tables.requestsLogs,
-        Item: {
-          key,
-          at: String(new Date().getTime()).concat('_'.concat(UUIDV4())),
-          expiresAt: Math.round(expiresAt.getTime() / 1000),
-          userId: this.principalId || null,
-          resource: this.resource,
-          resourceId: this.resourceId || null,
-          method: this.httpMethod,
-          action: this.body && this.body.action ? this.body.action : null,
-          requestSucceeded: success
-        } as RequestLog
-      })
-      .then(() => {})
-      .catch(() => {});
+    this.dynamoDB.put({ TableName: 'idea_logs', Item: log }).catch(() => {});
   }
 }
 
@@ -336,8 +328,7 @@ export interface ResourceControllerOptions {
    */
   resourceId?: string;
   /**
-   * If one or more keys are specified, insert a log for each of those keys.
-   * Note well: the the special table `requestsLogs` must be specified.
+   * If set, the logs of the API requests on this resource will be stored (using this key).
    */
-  logsKeys?: Array<string>;
+  logRequestsWithKey?: string;
 }
