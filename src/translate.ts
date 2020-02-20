@@ -15,26 +15,18 @@ export class Translate {
 
   /**
    * Translates input text from the source language to the target language.
-   * @param options
-   * ```
-   * sourceLanguageCode: string;  // required.
-   * targetLanguageCode: string;  // required.
-   * text: string;                // Text to translate. Max. 5,000 bytes.
-   * terminologyNames?: Array<string>;  // The name of the terminology list file to be used in the TranslateText
-   *                                       request. You can use 1 terminology list at most in a TranslateText request.
-   *                                       Terminology lists can contain a maximum of 256 terms.
-   * ```
+   * @param params the parameters to invoke translateText
    */
-  public translateText(options: any): Promise<any> {
+  public translateText(params: TranslateParameters): Promise<any> {
     return new Promise((resolve, reject) => {
       // if needed, randomly generates the key
-      if (!options.sourceLanguageCode || !options.targetLanguageCode) return reject();
+      if (!params.sourceLanguageCode || !params.targetLanguageCode || !params.text) return reject();
       this.translate.translateText(
         {
-          SourceLanguageCode: options.sourceLanguageCode,
-          TargetLanguageCode: options.targetLanguageCode,
-          Text: options.text,
-          TerminologyNames: options.terminologyNames
+          SourceLanguageCode: params.sourceLanguageCode,
+          TargetLanguageCode: params.targetLanguageCode,
+          Text: params.text,
+          TerminologyNames: params.terminologyNames
         },
         (err: Error, data: any) => {
           if (err) reject(err);
@@ -43,4 +35,27 @@ export class Translate {
       );
     });
   }
+}
+
+export interface TranslateParameters {
+  /**
+   * The language code for the language of the source text. Required.
+   */
+  sourceLanguageCode: string;
+  /**
+   * The language code requested for the language of the target text. Required.
+   */
+  targetLanguageCode: string;
+  /**
+   * The text to translate. The text string can be a maximum of 5,000 bytes long.
+   * Depending on your character set, this may be fewer than 5,000 characters.
+   * Required.
+   */
+  text: string;
+  /**
+   * The name of the terminology list file to be used in the TranslateText request.
+   * You can use 1 terminology list at most in a TranslateText request.
+   * Terminology lists can contain a maximum of 256 terms.
+   */
+  terminologyNames?: Array<string>;
 }
