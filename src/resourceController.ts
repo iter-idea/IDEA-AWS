@@ -1,4 +1,3 @@
-import UUIDV4 = require('uuid/v4');
 import IdeaX = require('idea-toolbox');
 
 import { DynamoDB } from './dynamoDB';
@@ -6,6 +5,7 @@ import { Cognito } from './cognito';
 import { S3 } from './s3';
 import { SES } from './ses';
 import { SNS } from './sns';
+import { Translate } from './translate';
 import { Attachments } from './attachments';
 import { HTML2PDF } from './html2pdf';
 
@@ -35,6 +35,7 @@ export abstract class ResourceController {
   protected _s3: S3;
   protected _ses: SES;
   protected _sns: SNS;
+  protected _translate: Translate;
   protected _attachments: Attachments;
   protected _html2pdf: HTML2PDF;
 
@@ -268,6 +269,13 @@ export abstract class ResourceController {
   }
   set sns(sns: SNS) {
     this._sns = sns;
+  }
+  get translate(): Translate {
+    if (!this._translate) this._translate = new Translate();
+    return this._translate;
+  }
+  set translate(translate: Translate) {
+    this._translate = translate;
   }
 
   ///
