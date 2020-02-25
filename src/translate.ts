@@ -30,9 +30,9 @@ export class Translate {
 
   /**
    * Translates input text from the source language to the target language.
-   * @param params the parameters to invoke translateText
+   * @param params the parameters for translateText
    */
-  public translateText(params: TranslateParameters): Promise<any> {
+  public text(params: TranslateParameters): Promise<string> {
     return new Promise((resolve, reject) => {
       // load source and target languages codes
       if (params.sourceLanguageCode) this.sourceLanguageCode = params.sourceLanguageCode;
@@ -50,7 +50,7 @@ export class Translate {
         },
         (err: Error, data: any) => {
           if (err) reject(err);
-          else resolve(data);
+          else resolve(data.TranslatedText);
         }
       );
     });
