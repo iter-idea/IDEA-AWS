@@ -5,12 +5,27 @@ import AWS = require('aws-sdk');
  */
 export class Translate {
   protected translate: AWS.Translate;
+  /**
+   * Default input language code.
+   */
+  protected sourceLanguageCode: string;
+  /**
+   * Default output language code.
+   */
+  protected targetLanguageCode: string;
+  /**
+   * Default terminology list.
+   */
+  protected terminologyNames: Array<string>;
 
   /**
    * Initialize a new Translate helper object.
    */
   constructor() {
     this.translate = new AWS.Translate({ apiVersion: '2017-07-01' });
+    this.sourceLanguageCode = 'en';
+    this.targetLanguageCode = 'en';
+    this.terminologyNames = new Array<string>();
   }
 
   /**
@@ -19,14 +34,19 @@ export class Translate {
    */
   public translateText(params: TranslateParameters): Promise<any> {
     return new Promise((resolve, reject) => {
-      // if needed, randomly generates the key
-      if (!params.sourceLanguageCode || !params.targetLanguageCode || !params.text) return reject();
+      // load source and target languages codes
+      if (params.sourceLanguageCode) this.sourceLanguageCode = params.sourceLanguageCode;
+      if (params.targetLanguageCode) this.targetLanguageCode = params.targetLanguageCode;
+      if (params.terminologyNames) this.terminologyNames = params.terminologyNames;
+      // check for obligatory params
+      if (!this.sourceLanguageCode || !this.targetLanguageCode || !params.text) return reject();
+      // execute the translation
       this.translate.translateText(
         {
-          SourceLanguageCode: params.sourceLanguageCode,
-          TargetLanguageCode: params.targetLanguageCode,
           Text: params.text,
-          TerminologyNames: params.terminologyNames
+          SourceLanguageCode: this.sourceLanguageCode,
+          TargetLanguageCode: this.targetLanguageCode,
+          TerminologyNames: this.terminologyNames
         },
         (err: Error, data: any) => {
           if (err) reject(err);
@@ -39,22 +59,20 @@ export class Translate {
 
 export interface TranslateParameters {
   /**
-   * The language code for the language of the source text. Required.
-   */
-  sourceLanguageCode: string;
-  /**
-   * The language code requested for the language of the target text. Required.
-   */
-  targetLanguageCode: string;
-  /**
-   * The text to translate. The text string can be a maximum of 5,000 bytes long.
-   * Depending on your character set, this may be fewer than 5,000 characters.
-   * Required.
+   * The text to translate. Required.
+   * The text string can be a maximum of 5,000 bytes long; depending on the char set, it may be fewer than 5,000 chars.
    */
   text: string;
   /**
+   * The input language.
+   */
+  sourceLanguageCode?: string;
+  /**
+   * The output language.
+   */
+  targetLanguageCode?: string;
+  /**
    * The name of the terminology list file to be used in the TranslateText request.
-   * You can use 1 terminology list at most in a TranslateText request.
    * Terminology lists can contain a maximum of 256 terms.
    */
   terminologyNames?: Array<string>;
