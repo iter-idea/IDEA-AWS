@@ -8,15 +8,15 @@ export class Translate {
   /**
    * Default input language code.
    */
-  protected sourceLanguageCode: string;
+  public sourceLanguageCode: string;
   /**
    * Default output language code.
    */
-  protected targetLanguageCode: string;
+  public targetLanguageCode: string;
   /**
    * Default terminology list.
    */
-  protected terminologyNames: Array<string>;
+  public terminologyNames: Array<string>;
 
   /**
    * Initialize a new Translate helper object.
