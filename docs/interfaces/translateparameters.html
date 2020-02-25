@@ -2457,31 +2457,31 @@ img {
 			<h2>Properties</h2>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="sourcelanguagecode" class="tsd-anchor"></a>
-				<h3>source<wbr>Language<wbr>Code</h3>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> source<wbr>Language<wbr>Code</h3>
 				<div class="tsd-signature tsd-kind-icon">source<wbr>Language<wbr>Code<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/8c8bfc5/src/translate.ts#L44">translate.ts:44</a></li>
+						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/bff75e1/src/translate.ts#L69">translate.ts:69</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>The language code for the language of the source text. Required.</p>
+						<p>The input language.</p>
 					</div>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
 				<a name="targetlanguagecode" class="tsd-anchor"></a>
-				<h3>target<wbr>Language<wbr>Code</h3>
+				<h3><span class="tsd-flag ts-flagOptional">Optional</span> target<wbr>Language<wbr>Code</h3>
 				<div class="tsd-signature tsd-kind-icon">target<wbr>Language<wbr>Code<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/8c8bfc5/src/translate.ts#L48">translate.ts:48</a></li>
+						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/bff75e1/src/translate.ts#L73">translate.ts:73</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>The language code requested for the language of the target text. Required.</p>
+						<p>The output language.</p>
 					</div>
 				</div>
 			</section>
@@ -2491,13 +2491,12 @@ img {
 				<div class="tsd-signature tsd-kind-icon">terminology<wbr>Names<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/8c8bfc5/src/translate.ts#L60">translate.ts:60</a></li>
+						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/bff75e1/src/translate.ts#L78">translate.ts:78</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
 						<p>The name of the terminology list file to be used in the TranslateText request.
-							You can use 1 terminology list at most in a TranslateText request.
 						Terminology lists can contain a maximum of 256 terms.</p>
 					</div>
 				</div>
@@ -2508,14 +2507,13 @@ img {
 				<div class="tsd-signature tsd-kind-icon">text<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/8c8bfc5/src/translate.ts#L54">translate.ts:54</a></li>
+						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/bff75e1/src/translate.ts#L65">translate.ts:65</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>The text to translate. The text string can be a maximum of 5,000 bytes long.
-							Depending on your character set, this may be fewer than 5,000 characters.
-						Required.</p>
+						<p>The text to translate. Required.
+						The text string can be a maximum of 5,000 bytes long; depending on the char set, it may be fewer than 5,000 chars.</p>
 					</div>
 				</div>
 			</section>
