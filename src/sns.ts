@@ -73,7 +73,7 @@ export class SNS {
           structuredMessage = { APNS_SANDBOX: JSON.stringify({ aps: { alert: message } }) };
           break;
         case IdeaX.PushNotificationsPlatforms.FCM:
-          structuredMessage = { GCM: JSON.stringify({ data: { message } }) };
+          structuredMessage = { GCM: JSON.stringify({ notification: { text: message } }) };
           break;
         default:
           return reject(new Error(`UNSUPPORTED_PLATFORM`));
