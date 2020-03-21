@@ -105,7 +105,9 @@ export class DynamoDB {
   /**
    * Get an item of a DynamoDB table.
    */
-  public get(params: AWS.DynamoDB.DocumentClient.GetItemInput): Promise<AWS.DynamoDB.DocumentClient.AttributeMap> {
+  public get(
+    params: AWS.DynamoDB.DocumentClient.GetItemInput
+  ): Promise<AWS.DynamoDB.DocumentClient.AttributeMap | any> {
     return new Promise((resolve, reject) => {
       this.dynamo.get(params, (err: Error, data: AWS.DynamoDB.DocumentClient.GetItemOutput) => {
         IdeaX.logger(`GET ${params.TableName}`, err, JSON.stringify(data));
@@ -167,7 +169,7 @@ export class DynamoDB {
     table: string,
     keys: Array<AWS.DynamoDB.DocumentClient.Key>,
     ignoreErr?: boolean
-  ): Promise<Array<AWS.DynamoDB.DocumentClient.AttributeMap>> {
+  ): Promise<Array<AWS.DynamoDB.DocumentClient.AttributeMap | any>> {
     return new Promise((resolve, reject) => {
       if (!keys.length) {
         IdeaX.logger(`BATCH GET ${table}`, null, `No elements to get`);
@@ -270,7 +272,7 @@ export class DynamoDB {
    */
   public query(
     params: AWS.DynamoDB.DocumentClient.QueryInput
-  ): Promise<Array<AWS.DynamoDB.DocumentClient.AttributeMap>> {
+  ): Promise<Array<AWS.DynamoDB.DocumentClient.AttributeMap | any>> {
     return new Promise((resolve, reject) => {
       this.queryScanHelper(params, [], true, resolve, reject);
     });
@@ -279,7 +281,9 @@ export class DynamoDB {
    * Scan a DynamoDb table, avoiding the limits of DynamoDB's Query.
    * @param params the params to apply to DynamoDB's function
    */
-  public scan(params: AWS.DynamoDB.DocumentClient.ScanInput): Promise<Array<AWS.DynamoDB.DocumentClient.AttributeMap>> {
+  public scan(
+    params: AWS.DynamoDB.DocumentClient.ScanInput
+  ): Promise<Array<AWS.DynamoDB.DocumentClient.AttributeMap | any>> {
     return new Promise((resolve, reject) => {
       this.queryScanHelper(params, [], false, resolve, reject);
     });
