@@ -2375,6 +2375,9 @@ img {
 </header>
 <nav class="tsd-navigation secondary">
 	<ul>
+		<li class=" tsd-kind-enum">
+			<a href="../enums/getobjecttypes.html" class="tsd-kind-icon">Get<wbr>Object<wbr>Types</a>
+		</li>
 		<li class=" tsd-kind-class">
 			<a href="attachments.html" class="tsd-kind-icon">Attachments</a>
 		</li>
@@ -2417,10 +2420,40 @@ img {
 			<a href="translate.html" class="tsd-kind-icon">Translate</a>
 		</li>
 		<li class=" tsd-kind-interface">
+			<a href="../interfaces/cognitouserdata.html" class="tsd-kind-icon">Cognito<wbr>User<wbr>Data</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/copyobjectoptions.html" class="tsd-kind-icon">Copy<wbr>Object<wbr>Options</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/createdownloadurlfromdataoptions.html" class="tsd-kind-icon">Create<wbr>DownloadURLFrom<wbr>Data<wbr>Options</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/createuseroptions.html" class="tsd-kind-icon">Create<wbr>User<wbr>Options</a>
+		</li>
+		<li class=" tsd-kind-interface tsd-is-not-exported">
+			<a href="../interfaces/emailattachment.html" class="tsd-kind-icon">Email<wbr>Attachment</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/emaildata.html" class="tsd-kind-icon">Email<wbr>Data</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/getobjectoptions.html" class="tsd-kind-icon">Get<wbr>Object<wbr>Options</a>
+		</li>
+		<li class=" tsd-kind-interface">
 			<a href="../interfaces/html2pdfparameters.html" class="tsd-kind-icon">HTML2PDFParameters</a>
 		</li>
 		<li class=" tsd-kind-interface">
+			<a href="../interfaces/putobjectoptions.html" class="tsd-kind-icon">Put<wbr>Object<wbr>Options</a>
+		</li>
+		<li class=" tsd-kind-interface">
 			<a href="../interfaces/resourcecontrolleroptions.html" class="tsd-kind-icon">Resource<wbr>Controller<wbr>Options</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/sesparams.html" class="tsd-kind-icon">SESParams</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/snsparams.html" class="tsd-kind-icon">SNSParams</a>
 		</li>
 		<li class=" tsd-kind-interface">
 			<a href="../interfaces/translateparameters.html" class="tsd-kind-icon">Translate<wbr>Parameters</a>
@@ -2477,7 +2510,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/414d12c/src/sns.ts#L10">sns.ts:10</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/906e428/src/sns.ts#L10">sns.ts:10</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2496,13 +2529,13 @@ img {
 				<a name="createpushplatormendpoint" class="tsd-anchor"></a>
 				<h3>create<wbr>Push<wbr>Platorm<wbr>Endpoint</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">create<wbr>Push<wbr>Platorm<wbr>Endpoint<span class="tsd-signature-symbol">(</span>platform<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, deviceId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, snsParams<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">create<wbr>Push<wbr>Platorm<wbr>Endpoint<span class="tsd-signature-symbol">(</span>platform<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PushNotificationsPlatforms</span>, token<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, snsParams<span class="tsd-signature-symbol">: </span><a href="../interfaces/snsparams.html" class="tsd-signature-type">SNSParams</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/414d12c/src/sns.ts#L26">sns.ts:26</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/906e428/src/sns.ts#L23">sns.ts:23</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2513,22 +2546,13 @@ img {
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>platform: <span class="tsd-signature-type">string</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<p>enum: APNS, FCM</p>
-								</div>
+								<h5>platform: <span class="tsd-signature-type">PushNotificationsPlatforms</span></h5>
 							</li>
 							<li>
-								<h5>deviceId: <span class="tsd-signature-type">string</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<p>registrationId</p>
-								</div>
+								<h5>token: <span class="tsd-signature-type">string</span></h5>
 							</li>
 							<li>
-								<h5>snsParams: <span class="tsd-signature-type">any</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<p>to identify the SNS resources</p>
-								</div>
+								<h5>snsParams: <a href="../interfaces/snsparams.html" class="tsd-signature-type">SNSParams</a></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
@@ -2546,7 +2570,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/414d12c/src/sns.ts#L91">sns.ts:91</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/906e428/src/sns.ts#L100">sns.ts:100</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2558,9 +2582,6 @@ img {
 						<ul class="tsd-parameters">
 							<li>
 								<h5>object: <span class="tsd-signature-type">object</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<p>the JSON object to send</p>
-								</div>
 							</li>
 							<li>
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> endpoint: <span class="tsd-signature-type">string</span></h5>
@@ -2577,13 +2598,13 @@ img {
 				<a name="publishsnspush" class="tsd-anchor"></a>
 				<h3>publishSNSPush</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">publishSNSPush<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, platform<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, endpoint<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">PublishResponse</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">publishSNSPush<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, platform<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PushNotificationsPlatforms</span>, endpoint<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">PublishResponse</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/414d12c/src/sns.ts#L58">sns.ts:58</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/906e428/src/sns.ts#L60">sns.ts:60</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2595,20 +2616,14 @@ img {
 						<ul class="tsd-parameters">
 							<li>
 								<h5>message: <span class="tsd-signature-type">string</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<p>the message to send</p>
-								</div>
 							</li>
 							<li>
-								<h5>platform: <span class="tsd-signature-type">string</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<p>enum: APNS, FCM</p>
-								</div>
+								<h5>platform: <span class="tsd-signature-type">PushNotificationsPlatforms</span></h5>
 							</li>
 							<li>
-								<h5>endpoint: <span class="tsd-signature-type">string</span></h5>
+								<h5><span class="tsd-flag ts-flagOptional">Optional</span> endpoint: <span class="tsd-signature-type">string</span></h5>
 								<div class="tsd-comment tsd-typography">
-									<p>endpoint to a specific device</p>
+									<p>endpoint to a specific device (default: IDEA&#39;s endpoint)</p>
 								</div>
 							</li>
 						</ul>
