@@ -39,6 +39,8 @@ export abstract class ResourceController {
   protected _attachments: Attachments;
   protected _html2pdf: HTML2PDF;
 
+  protected X = IdeaX;
+
   /**
    * Initialize a new ResourceController helper object.
    * @param event the event that invoked the AWS lambda function

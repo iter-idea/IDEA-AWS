@@ -104,16 +104,11 @@ export class DynamoDB {
 
   /**
    * Get an item of a DynamoDB table.
-   * @param params the params to apply to DynamoDB's function
    */
-  public get(params: any): Promise<any> {
+  public get(params: AWS.DynamoDB.DocumentClient.GetItemInput): Promise<AWS.DynamoDB.DocumentClient.AttributeMap> {
     return new Promise((resolve, reject) => {
-      this.dynamo.get(params, (err: Error, data: any) => {
-        IdeaX.logger(
-          `GET ${params.IndexName ? `${params.TableName} (${params.IndexName})` : params.TableName}`,
-          err,
-          data
-        );
+      this.dynamo.get(params, (err: Error, data: AWS.DynamoDB.DocumentClient.GetItemOutput) => {
+        IdeaX.logger(`GET ${params.TableName}`, err, JSON.stringify(data));
         if (err || !data.Item) reject(err);
         else resolve(data.Item);
       });
@@ -122,12 +117,11 @@ export class DynamoDB {
 
   /**
    * Put an item in a DynamoDB table.
-   * @param params the params to apply to DynamoDB's function
    */
-  public put(params: any): Promise<any> {
+  public put(params: AWS.DynamoDB.DocumentClient.PutItemInput): Promise<AWS.DynamoDB.DocumentClient.PutItemOutput> {
     return new Promise((resolve, reject) => {
-      this.dynamo.put(params, (err: Error, data: any) => {
-        IdeaX.logger(`PUT ${params.TableName}`, err, params.Item);
+      this.dynamo.put(params, (err: Error, data: AWS.DynamoDB.DocumentClient.PutItemOutput) => {
+        IdeaX.logger(`PUT ${params.TableName}`, err, JSON.stringify(params.Item));
         if (err) reject(err);
         else resolve(data);
       });
@@ -136,12 +130,13 @@ export class DynamoDB {
 
   /**
    * Update an item of a DynamoDB table.
-   * @param params the params to apply to DynamoDB's function
    */
-  public update(params: any): Promise<any> {
+  public update(
+    params: AWS.DynamoDB.DocumentClient.UpdateItemInput
+  ): Promise<AWS.DynamoDB.DocumentClient.UpdateItemOutput> {
     return new Promise((resolve, reject) => {
-      this.dynamo.update(params, (err: Error, data: any) => {
-        IdeaX.logger(`UPDATE ${params.TableName}`, err, data);
+      this.dynamo.update(params, (err: Error, data: AWS.DynamoDB.DocumentClient.UpdateItemOutput) => {
+        IdeaX.logger(`UPDATE ${params.TableName}`, err, JSON.stringify(params.Key));
         if (err) reject(err);
         else resolve(data);
       });
@@ -150,12 +145,13 @@ export class DynamoDB {
 
   /**
    * Delete an item of a DynamoDB table.
-   * @param params The params to apply to DynamoDB's function
    */
-  public delete(params: any): Promise<any> {
+  public delete(
+    params: AWS.DynamoDB.DocumentClient.DeleteItemInput
+  ): Promise<AWS.DynamoDB.DocumentClient.DeleteItemOutput> {
     return new Promise((resolve, reject) => {
-      this.dynamo.delete(params, (err: Error, data: any) => {
-        IdeaX.logger(`DELETE ${params.TableName}`, err, params.Key);
+      this.dynamo.delete(params, (err: Error, data: AWS.DynamoDB.DocumentClient.DeleteItemOutput) => {
+        IdeaX.logger(`DELETE ${params.TableName}`, err, JSON.stringify(params.Key));
         if (err) reject(err);
         else resolve(data);
       });
@@ -165,13 +161,15 @@ export class DynamoDB {
   /**
    * Get group of items based on their keys from DynamoDb table,
    * avoiding the limits of DynamoDB's BatchGetItem.
-   * @param table DynamoDB table on which to operate
-   * @param keys the keys of items to get
-   * @param ignoreErr if true, ignore the errors and continue the bulk op.
+   * @param ignoreErr if set, ignore the errors and continue the bulk op.
    */
-  public batchGet(table: string, keys: Array<any>, ignoreErr?: boolean): Promise<Array<any>> {
+  public batchGet(
+    table: string,
+    keys: Array<AWS.DynamoDB.DocumentClient.Key>,
+    ignoreErr?: boolean
+  ): Promise<Array<AWS.DynamoDB.DocumentClient.AttributeMap>> {
     return new Promise((resolve, reject) => {
-      if (keys.length === 0) {
+      if (!keys.length) {
         IdeaX.logger(`BATCH GET ${table}`, null, `No elements to get`);
         resolve();
       } else this.batchGetHelper(table, keys, [], Boolean(ignoreErr), 0, 100, resolve, reject);
@@ -179,8 +177,8 @@ export class DynamoDB {
   }
   protected batchGetHelper(
     t: string,
-    keys: Array<any>,
-    elements: Array<any>,
+    keys: Array<AWS.DynamoDB.DocumentClient.Key>,
+    elements: Array<AWS.DynamoDB.DocumentClient.AttributeMap>,
     iErr: boolean,
     curr: number,
     size: number,
@@ -192,7 +190,7 @@ export class DynamoDB {
     batch.RequestItems[t] = { Keys: [] };
     batch.RequestItems[t].Keys = keys.slice(curr, curr + size);
     // execute the bulk operation
-    this.dynamo.batchGet(batch, (err: Error, data: any) => {
+    this.dynamo.batchGet(batch, (err: Error, data: AWS.DynamoDB.DocumentClient.BatchGetItemOutput) => {
       IdeaX.logger(`BATCH GET ${t}`, err, `${curr} of ${keys.length}`);
       if (err && !iErr) return reject(err);
       // concat the results
@@ -206,26 +204,25 @@ export class DynamoDB {
 
   /**
    * Put an array of items in a DynamoDb table, avoiding the limits of DynamoDB's BatchWriteItem.
-   * @param table DynamoDB table on which to operate
-   * @param items the items to put
    * @param ignoreErr if true, ignore the errors and continue the bulk op
    */
-  public batchPut(table: string, items: Array<any>, ignoreErr?: boolean): Promise<any> {
+  public batchPut(
+    table: string,
+    items: Array<AWS.DynamoDB.DocumentClient.AttributeMap>,
+    ignoreErr?: boolean
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (items.length === 0) {
+      if (!items.length) {
         IdeaX.logger(`BATCH WRITE (PUT) ${table}`, null, `No elements to write`);
         resolve();
       } else this.batchWriteHelper(table, items, true, Boolean(ignoreErr), 0, 25, resolve, reject);
     });
   }
   /**
-   * Delete an array of items from a DynamoDb table,
-   * avoiding the limits of DynamoDB's BatchWriteItem.
-   * @param table DynamoDB table on which to operate
-   * @param keys the keys of items to delete
+   * Delete an array of items from a DynamoDb table, avoiding the limits of DynamoDB's BatchWriteItem.
    * @param ignoreErr if true, ignore the errors and continue the bulk op.
    */
-  public batchDelete(table: string, keys: Array<any>, ignoreErr?: boolean): Promise<any> {
+  public batchDelete(table: string, keys: Array<AWS.DynamoDB.DocumentClient.Key>, ignoreErr?: boolean): Promise<void> {
     return new Promise((resolve, reject) => {
       if (keys.length === 0) {
         IdeaX.logger(`BATCH WRITE (DELETE) ${table}`, null, `No elements to write`);
@@ -235,7 +232,7 @@ export class DynamoDB {
   }
   protected batchWriteHelper(
     t: string,
-    items: Array<any>,
+    items: Array<AWS.DynamoDB.DocumentClient.AttributeMap>,
     isPut: boolean,
     iErr: boolean,
     curr: number,
@@ -271,7 +268,9 @@ export class DynamoDB {
    * Query a DynamoDb table, avoiding the limits of DynamoDB's Query.
    * @param params the params to apply to DynamoDB's function
    */
-  public query(params: any): Promise<Array<any>> {
+  public query(
+    params: AWS.DynamoDB.DocumentClient.QueryInput
+  ): Promise<Array<AWS.DynamoDB.DocumentClient.AttributeMap>> {
     return new Promise((resolve, reject) => {
       this.queryScanHelper(params, [], true, resolve, reject);
     });
@@ -280,34 +279,45 @@ export class DynamoDB {
    * Scan a DynamoDb table, avoiding the limits of DynamoDB's Query.
    * @param params the params to apply to DynamoDB's function
    */
-  public scan(params: any): Promise<Array<any>> {
+  public scan(params: AWS.DynamoDB.DocumentClient.ScanInput): Promise<Array<AWS.DynamoDB.DocumentClient.AttributeMap>> {
     return new Promise((resolve, reject) => {
       this.queryScanHelper(params, [], false, resolve, reject);
     });
   }
-  protected queryScanHelper(params: any, items: Array<any>, isQuery: boolean, resolve: any, reject: any) {
+  protected queryScanHelper(
+    params: AWS.DynamoDB.DocumentClient.QueryInput | AWS.DynamoDB.DocumentClient.ScanInput,
+    items: Array<AWS.DynamoDB.DocumentClient.AttributeMap>,
+    isQuery: boolean,
+    resolve: any,
+    reject: any
+  ) {
     const f = isQuery ? 'query' : 'scan';
-    (this.dynamo as any)[f](params, (err: Error, data: any) => {
-      if (err || !data || !data.Items) {
-        IdeaX.logger(`${f.toUpperCase()} ${params.TableName}`, err, data);
-        return reject(err);
+    (this.dynamo as any)[f](
+      params,
+      (err: Error, data: AWS.DynamoDB.DocumentClient.QueryOutput | AWS.DynamoDB.DocumentClient.ScanOutput) => {
+        if (err || !data || !data.Items) {
+          IdeaX.logger(`${f.toUpperCase()} ${params.TableName}`, err, JSON.stringify(data));
+          return reject(err);
+        }
+        items = items.concat(data.Items);
+        if (data.LastEvaluatedKey) {
+          params.ExclusiveStartKey = data.LastEvaluatedKey;
+          this.queryScanHelper(params, items, isQuery, resolve, reject);
+        } else {
+          IdeaX.logger(`${f.toUpperCase()} ${params.TableName}`, null, items.length.toString());
+          resolve(items);
+        }
       }
-      items = items.concat(data.Items);
-      if (data.LastEvaluatedKey) {
-        params.ExclusiveStartKey = data.LastEvaluatedKey;
-        this.queryScanHelper(params, items, isQuery, resolve, reject);
-      } else {
-        IdeaX.logger(`${f.toUpperCase()} ${params.TableName}`, null, items.length.toString());
-        resolve(items);
-      }
-    });
+    );
   }
 
   /**
    * Query a DynamoDb table in the traditional way (no pagination or data mapping).
    * @param params the params to apply to DynamoDB's function
    */
-  public queryClassic(params: any): Promise<Array<any>> {
+  public queryClassic(
+    params: AWS.DynamoDB.DocumentClient.QueryInput
+  ): Promise<Array<AWS.DynamoDB.DocumentClient.QueryOutput>> {
     return new Promise((resolve, reject) => {
       this.queryScanClassicHelper(params, true, resolve, reject);
     });
@@ -316,27 +326,41 @@ export class DynamoDB {
    * Scan a DynamoDb table in the traditional way (no pagination or data mapping).
    * @param params the params to apply to DynamoDB's function
    */
-  public scanClassic(params: any): Promise<Array<any>> {
+  public scanClassic(
+    params: AWS.DynamoDB.DocumentClient.ScanInput
+  ): Promise<Array<AWS.DynamoDB.DocumentClient.ScanOutput>> {
     return new Promise((resolve, reject) => {
       this.queryScanClassicHelper(params, false, resolve, reject);
     });
   }
-  protected queryScanClassicHelper(params: any, isQuery: boolean, resolve: any, reject: any) {
+  protected queryScanClassicHelper(
+    params: AWS.DynamoDB.DocumentClient.QueryInput | AWS.DynamoDB.DocumentClient.ScanInput,
+    isQuery: boolean,
+    resolve: any,
+    reject: any
+  ) {
     const f = isQuery ? 'query' : 'scan';
-    (this.dynamo as any)[f](params, (err: Error, data: any) => {
-      IdeaX.logger(`${f.toUpperCase()} classic ${params.TableName}`, err, data && data.Items ? data.Items.length : 0);
-      if (err || !data) reject(err);
-      else resolve(data);
-    });
+    (this.dynamo as any)[f](
+      params,
+      (err: Error, data: AWS.DynamoDB.DocumentClient.QueryOutput | AWS.DynamoDB.DocumentClient.QueryOutput) => {
+        IdeaX.logger(
+          `${f.toUpperCase()} classic ${params.TableName}`,
+          err,
+          String(data && data.Items ? data.Items.length : 0)
+        );
+        if (err || !data) reject(err);
+        else resolve(data);
+      }
+    );
   }
 
   /**
    * Execute a series of max 10 write operations in a single transaction.
    * @param ops the operations to execute in the transaction
    */
-  public transactWrites(ops: Array<AWS.DynamoDB.DocumentClient.TransactWriteItem>): Promise<any> {
+  public transactWrites(ops: Array<AWS.DynamoDB.DocumentClient.TransactWriteItem>): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (ops.length === 0) {
+      if (!ops.length) {
         IdeaX.logger(`TRANSACTION WRITES`, null, `No elements to write`);
         resolve();
       } else

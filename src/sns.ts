@@ -18,28 +18,32 @@ export class SNS {
 
   /**
    * Create a new endpoint in the SNS platform specified.
-   * @param platform enum: APNS, FCM
-   * @param deviceId registrationId
-   * @param snsParams to identify the SNS resources
    * @return platform endpoint ARN
    */
-  public createPushPlatormEndpoint(platform: string, deviceId: string, snsParams: any): Promise<string> {
+  public createPushPlatormEndpoint(
+    platform: IdeaX.PushNotificationsPlatforms,
+    token: string,
+    snsParams: SNSParams
+  ): Promise<string> {
     return new Promise((resolve, reject) => {
-      let platformARN;
+      let platformARN: string;
       // identify the platform ARN
       switch (platform) {
-        case 'APNS':
-          platformARN = snsParams.pushiOS;
+        case IdeaX.PushNotificationsPlatforms.APNS:
+          platformARN = snsParams.appleArn;
           break;
-        case 'FCM':
-          platformARN = snsParams.pushAndroid;
+        case IdeaX.PushNotificationsPlatforms.APNS_SANDBOX:
+          platformARN = snsParams.appleDevArn;
+          break;
+        case IdeaX.PushNotificationsPlatforms.FCM:
+          platformARN = snsParams.androidArn;
           break;
         default:
           return reject(new Error(`UNSUPPORTED_PLATFORM`));
       }
       // create a new endpoint in the platform
       this.sns.createPlatformEndpoint(
-        { PlatformApplicationArn: platformARN, Token: deviceId },
+        { PlatformApplicationArn: platformARN, Token: token },
         (err: Error, data: AWS.SNS.CreateEndpointResponse) => {
           IdeaX.logger('SNS ADD PLATFORM ENDPOINT', err, JSON.stringify(data));
           if (err || !data.EndpointArn) reject(err);
@@ -51,18 +55,24 @@ export class SNS {
 
   /**
    * Send a push notification through a SNS endpoint.
-   * @param message the message to send
-   * @param platform enum: APNS, FCM
-   * @param endpoint endpoint to a specific device
+   * @param endpoint endpoint to a specific device (default: IDEA's endpoint)
    */
-  public publishSNSPush(message: string, platform: string, endpoint: string): Promise<AWS.SNS.PublishResponse> {
+  public publishSNSPush(
+    message: string,
+    platform: IdeaX.PushNotificationsPlatforms,
+    endpoint?: string
+  ): Promise<AWS.SNS.PublishResponse> {
     return new Promise((resolve, reject) => {
+      endpoint = endpoint || this.IDEA_DEFAULT_SNS_ENDPOINT;
       let structuredMessage;
       switch (platform) {
-        case 'APNS':
+        case IdeaX.PushNotificationsPlatforms.APNS:
           structuredMessage = { APNS: JSON.stringify({ aps: { alert: message } }) };
           break;
-        case 'FCM':
+        case IdeaX.PushNotificationsPlatforms.APNS_SANDBOX:
+          structuredMessage = { APNS_SANDBOX: JSON.stringify({ aps: { alert: message } }) };
+          break;
+        case IdeaX.PushNotificationsPlatforms.FCM:
           structuredMessage = { GCM: JSON.stringify({ data: { message } }) };
           break;
         default:
@@ -85,7 +95,6 @@ export class SNS {
 
   /**
    * Publish a JSON message (object) in a SNS endpoint.
-   * @param object the JSON object to send
    * @param endpoint SNS endpoint (default: IDEA's endpoint)
    */
   public publishJSON(object: object, endpoint?: string): Promise<AWS.SNS.PublishResponse> {
@@ -101,4 +110,26 @@ export class SNS {
       );
     });
   }
+}
+
+/**
+ * SNS configuration.
+ */
+export interface SNSParams {
+  /**
+   * SES region.
+   */
+  region: string;
+  /**
+   * ARN to production of Apple's (iOS, MacOS) notification services.
+   */
+  appleArn?: string;
+  /**
+   * ARN to development of Apple's (iOS, MacOS) notification services.
+   */
+  appleDevArn?: string;
+  /**
+   * ARN to Android's notification services.
+   */
+  androidArn?: string;
 }

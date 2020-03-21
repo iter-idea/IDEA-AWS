@@ -22,17 +22,11 @@ export class S3 {
   /**
    * Create a download link of a piece of data (through S3).
    * *Pratically*, it uploads the file on an S3 bucket, generating and returning a url to it.
-   * @param data usually a buffer
-   * @param options strucuted as follows
-   * ```
-   * bucket?: string;       // downloads bucket; default: `idea-downloads`.
-   * prefix?: string;       // folder (e.g. the project name); default: `common`.
-   * key?; string;          // the unique filepath in which to store the file; default: _random_.
-   * contentType?: string;  // e.g. application/json; default: _guessed_.
-   * secToExp?: number;     // seconds to URL expiration; default: `180`.
-   * ```
    */
-  public createDownloadURLFromData(data: any, options?: any): Promise<IdeaX.SignedURL> {
+  public createDownloadURLFromData(
+    data: Buffer | any,
+    options?: CreateDownloadURLFromDataOptions
+  ): Promise<IdeaX.SignedURL> {
     return new Promise((resolve, reject) => {
       // if needed, randomly generates the key
       if (!options.key)
@@ -57,8 +51,8 @@ export class S3 {
           Body: data,
           ContentType: options.contentType
         },
-        (err: Error, d: any) => {
-          IdeaX.logger('S3 UPLOAD', err, d);
+        (err: Error) => {
+          IdeaX.logger('S3 UPLOAD', err);
           if (err) reject(err);
           else resolve(this.signedURLGet(options.bucket, options.key, options.secToExp));
         }
@@ -96,19 +90,13 @@ export class S3 {
 
   /**
    * Make a copy of an object of the bucket.
-   * @param options strucuted as follows
-   * ```
-   * copySource: string;   // the source path (complete with the bucket name).
-   * bucket: string;       // the bucket in which to copy the file.
-   * key; string;          // the complete filepath of the bucket in which to copy the file
-   * ```
    */
-  public copyObject(options?: any): Promise<void> {
+  public copyObject(options: CopyObjectOptions): Promise<void> {
     return new Promise((resolve, reject) => {
       this.s3.copyObject(
         { CopySource: options.copySource, Bucket: options.bucket, Key: options.key },
-        (err: Error, d: any) => {
-          IdeaX.logger('S3 COPY OBJECT', err, d);
+        (err: Error, d: AWS.S3.CopyObjectOutput) => {
+          IdeaX.logger('S3 COPY OBJECT', err, JSON.stringify(d));
           if (err) reject(err);
           else resolve();
         }
@@ -118,21 +106,15 @@ export class S3 {
 
   /**
    * Get an object from a S3 bucket.
-   * @param options strucuted as follows
-   * ```
-   * bucket: string;       // the bucket in which to copy the file.
-   * key; string;          // the complete filepath of the bucket in which to copy the file
-   * type: string;         // enum: JSON; useful to cast the result
-   * ```
    */
-  public getObject(options?: any): Promise<any> {
+  public getObject(options: GetObjectOptions): Promise<any> {
     return new Promise((resolve, reject) => {
       this.s3.getObject({ Bucket: options.bucket, Key: options.key }, (err: Error, d: any) => {
         IdeaX.logger('S3 GET OBJECT', err, d);
         if (err) reject(err);
         else
           switch (options.type) {
-            case 'JSON':
+            case GetObjectTypes.JSON:
               resolve(JSON.parse(d.Body.toString('utf-8')));
               break;
             default:
@@ -144,27 +126,114 @@ export class S3 {
 
   /**
    * Put an object in a S3 bucket.
-   * @param options strucuted as follows
-   * ```
-   * bucket: string;         // the bucket in which to copy the file.
-   * key; string;            // the complete filepath of the bucket in which to copy the file
-   * body: any;              // the content of the file
-   * contentType?: string;   // content type (e.g. image/png)
-   * acl?: string;           // access-control list (e.g. public-read)
-   * metadata?: any;         // a set of metadata as attributes
-   * ```
    */
-  public putObject(options?: any): Promise<any> {
+  public putObject(options: PutObjectOptions): Promise<AWS.S3.PutObjectOutput> {
     return new Promise((resolve, reject) => {
       const params: any = { Bucket: options.bucket, Key: options.key, Body: options.body };
       if (options.contentType) params.ContentType = options.contentType;
       if (options.acl) params.ACL = options.acl;
       if (options.metadata) params.Metadata = options.metadata;
-      this.s3.putObject(params, (err: Error, d: any) => {
-        IdeaX.logger('S3 PUT OBJECT', err, d);
+      this.s3.putObject(params, (err: Error, d: AWS.S3.PutObjectOutput) => {
+        IdeaX.logger('S3 PUT OBJECT', err, JSON.stringify(d));
         if (err) reject(err);
         else resolve(d);
       });
     });
   }
+}
+
+/**
+ * Options for creating a download URL.
+ */
+export interface CreateDownloadURLFromDataOptions {
+  /**
+   * Downloads bucket; default: `idea-downloads`.
+   */
+  bucket?: string;
+  /**
+   * Folder (e.g. the project name); default: `common`.
+   */
+  prefix?: string;
+  /**
+   * The unique filepath in which to store the file; default: _random_.
+   */
+  key?: string;
+  /**
+   * Content type, e.g. application/json; default: _guessed_.
+   */
+  contentType?: string;
+  /**
+   * Seconds to URL expiration; default: `180`.
+   */
+  secToExp?: number;
+}
+
+/**
+ * Options for copying an object.
+ */
+export interface CopyObjectOptions {
+  /**
+   * The source path (complete with the bucket name).
+   */
+  copySource: string;
+  /**
+   * The bucket in which to copy the file.
+   */
+  bucket: string;
+  /**
+   * The complete filepath of the bucket in which to copy the file.
+   */
+  key: string;
+}
+
+/**
+ * Options for getting an object.
+ */
+export interface GetObjectOptions {
+  /**
+   * The bucket from which to acquire the file.
+   */
+  bucket: string;
+  /**
+   * The complete filepath of the bucket from which to acquire the file.
+   */
+  key: string;
+  /**
+   * Enum: JSON; useful to cast the result.
+   */
+  type: GetObjectTypes;
+}
+
+export enum GetObjectTypes {
+  JSON = 'JSON'
+}
+
+/**
+ * Options for putting an object.
+ */
+export interface PutObjectOptions {
+  /**
+   * The bucket in which to copy the file.
+   */
+  bucket: string;
+  /**
+   * The complete filepath of the bucket in which to copy the file.
+   */
+  key: string;
+  /**
+   * The content of the file.
+   */
+  body: any;
+  /**
+   * Content type (e.g. image/png).
+   */
+  contentType?: string;
+  /**
+   * Access-control list (e.g. public-read).
+   */
+  acl?: string;
+  /**
+   * A set of metadata as attributes
+   */
+  metadata?: any;
 }

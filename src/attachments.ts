@@ -27,9 +27,6 @@ export class Attachments {
 
   /**
    * Get a signedURL to put an attachment.
-   * @param project project code
-   * @param teamId the id of the team
-   * @return the URL to upload the attachment
    */
   public put(project: string, teamId: string): Promise<IdeaX.SignedURL> {
     return new Promise((resolve, reject) => {
@@ -51,8 +48,6 @@ export class Attachments {
 
   /**
    * Get a signedURL to retrieve an attachment.
-   * @param attachmentId the id of the attachment to acquire
-   * @return the URL to download the attachment
    */
   public get(attachmentId: string): IdeaX.SignedURL {
     const signedURL = this.s3.signedURLGet(this.S3_ATTACHMENTS_BUCKET, attachmentId);
