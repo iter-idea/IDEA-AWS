@@ -109,13 +109,16 @@ export class S3 {
    */
   public getObject(options: GetObjectOptions): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.s3.getObject({ Bucket: options.bucket, Key: options.key }, (err: Error, d: any) => {
-        IdeaX.logger('S3 GET OBJECT', err, d);
+      this.s3.getObject({ Bucket: options.bucket, Key: options.key }, (err: Error, d: AWS.S3.GetObjectOutput) => {
+        IdeaX.logger('S3 GET OBJECT', err, options.type);
         if (err) reject(err);
         else
           switch (options.type) {
             case GetObjectTypes.JSON:
-              resolve(JSON.parse(d.Body.toString('utf-8')));
+              resolve(JSON.parse((<any>d.Body).toString('utf-8')));
+              break;
+            case GetObjectTypes.TEXT:
+              resolve((<any>d.Body).toString('utf-8'));
               break;
             default:
               resolve(d);
@@ -201,11 +204,15 @@ export interface GetObjectOptions {
   /**
    * Enum: JSON; useful to cast the result.
    */
-  type: GetObjectTypes;
+  type?: GetObjectTypes;
 }
 
+/**
+ * The managed types to convert objects coming from an S3 bucket.
+ */
 export enum GetObjectTypes {
-  JSON = 'JSON'
+  JSON = 'JSON',
+  TEXT = 'TEXT'
 }
 
 /**
