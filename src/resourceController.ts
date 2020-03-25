@@ -1,3 +1,4 @@
+import Fs = require('fs');
 import IdeaX = require('idea-toolbox');
 
 import { DynamoDB } from './dynamoDB';
@@ -40,6 +41,11 @@ export abstract class ResourceController {
   protected _html2pdf: HTML2PDF;
 
   protected X = IdeaX;
+
+  protected currentLang: string;
+  protected defaultLang: string;
+  protected translations: any;
+  protected templateMatcher: RegExp = /{{\s?([^{}\s]*)\s?}}/g;
 
   /**
    * Initialize a new ResourceController helper object.
@@ -322,6 +328,90 @@ export abstract class ResourceController {
     if (this.httpMethod === 'PATCH' && this.body && this.body.action) log.action = this.body.action;
     // insert the log and don't wait for response or errors
     this.dynamoDB.put({ TableName: 'idea_logs', Item: log }).catch(() => {});
+  }
+  /**
+   * Check whether shared resource exists in the back-end (translation, template, etc.).
+   */
+  protected sharedResourceExists(path: string): boolean {
+    return Fs.existsSync(`./_shared/${path}`);
+  }
+  /**
+   * Load a shared resource in the back-end (translation, template, etc.).
+   * @param encoding default: `utf-8`
+   */
+  protected loadSharedResource(path: string, encoding?: string) {
+    encoding = encoding || 'utf-8';
+    return Fs.readFileSync(`./_shared/${path}`);
+  }
+
+  //
+  // TRANSLATIONS
+  //
+
+  /**
+   * Load the translations from the shared resources and set them with a fallback language.
+   */
+  protected loadTranslations(lang: string, defLang?: string) {
+    // check for the existance of the mandatory source file
+    if (!this.sharedResourceExists(`i18n/${lang}.json`)) return;
+    // set the languages
+    this.currentLang = lang;
+    this.defaultLang = defLang || lang;
+    this.translations = {};
+    // load the translations in the chosen language
+    this.translations[this.currentLang] = JSON.parse(
+      this.loadSharedResource(`i18n/${this.currentLang}.json`).toString()
+    );
+    // load the translations in the default language, if set and differ from the current
+    if (this.defaultLang !== this.currentLang && this.sharedResourceExists(`i18n/${this.defaultLang}.json`))
+      this.translations[this.defaultLang] = JSON.parse(
+        this.loadSharedResource(`i18n/${this.defaultLang}.json`).toString()
+      );
+  }
+  /**
+   * Get a translated term by key, optionally interpolating variables (e.g. `{{user}}`).
+   * If the term doesn't exist in the current language, it is searched in the default language.
+   */
+  protected t(key: string, interpolateParams?: Object): string {
+    if (!this.isDefined(key) || !key.length) return;
+    let res = this.interpolate(this.getValue(this.translations[this.currentLang], key), interpolateParams);
+    if (res === undefined && this.defaultLang !== null && this.defaultLang !== this.currentLang)
+      res = this.interpolate(this.getValue(this.translations[this.defaultLang], key), interpolateParams);
+    return res;
+  }
+  /**
+   * Interpolates a string to replace parameters.
+   * "This is a {{ key }}" ==> "This is a value", with params = { key: "value" }
+   */
+  private interpolate(expr: string, params?: any): string {
+    if (!params || !expr) return expr;
+    return expr.replace(this.templateMatcher, (substring: string, b: string) => {
+      let r = this.getValue(params, b);
+      return this.isDefined(r) ? r : substring;
+    });
+  }
+  /**
+   * Gets a value from an object by composed key.
+   * getValue({ key1: { keyA: 'valueI' }}, 'key1.keyA') ==> 'valueI'
+   */
+  private getValue(target: any, key: string): any {
+    let keys = typeof key === 'string' ? key.split('.') : [key];
+    key = '';
+    do {
+      key += keys.shift();
+      if (this.isDefined(target) && this.isDefined(target[key]) && (typeof target[key] === 'object' || !keys.length)) {
+        target = target[key];
+        key = '';
+      } else if (!keys.length) target = undefined;
+      else key += '.';
+    } while (keys.length);
+    return target;
+  }
+  /**
+   * Helper to quicly check if the value is defined.
+   */
+  private isDefined(value: any): boolean {
+    return value !== undefined && value !== null;
   }
 }
 
