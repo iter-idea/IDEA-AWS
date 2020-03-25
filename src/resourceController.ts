@@ -373,6 +373,7 @@ export abstract class ResourceController {
    * If the term doesn't exist in the current language, it is searched in the default language.
    */
   protected t(key: string, interpolateParams?: Object): string {
+    if (!this.translations || !this.currentLang) return;
     if (!this.isDefined(key) || !key.length) return;
     let res = this.interpolate(this.getValue(this.translations[this.currentLang], key), interpolateParams);
     if (res === undefined && this.defaultLang !== null && this.defaultLang !== this.currentLang)
