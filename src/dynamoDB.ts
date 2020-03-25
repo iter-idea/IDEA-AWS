@@ -173,7 +173,7 @@ export class DynamoDB {
     return new Promise((resolve, reject) => {
       if (!keys.length) {
         IdeaX.logger(`BATCH GET ${table}`, null, `No elements to get`);
-        resolve();
+        resolve([]);
       } else this.batchGetHelper(table, keys, [], Boolean(ignoreErr), 0, 100, resolve, reject);
     });
   }
