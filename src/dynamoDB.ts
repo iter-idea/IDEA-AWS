@@ -375,4 +375,14 @@ export class DynamoDB {
         });
     });
   }
+
+  /**
+   * Creates a set of elements (DynamoDB format) inferring the type of set from the type of the first element.
+   */
+  public createSet(
+    array: Array<number> | Array<string>,
+    options?: AWS.DynamoDB.DocumentClient.CreateSetOptions
+  ): AWS.DynamoDB.DocumentClient.DynamoDbSet {
+    return this.dynamo.createSet(array, options);
+  }
 }
