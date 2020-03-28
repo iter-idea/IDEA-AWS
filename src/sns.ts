@@ -5,8 +5,6 @@ import IdeaX = require('idea-toolbox');
  * A wrapper for AWS Simple Notification Service.
  */
 export class SNS {
-  protected IDEA_DEFAULT_SNS_ENDPOINT = 'arn:aws:sns:eu-west-2:854501414358:idea_notifications';
-
   /**
    * Create a new endpoint in the SNS platform specified.
    * @return platform endpoint ARN
@@ -45,54 +43,32 @@ export class SNS {
   }
 
   /**
-   * Send a push notification through a SNS endpoint.
-   * @param endpoint endpoint to a specific device (default: IDEA's endpoint)
+   * Publish a message to a SNS endpoint.
    */
-  public publishSNSPush(
-    message: string,
-    platform: IdeaX.PushNotificationsPlatforms,
-    endpoint?: string
-  ): Promise<AWS.SNS.PublishResponse> {
+  public publish(params: SNSPublishParams): Promise<AWS.SNS.PublishResponse> {
     return new Promise((resolve, reject) => {
-      endpoint = endpoint || this.IDEA_DEFAULT_SNS_ENDPOINT;
       let structuredMessage;
-      switch (platform) {
-        case IdeaX.PushNotificationsPlatforms.APNS:
-          structuredMessage = { APNS: JSON.stringify({ aps: { alert: message } }) };
-          break;
-        case IdeaX.PushNotificationsPlatforms.APNS_SANDBOX:
-          structuredMessage = { APNS_SANDBOX: JSON.stringify({ aps: { alert: message } }) };
-          break;
-        case IdeaX.PushNotificationsPlatforms.FCM:
-          structuredMessage = { GCM: JSON.stringify({ notification: { text: message } }) };
-          break;
-        default:
-          return reject(new Error(`UNSUPPORTED_PLATFORM`));
-      }
-      new AWS.SNS({ apiVersion: '2010-03-31' }).publish(
+      if (params.json) structuredMessage = { default: JSON.stringify(params.json) };
+      else
+        switch (params.platform) {
+          case IdeaX.PushNotificationsPlatforms.APNS:
+            structuredMessage = { APNS: JSON.stringify({ aps: { alert: params.message } }) };
+            break;
+          case IdeaX.PushNotificationsPlatforms.APNS_SANDBOX:
+            structuredMessage = { APNS_SANDBOX: JSON.stringify({ aps: { alert: params.message } }) };
+            break;
+          case IdeaX.PushNotificationsPlatforms.FCM:
+            structuredMessage = { GCM: JSON.stringify({ notification: { text: params.message } }) };
+            break;
+          default:
+            return reject(new Error(`UNSUPPORTED_PLATFORM`));
+        }
+      new AWS.SNS({ apiVersion: '2010-03-31', region: params.region }).publish(
         {
           MessageStructure: 'json',
           Message: JSON.stringify(structuredMessage),
-          TargetArn: endpoint
+          TargetArn: params.endpoint
         },
-        (err: Error, data: AWS.SNS.PublishResponse) => {
-          IdeaX.logger('SNS PUSH NOTIFICATION', err, JSON.stringify(data));
-          if (err) reject(err);
-          else resolve(data);
-        }
-      );
-    });
-  }
-
-  /**
-   * Publish a JSON message (object) in a SNS endpoint.
-   * @param endpoint SNS endpoint (default: IDEA's endpoint)
-   */
-  public publishJSON(object: object, endpoint?: string): Promise<AWS.SNS.PublishResponse> {
-    return new Promise((resolve, reject) => {
-      endpoint = endpoint || this.IDEA_DEFAULT_SNS_ENDPOINT;
-      new AWS.SNS({ apiVersion: '2010-03-31' }).publish(
-        { MessageStructure: 'json', Message: JSON.stringify({ default: JSON.stringify(object) }), TargetArn: endpoint },
         (err: Error, data: AWS.SNS.PublishResponse) => {
           IdeaX.logger('SNS PUBLISH IN TOPIC', err, JSON.stringify(data));
           if (err) reject(err);
@@ -108,7 +84,7 @@ export class SNS {
  */
 export interface SNSParams {
   /**
-   * SES region.
+   * SNS region.
    */
   region: string;
   /**
@@ -123,4 +99,27 @@ export interface SNSParams {
    * ARN to Android's notification services.
    */
   androidArn?: string;
+}
+
+export interface SNSPublishParams {
+  /**
+   * SNS region.
+   */
+  region: string;
+  /**
+   * The endpoint of the notification.
+   */
+  endpoint: string;
+  /**
+   * The message to send.
+   */
+  message?: string;
+  /**
+   * The platform receiver; used to structure the message.
+   */
+  platform?: IdeaX.PushNotificationsPlatforms;
+  /**
+   * If set, message and platform will be ignored and the content of this attribute will be preferred.
+   */
+  json?: object;
 }
