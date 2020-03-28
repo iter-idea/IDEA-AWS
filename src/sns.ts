@@ -5,16 +5,7 @@ import IdeaX = require('idea-toolbox');
  * A wrapper for AWS Simple Notification Service.
  */
 export class SNS {
-  protected sns: AWS.SNS;
-
   protected IDEA_DEFAULT_SNS_ENDPOINT = 'arn:aws:sns:eu-west-2:854501414358:idea_notifications';
-
-  /**
-   * Initialize a new SNS helper object.
-   */
-  constructor() {
-    this.sns = new AWS.SNS({ apiVersion: '2010-03-31', region: process.env['SNS_PUSH_REGION'] });
-  }
 
   /**
    * Create a new endpoint in the SNS platform specified.
@@ -42,7 +33,7 @@ export class SNS {
           return reject(new Error(`UNSUPPORTED_PLATFORM`));
       }
       // create a new endpoint in the platform
-      this.sns.createPlatformEndpoint(
+      new AWS.SNS({ apiVersion: '2010-03-31', region: snsParams.region }).createPlatformEndpoint(
         { PlatformApplicationArn: platformARN, Token: token },
         (err: Error, data: AWS.SNS.CreateEndpointResponse) => {
           IdeaX.logger('SNS ADD PLATFORM ENDPOINT', err, JSON.stringify(data));
@@ -78,7 +69,7 @@ export class SNS {
         default:
           return reject(new Error(`UNSUPPORTED_PLATFORM`));
       }
-      this.sns.publish(
+      new AWS.SNS({ apiVersion: '2010-03-31' }).publish(
         {
           MessageStructure: 'json',
           Message: JSON.stringify(structuredMessage),
@@ -100,7 +91,7 @@ export class SNS {
   public publishJSON(object: object, endpoint?: string): Promise<AWS.SNS.PublishResponse> {
     return new Promise((resolve, reject) => {
       endpoint = endpoint || this.IDEA_DEFAULT_SNS_ENDPOINT;
-      this.sns.publish(
+      new AWS.SNS({ apiVersion: '2010-03-31' }).publish(
         { MessageStructure: 'json', Message: JSON.stringify({ default: JSON.stringify(object) }), TargetArn: endpoint },
         (err: Error, data: AWS.SNS.PublishResponse) => {
           IdeaX.logger('SNS PUBLISH IN TOPIC', err, JSON.stringify(data));
