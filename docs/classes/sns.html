@@ -2406,10 +2406,7 @@ img {
 					<a href="sns.html#createpushplatormendpoint" class="tsd-kind-icon">create<wbr>Push<wbr>Platorm<wbr>Endpoint</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="sns.html#publishjson" class="tsd-kind-icon">publishJSON</a>
-				</li>
-				<li class=" tsd-kind-method tsd-parent-kind-class">
-					<a href="sns.html#publishsnspush" class="tsd-kind-icon">publishSNSPush</a>
+					<a href="sns.html#publish" class="tsd-kind-icon">publish</a>
 				</li>
 			</ul>
 		</li>
@@ -2453,6 +2450,9 @@ img {
 			<a href="../interfaces/snsparams.html" class="tsd-kind-icon">SNSParams</a>
 		</li>
 		<li class=" tsd-kind-interface">
+			<a href="../interfaces/snspublishparams.html" class="tsd-kind-icon">SNSPublish<wbr>Params</a>
+		</li>
+		<li class=" tsd-kind-interface">
 			<a href="../interfaces/translateparameters.html" class="tsd-kind-icon">Translate<wbr>Parameters</a>
 		</li>
 	</ul>
@@ -2482,8 +2482,7 @@ img {
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="sns.html#createpushplatormendpoint" class="tsd-kind-icon">create<wbr>Push<wbr>Platorm<wbr>Endpoint</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="sns.html#publishjson" class="tsd-kind-icon">publishJSON</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="sns.html#publishsnspush" class="tsd-kind-icon">publishSNSPush</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="sns.html#publish" class="tsd-kind-icon">publish</a></li>
 						</ul>
 					</section>
 				</div>
@@ -2501,7 +2500,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/5a1a6d8/src/sns.ts#L14">sns.ts:14</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/1e795c7/src/sns.ts#L12">sns.ts:12</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2527,70 +2526,27 @@ img {
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="publishjson" class="tsd-anchor"></a>
-				<h3>publishJSON</h3>
+				<a name="publish" class="tsd-anchor"></a>
+				<h3>publish</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">publishJSON<span class="tsd-signature-symbol">(</span>object<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span>, endpoint<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">PublishResponse</span><span class="tsd-signature-symbol">&gt;</span></li>
+					<li class="tsd-signature tsd-kind-icon">publish<span class="tsd-signature-symbol">(</span>params<span class="tsd-signature-symbol">: </span><a href="../interfaces/snspublishparams.html" class="tsd-signature-type">SNSPublishParams</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">PublishResponse</span><span class="tsd-signature-symbol">&gt;</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/5a1a6d8/src/sns.ts#L91">sns.ts:91</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/1e795c7/src/sns.ts#L48">sns.ts:48</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
 							<div class="lead">
-								<p>Publish a JSON message (object) in a SNS endpoint.</p>
+								<p>Publish a message to a SNS endpoint.</p>
 							</div>
 						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
-								<h5>object: <span class="tsd-signature-type">object</span></h5>
-							</li>
-							<li>
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> endpoint: <span class="tsd-signature-type">string</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<p>SNS endpoint (default: IDEA&#39;s endpoint)</p>
-								</div>
-							</li>
-						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">PublishResponse</span><span class="tsd-signature-symbol">&gt;</span></h4>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
-				<a name="publishsnspush" class="tsd-anchor"></a>
-				<h3>publishSNSPush</h3>
-				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon">publishSNSPush<span class="tsd-signature-symbol">(</span>message<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, platform<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PushNotificationsPlatforms</span>, endpoint<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">PublishResponse</span><span class="tsd-signature-symbol">&gt;</span></li>
-				</ul>
-				<ul class="tsd-descriptions">
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/5a1a6d8/src/sns.ts#L51">sns.ts:51</a></li>
-							</ul>
-						</aside>
-						<div class="tsd-comment tsd-typography">
-							<div class="lead">
-								<p>Send a push notification through a SNS endpoint.</p>
-							</div>
-						</div>
-						<h4 class="tsd-parameters-title">Parameters</h4>
-						<ul class="tsd-parameters">
-							<li>
-								<h5>message: <span class="tsd-signature-type">string</span></h5>
-							</li>
-							<li>
-								<h5>platform: <span class="tsd-signature-type">PushNotificationsPlatforms</span></h5>
-							</li>
-							<li>
-								<h5><span class="tsd-flag ts-flagOptional">Optional</span> endpoint: <span class="tsd-signature-type">string</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<p>endpoint to a specific device (default: IDEA&#39;s endpoint)</p>
-								</div>
+								<h5>params: <a href="../interfaces/snspublishparams.html" class="tsd-signature-type">SNSPublishParams</a></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">PublishResponse</span><span class="tsd-signature-symbol">&gt;</span></h4>
