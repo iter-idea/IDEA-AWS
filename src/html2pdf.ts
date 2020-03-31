@@ -36,7 +36,6 @@ export class HTML2PDF {
         {
           FunctionName: alternativeLambda || this.LAMBDA_NAME,
           InvocationType: 'RequestResponse',
-          LogType: 'Tail',
           Payload: JSON.stringify(params)
         },
         (err: Error, data: any) => {

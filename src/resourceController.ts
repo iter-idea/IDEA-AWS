@@ -19,8 +19,6 @@ export abstract class ResourceController {
 
   protected event: any;
 
-  protected apiId: string;
-
   protected authorization: string;
   protected claims: any;
   protected principalId: string;
@@ -62,8 +60,6 @@ export abstract class ResourceController {
     IdeaX.logger('START', null, event, true);
 
     this.event = event;
-
-    this.apiId = event.requestContext ? event.requestContext.apiId : null;
 
     this.callback = callback;
 
@@ -152,7 +148,7 @@ export abstract class ResourceController {
           request.then((res: any) => this.done(null, res)).catch((err: Error) => this.done(err));
         }
       })
-      .catch(() => this.done(new Error(`E.COMMON.UNAUTHORIZED`)));
+      .catch(err => this.done(new Error(err && err.message ? err.message : `E.COMMON.UNAUTHORIZED`)));
   };
   /**
    * To @override
@@ -365,9 +361,6 @@ export abstract class ResourceController {
     return new Promise((resolve, reject) => {
       // create a copy of the event
       const event = JSON.parse(JSON.stringify(this.event));
-      console.log('internal', event);
-      // set a flag to make the invoked to recognise that is an internal request
-      event.internalAPIRequest = true;
       // change only the event attributes we need; e.g. the authorization is unchanged
       event.httpMethod = params.httpMethod;
       event.resource = params.resource;
@@ -377,23 +370,23 @@ export abstract class ResourceController {
       // parse the path
       event.path = event.resource;
       for (let p in event.pathParameters) event.resource = event.resource.replace(`{${p}}`, event.pathParameters[p]);
-      console.log('parsed', event);
+      // set a flag to make the invoked to recognise that is an internal request
+      event.internalAPIRequest = true;
       // invoke the lambda with the event prepaired, simulating an API request
       new Lambda().invoke(
-        {
-          FunctionName: params.lambda,
-          InvocationType: 'RequestResponse',
-          LogType: 'Tail',
-          Payload: JSON.stringify(event)
-        },
+        { FunctionName: params.lambda, InvocationType: 'RequestResponse', Payload: JSON.stringify(event) },
         (err: Error, res: any) => {
-          console.log(err, res);
           // reject in case of internal error
           if (err) reject(err);
-          // reject in case of controlled error
-          else if (Number(res.statusCode) === 400) reject(new Error(JSON.parse(res.body.message)));
-          // otherwise, resolve the body
-          else if (Number(res.statusCode) === 200) resolve(JSON.parse(res.body));
+          else {
+            // parse the payload and the body
+            const payload = JSON.parse(res.Payload);
+            const body = JSON.parse(payload.body);
+            // if the response is successfull, return the body
+            if (Number(payload.statusCode) === 200) resolve(body);
+            // otherwise, reject the controlled error
+            else reject(new Error(body.message));
+          }
         }
       );
     });
