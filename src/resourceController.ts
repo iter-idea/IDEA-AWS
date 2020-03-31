@@ -1,4 +1,5 @@
 import Fs = require('fs');
+import { Lambda } from 'aws-sdk';
 import IdeaX = require('idea-toolbox');
 
 import { DynamoDB } from './dynamoDB';
@@ -15,6 +16,10 @@ import { HTML2PDF } from './html2pdf';
  */
 export abstract class ResourceController {
   protected callback: any;
+
+  protected event: any;
+
+  protected apiId: string;
 
   protected authorization: string;
   protected claims: any;
@@ -55,6 +60,10 @@ export abstract class ResourceController {
   constructor(event: any, callback: any, options?: ResourceControllerOptions) {
     options = options || ({} as ResourceControllerOptions);
     IdeaX.logger('START', null, event, true);
+
+    this.event = event;
+
+    this.apiId = event.requestContext ? event.requestContext.apiId : null;
 
     this.callback = callback;
 
@@ -344,6 +353,52 @@ export abstract class ResourceController {
     return Fs.readFileSync(`./_shared/${path}`);
   }
 
+  ///
+  /// MANAGE INTERNAL API REQUESTS (lambda invokes masked as API requests)
+  ///
+
+  /**
+   * Simulate an internal API request, invoking directly the lambda and therefore saving resources.
+   * @return the body of the response
+   */
+  public invokeInternalAPIRequest(params: InternalAPIRequestParams): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // create a copy of the event
+      const event = JSON.parse(JSON.stringify(this.event));
+      console.log('internal', event);
+      // set a flag to make the invoked to recognise that is an internal request
+      event.internalAPIRequest = true;
+      // change only the event attributes we need; e.g. the authorization is unchanged
+      event.httpMethod = params.httpMethod;
+      event.resource = params.resource;
+      event.pathParameters = params.pathParams || {};
+      event.queryStringParameters = params.queryParams || {};
+      event.body = JSON.stringify(params.body || {});
+      // parse the path
+      event.path = event.resource;
+      for (let p in event.pathParameters) event.resource = event.resource.replace(`{${p}}`, event.pathParameters[p]);
+      console.log('parsed', event);
+      // invoke the lambda with the event prepaired, simulating an API request
+      new Lambda().invoke(
+        {
+          FunctionName: params.lambda,
+          InvocationType: 'RequestResponse',
+          LogType: 'Tail',
+          Payload: JSON.stringify(event)
+        },
+        (err: Error, res: any) => {
+          console.log(err, res);
+          // reject in case of internal error
+          if (err) reject(err);
+          // reject in case of controlled error
+          else if (Number(res.statusCode) === 400) reject(new Error(JSON.parse(res.body.message)));
+          // otherwise, resolve the body
+          else if (Number(res.statusCode) === 200) resolve(JSON.parse(res.body));
+        }
+      );
+    });
+  }
+
   //
   // TRANSLATIONS
   //
@@ -432,4 +487,34 @@ export interface ResourceControllerOptions {
    * If set, the logs of the API requests on this resource will be stored (using this key).
    */
   logRequestsWithKey?: string;
+}
+
+/**
+ * The parameters needed to invoke an internal API request.
+ */
+export interface InternalAPIRequestParams {
+  /**
+   * The name of the lambda function receiving the request; e.g. `project_memberships`.
+   */
+  lambda: string;
+  /**
+   * The http method to use.
+   */
+  httpMethod: string;
+  /**
+   * The path (in the internal API) to the resource we need; e.g. `teams/{teamId}/memberships/{userId}`.
+   */
+  resource: string;
+  /**
+   * The parameters to substitute in the path.
+   */
+  pathParams?: { [index: string]: string | number };
+  /**
+   * The parameters to substitute in the path.
+   */
+  queryParams?: { [index: string]: string | number };
+  /**
+   * The body of the request.
+   */
+  body?: any;
 }
