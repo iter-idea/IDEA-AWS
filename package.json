@@ -1,6 +1,6 @@
 {
   "name": "idea-aws",
-  "version": "2.11.0",
+  "version": "2.11.1",
   "description": "AWS wrappers to use in IDEA's back-ends",
   "engines": {
     "node": ">=6.0.0"
@@ -21,16 +21,19 @@
     "dynamo",
     "ses",
     "s3",
-    "sns"
+    "sns",
+    "lambda",
+    "translate",
+    "cognito"
   ],
-  "author": "iter IDEA <info@iter-idea.com> (https://iter-idea.com)",
+  "author": "ITER IDEA <info@iter-idea.com> (https://iter-idea.com)",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/uatisdeproblem/IDEA-AWS/issues"
   },
   "homepage": "https://uatisdeproblem.github.io/IDEA-AWS",
   "dependencies": {
-    "idea-toolbox": "^5.16.1",
+    "idea-toolbox": "^5.18.1",
     "nodemailer": "^5.1.1",
     "shortid": "^2.2.14",
     "uuid": "^3.3.2"
@@ -44,6 +47,7 @@
     "@types/showdown": "^1.9.2",
     "@types/uuid": "^3.4.4",
     "aws-sdk": "^2.411.0",
+    "prettier": "^2.0.2",
     "tslint": "^5.13.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.0.1",
