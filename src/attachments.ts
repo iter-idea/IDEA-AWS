@@ -31,12 +31,7 @@ export class Attachments {
   public put(project: string, teamId: string): Promise<IdeaX.SignedURL> {
     return new Promise((resolve, reject) => {
       this.dynamo
-        .IUID(
-          this.IUID_ATTACHMENTS_PREFIX.concat('_')
-            .concat(project)
-            .concat('_')
-            .concat(teamId)
-        )
+        .IUID(this.IUID_ATTACHMENTS_PREFIX.concat('_').concat(project).concat('_').concat(teamId))
         .then(attachmentId => {
           const signedURL = this.s3.signedURLPut(this.S3_ATTACHMENTS_BUCKET, attachmentId);
           signedURL.id = attachmentId;

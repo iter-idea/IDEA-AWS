@@ -122,7 +122,7 @@ interface EmailAttachment {
   /**
    * Filename to be reported as the name of the attached file, use of unicode is allowed.
    * If you do not want to use a filename, set this value as false, otherwise a filename is generated automatically .
-   * */
+   */
   filename?: string | false;
   /**
    * If set and content is string, then encodes the content to a Buffer using the specified encoding.
@@ -131,7 +131,7 @@ interface EmailAttachment {
   encoding?: string;
   /**
    * Optional content type for the attachment, if not set will be derived from the filename property
-   * */
+   */
   contentType?: string;
   /**
    * Additional headers

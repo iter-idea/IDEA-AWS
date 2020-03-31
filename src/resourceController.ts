@@ -369,7 +369,7 @@ export abstract class ResourceController {
       event.body = JSON.stringify(params.body || {});
       // parse the path
       event.path = event.resource;
-      for (let p in event.pathParameters) event.resource = event.resource.replace(`{${p}}`, event.pathParameters[p]);
+      for (const p in event.pathParameters) event.resource = event.resource.replace(`{${p}}`, event.pathParameters[p]);
       // set a flag to make the invoked to recognise that is an internal request
       event.internalAPIRequest = true;
       // invoke the lambda with the event prepaired, simulating an API request
@@ -390,6 +390,12 @@ export abstract class ResourceController {
         }
       );
     });
+  }
+  /**
+   * Whether the current request comes from an internal API request, i.e. it was invoked by another controller.
+   */
+  public comesFromInternalRequest(): boolean {
+    return Boolean(this.event.internalAPIRequest);
   }
 
   //
@@ -420,7 +426,7 @@ export abstract class ResourceController {
    * Get a translated term by key, optionally interpolating variables (e.g. `{{user}}`).
    * If the term doesn't exist in the current language, it is searched in the default language.
    */
-  protected t(key: string, interpolateParams?: Object): string {
+  protected t(key: string, interpolateParams?: object): string {
     if (!this.translations || !this.currentLang) return;
     if (!this.isDefined(key) || !key.length) return;
     let res = this.interpolate(this.getValue(this.translations[this.currentLang], key), interpolateParams);
@@ -435,7 +441,7 @@ export abstract class ResourceController {
   private interpolate(expr: string, params?: any): string {
     if (!params || !expr) return expr;
     return expr.replace(this.templateMatcher, (substring: string, b: string) => {
-      let r = this.getValue(params, b);
+      const r = this.getValue(params, b);
       return this.isDefined(r) ? r : substring;
     });
   }
@@ -444,7 +450,7 @@ export abstract class ResourceController {
    * getValue({ key1: { keyA: 'valueI' }}, 'key1.keyA') ==> 'valueI'
    */
   private getValue(target: any, key: string): any {
-    let keys = typeof key === 'string' ? key.split('.') : [key];
+    const keys = typeof key === 'string' ? key.split('.') : [key];
     key = '';
     do {
       key += keys.shift();

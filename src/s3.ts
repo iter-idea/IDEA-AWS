@@ -29,15 +29,7 @@ export class S3 {
   ): Promise<IdeaX.SignedURL> {
     return new Promise((resolve, reject) => {
       // if needed, randomly generates the key
-      if (!options.key)
-        options.key = new Date()
-          .getTime()
-          .toString()
-          .concat(
-            Math.random()
-              .toString(36)
-              .slice(2)
-          );
+      if (!options.key) options.key = new Date().getTime().toString().concat(Math.random().toString(36).slice(2));
       // add the prefix to the key
       options.key = `${options.prefix || this.DEFAULT_DOWNLOAD_BUCKET_PREFIX}/${options.key}`;
       // set the other parameters
@@ -115,10 +107,10 @@ export class S3 {
         else
           switch (options.type) {
             case GetObjectTypes.JSON:
-              resolve(JSON.parse((<any>d.Body).toString('utf-8')));
+              resolve(JSON.parse((d.Body as any).toString('utf-8')));
               break;
             case GetObjectTypes.TEXT:
-              resolve((<any>d.Body).toString('utf-8'));
+              resolve((d.Body as any).toString('utf-8'));
               break;
             default:
               resolve(d);
