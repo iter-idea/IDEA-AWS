@@ -23,13 +23,13 @@ export class SES {
       if (emailData.toAddresses) sesData.Destination.ToAddresses = emailData.toAddresses;
       if (emailData.ccAddresses) sesData.Destination.CcAddresses = emailData.ccAddresses;
       if (emailData.bccAddresses) sesData.Destination.BccAddresses = emailData.bccAddresses;
+      if (emailData.replyToAddresses) sesData.ReplyToAddresses = emailData.replyToAddresses;
       sesData.Message = {};
       if (emailData.subject) sesData.Message.Subject = { Charset: 'UTF-8', Data: emailData.subject };
       sesData.Message.Body = {};
       if (emailData.html) sesData.Message.Body.Html = { Charset: 'UTF-8', Data: emailData.html };
       if (emailData.text) sesData.Message.Body.Text = { Charset: 'UTF-8', Data: emailData.text };
       if (!emailData.html && !emailData.text) sesData.Message.Body.Text = { Charset: 'UTF-8', Data: '' };
-      sesData.ReplyToAddresses = emailData.replyToAddresses;
       sesData.Source = `${sesParams.sourceName} <${sesParams.source}>`;
       sesData.SourceArn = sesParams.sourceArn;
       IdeaX.logger('SES DATA PREPARATION', null, sesData);
@@ -87,7 +87,7 @@ export interface EmailData {
   /**
    * Array of Reply-To email addresses.
    */
-  replyToAddresses: Array<string>;
+  replyToAddresses?: Array<string>;
   /**
    * Subject of the email.
    */
