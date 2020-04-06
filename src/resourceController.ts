@@ -361,12 +361,13 @@ export abstract class ResourceController {
     return new Promise((resolve, reject) => {
       // create a copy of the event
       const event = JSON.parse(JSON.stringify(this.event));
-      // change only the event attributes we need; e.g. the authorization is unchanged
+      // change only the event attributes we need
       event.httpMethod = params.httpMethod;
       event.resource = params.resource;
       event.pathParameters = params.pathParams || {};
       event.queryStringParameters = params.queryParams || {};
       event.body = JSON.stringify(params.body || {});
+      event.headers = params.headers || {};
       // parse the path
       event.path = event.resource;
       for (const p in event.pathParameters) event.resource = event.resource.replace(`{${p}}`, event.pathParameters[p]);
@@ -516,4 +517,8 @@ export interface InternalAPIRequestParams {
    * The body of the request.
    */
   body?: any;
+  /**
+   * The parameters to substitute in the headers. (e.g. `authorization`)
+   */
+  headers?: string;
 }
