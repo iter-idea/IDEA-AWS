@@ -17,6 +17,16 @@ export class DynamoDB {
   }
 
   /**
+   * Convert a JSON object from dynamoDB format to simple JSON.
+   */
+  public unmarshall(
+    data: AWS.DynamoDB.AttributeMap,
+    options?: AWS.DynamoDB.DocumentClient.ConverterOptions
+  ): { [key: string]: any } {
+    return AWS.DynamoDB.Converter.unmarshall(data, options);
+  }
+
+  /**
    * Returns an IUID: IDEA's Unique IDentifier, which is an id unique through all IDEA's projects.
    * Note: there's no need of an authorization check for extrernal uses: the permissions depend
    * from the context in which it's executed.
