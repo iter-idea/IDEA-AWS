@@ -28,7 +28,7 @@ export class SNS {
           platformARN = snsParams.androidArn;
           break;
         default:
-          return reject(new Error(`UNSUPPORTED_PLATFORM`));
+          return reject(new Error('UNSUPPORTED_PLATFORM'));
       }
       // create a new endpoint in the platform
       new AWS.SNS({ apiVersion: '2010-03-31', region: snsParams.region }).createPlatformEndpoint(
@@ -61,7 +61,7 @@ export class SNS {
             structuredMessage = { GCM: JSON.stringify({ notification: { text: params.message } }) };
             break;
           default:
-            return reject(new Error(`UNSUPPORTED_PLATFORM`));
+            return reject(new Error('UNSUPPORTED_PLATFORM'));
         }
       new AWS.SNS({ apiVersion: '2010-03-31', region: params.region }).publish(
         {

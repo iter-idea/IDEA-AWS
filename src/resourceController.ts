@@ -142,13 +142,13 @@ export abstract class ResourceController {
             default: /* nope */
           }
         // execute the API request
-        if (!request) this.done(new Error(`E.COMMON.UNSUPPORTED_METHOD`));
+        if (!request) this.done(new Error('UNSUPPORTED_METHOD'));
         else {
           IdeaX.logger('REQUEST', null, this.httpMethod, true);
           request.then((res: any) => this.done(null, res)).catch((err: Error) => this.done(err));
         }
       })
-      .catch(err => this.done(new Error(err && err.message ? err.message : `E.COMMON.FORBIDDEN`)));
+      .catch(err => this.done(new Error(err && err.message ? err.message : 'FORBIDDEN')));
   };
   /**
    * To @override
@@ -176,73 +176,73 @@ export abstract class ResourceController {
    * To @override
    */
   protected getResource(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_METHOD`)));
+    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
   }
   /**
    * To @override
    */
   protected postResource(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_METHOD`)));
+    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
   }
   /**
    * To @override
    */
   protected putResource(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_METHOD`)));
+    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
   }
   /**
    * To @override
    */
   protected deleteResource(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_METHOD`)));
+    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
   }
   /**
    * To @override
    */
   protected headResource(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_METHOD`)));
+    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
   }
   /**
    * To @override
    */
   protected getResources(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_METHOD`)));
+    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
   }
   /**
    * To @override
    */
   protected postResources(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_METHOD`)));
+    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
   }
   /**
    * To @override
    */
   protected putResources(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_METHOD`)));
+    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
   }
   /**
    * To @override
    */
   protected patchResource(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_METHOD`)));
+    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
   }
   /**
    * To @override
    */
   protected patchResources(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_METHOD`)));
+    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
   }
   /**
    * To @override
    */
   protected deleteResources(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_METHOD`)));
+    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
   }
   /**
    * To @override
    */
   protected headResources(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error(`E.COMMON.UNSUPPORTED_METHOD`)));
+    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
   }
 
   ///

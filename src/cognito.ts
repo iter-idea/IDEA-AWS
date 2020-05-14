@@ -70,7 +70,7 @@ export class Cognito {
   public createUser(email: string, cognitoUserPoolId: string, options?: CreateUserOptions): Promise<string> {
     return new Promise((resolve, reject) => {
       options = options || {};
-      if (IdeaX.isEmpty(email, 'email')) return reject(new Error(`E.COGNITO.INVALID_EMAIL`));
+      if (IdeaX.isEmpty(email, 'email')) return reject(new Error('INVALID_EMAIL'));
       const attributes = [
         { Name: 'email', Value: email },
         { Name: 'email_verified', Value: 'true' }
@@ -89,15 +89,15 @@ export class Cognito {
           if (err)
             switch (err.name) {
               case 'UsernameExistsException':
-                return reject(new Error(`E.COGNITO.USERNAME_ALREADY_EXISTS`));
+                return reject(new Error('USERNAME_ALREADY_EXISTS'));
               case 'InvalidPasswordException':
-                return reject(new Error(`E.COGNITO.INVALID_PASSWORD`));
+                return reject(new Error('INVALID_PASSWORD'));
               default:
                 return reject(err);
             }
           const userId = data.User.Attributes.find((attr: any) => attr.Name === 'sub').Value || null;
           if (userId) resolve(userId);
-          else reject(new Error(`E.COGNITO.CREATION_FAILED`));
+          else reject(new Error('CREATION_FAILED'));
         }
       );
     });
@@ -109,7 +109,7 @@ export class Cognito {
   public resendPassword(email: string, cognitoUserPoolId: string, options?: CreateUserOptions): Promise<void> {
     return new Promise((resolve, reject) => {
       options = options || {};
-      if (IdeaX.isEmpty(email, 'email')) return reject(new Error(`E.COGNITO.INVALID_EMAIL`));
+      if (IdeaX.isEmpty(email, 'email')) return reject(new Error('INVALID_EMAIL'));
       const params: AWS.CognitoIdentityServiceProvider.AdminCreateUserRequest = {
         UserPoolId: cognitoUserPoolId,
         Username: email,
@@ -123,7 +123,7 @@ export class Cognito {
           if (err)
             switch (err.name) {
               case 'UnsupportedUserStateException':
-                return reject(new Error(`E.COGNITO.USER_ALREADY_CONFIRMED_PASSWORD`));
+                return reject(new Error('USER_ALREADY_CONFIRMED_PASSWORD'));
               default:
                 return reject(err);
             }
@@ -138,12 +138,12 @@ export class Cognito {
    */
   public deleteUser(email: string, cognitoUserPoolId: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (IdeaX.isEmpty(email, 'email')) return reject(new Error(`E.COGNITO.INVALID_EMAIL`));
+      if (IdeaX.isEmpty(email, 'email')) return reject(new Error('INVALID_EMAIL'));
       new AWS.CognitoIdentityServiceProvider().adminDeleteUser(
         { UserPoolId: cognitoUserPoolId, Username: email },
         (err: Error) => {
           IdeaX.logger('COGNITO DELETE USER', err, `${email} (${cognitoUserPoolId})`);
-          if (err) reject(new Error(`E.COGNITO.DELETION_FAILED`));
+          if (err) reject(new Error('DELETION_FAILED'));
           else resolve();
         }
       );
@@ -181,7 +181,7 @@ export class Cognito {
    */
   public updateEmail(email: string, newEmail: string, cognitoUserPoolId: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (IdeaX.isEmpty(newEmail, 'email')) return reject(new Error('E.COGNITO.INVALID_NEW_EMAIL'));
+      if (IdeaX.isEmpty(newEmail, 'email')) return reject(new Error('INVALID_NEW_EMAIL'));
       new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' }).adminUpdateUserAttributes(
         {
           UserPoolId: cognitoUserPoolId,
@@ -215,7 +215,7 @@ export class Cognito {
     cognitoUserPoolClientId: string
   ): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (newPassword.length < 8) return reject(new Error('E.COGNITO.INVALID_NEW_PASSWORD'));
+      if (newPassword.length < 8) return reject(new Error('INVALID_NEW_PASSWORD'));
       // get a token to run the password change
       this.signIn(email, oldPassword, cognitoUserPoolId, cognitoUserPoolClientId)
         .then((data: AWS.CognitoIdentityServiceProvider.AuthenticationResultType) => {
@@ -258,9 +258,9 @@ export class Cognito {
    */
   public confirmSignUp(email: string, confirmationCode: string, cognitoUserPoolClientId: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      if (!email) return reject(new Error('E.COGNITO.INVALID_EMAIL'));
-      if (!confirmationCode) return reject(new Error('E.COGNITO.INVALID_CONFIRMATION_CODE'));
-      if (!cognitoUserPoolClientId) return reject(new Error('E.COGNITO.INVALID_CLIENT_ID'));
+      if (!email) return reject(new Error('INVALID_EMAIL'));
+      if (!confirmationCode) return reject(new Error('INVALID_CONFIRMATION_CODE'));
+      if (!cognitoUserPoolClientId) return reject(new Error('INVALID_CLIENT_ID'));
       // conclude the registration (sign-up) flow, using a provided confirmation code
       new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' }).confirmSignUp(
         { Username: email, ConfirmationCode: confirmationCode, ClientId: cognitoUserPoolClientId },
