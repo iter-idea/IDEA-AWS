@@ -1,6 +1,6 @@
 {
   "name": "idea-aws",
-  "version": "2.11.8",
+  "version": "2.11.9",
   "description": "AWS wrappers to use in IDEA's back-ends",
   "engines": {
     "node": ">=6.0.0"
