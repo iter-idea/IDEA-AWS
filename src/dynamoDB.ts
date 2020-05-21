@@ -68,8 +68,8 @@ export class DynamoDB {
    */
   public ISID(project: string): Promise<string> {
     const MAX_ATTEMPTS = 3;
-    // avoid - and _ characters (to avoid concatenation problems with ids)
-    ShortID.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ');
+    // avoid _ characters (to avoid concatenation problems with ids) -- it must be anyway 64 chars-long
+    ShortID.characters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-@');
     return new Promise((resolve, reject) => {
       if (!project) reject();
       else this.isidHelper(project, 0, MAX_ATTEMPTS, resolve, reject);
