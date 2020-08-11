@@ -57,7 +57,7 @@ export abstract class ResourceController {
    */
   constructor(event: any, callback: any, options?: ResourceControllerOptions) {
     options = options || ({} as ResourceControllerOptions);
-    IdeaX.logger('START', null, event, true);
+    IdeaX.logger('START', null, JSON.stringify(event), true);
 
     this.event = event;
 
