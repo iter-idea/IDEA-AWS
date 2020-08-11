@@ -99,9 +99,9 @@ export class DynamoDB {
    * They key of an atomic counter should be composed as the following: `DynamoDBTableName_uniqueKey`.
    * @param key the key of the counter
    */
-  public getAtomicCounterByKey(key: string): Promise<number> {
+  public getAtomicCounterByKey(key: string, skipLog?: boolean): Promise<number> {
     return new Promise((resolve, reject) => {
-      IdeaX.logger('GET ATOMIC COUNTER', null, key);
+      if (!skipLog) IdeaX.logger('GET ATOMIC COUNTER', null, key);
       this.update({
         TableName: 'idea_atomicCounters',
         Key: { key },
@@ -118,11 +118,12 @@ export class DynamoDB {
    * Get an item of a DynamoDB table.
    */
   public get(
-    params: AWS.DynamoDB.DocumentClient.GetItemInput
+    params: AWS.DynamoDB.DocumentClient.GetItemInput,
+    skipLog?: boolean
   ): Promise<AWS.DynamoDB.DocumentClient.AttributeMap | any> {
     return new Promise((resolve, reject) => {
       this.dynamo.get(params, (err: Error, data: AWS.DynamoDB.DocumentClient.GetItemOutput) => {
-        IdeaX.logger(`GET ${params.TableName}`, err, JSON.stringify(data));
+        if (!skipLog) IdeaX.logger(`GET ${params.TableName}`, err, JSON.stringify(data));
         if (err || !data.Item) reject(err);
         else resolve(data.Item);
       });
@@ -132,10 +133,13 @@ export class DynamoDB {
   /**
    * Put an item in a DynamoDB table.
    */
-  public put(params: AWS.DynamoDB.DocumentClient.PutItemInput): Promise<AWS.DynamoDB.DocumentClient.PutItemOutput> {
+  public put(
+    params: AWS.DynamoDB.DocumentClient.PutItemInput,
+    skipLog?: boolean
+  ): Promise<AWS.DynamoDB.DocumentClient.PutItemOutput> {
     return new Promise((resolve, reject) => {
       this.dynamo.put(params, (err: Error, data: AWS.DynamoDB.DocumentClient.PutItemOutput) => {
-        IdeaX.logger(`PUT ${params.TableName}`, err, JSON.stringify(params.Item));
+        if (!skipLog) IdeaX.logger(`PUT ${params.TableName}`, err, JSON.stringify(params.Item));
         if (err) reject(err);
         else resolve(data);
       });
@@ -146,11 +150,12 @@ export class DynamoDB {
    * Update an item of a DynamoDB table.
    */
   public update(
-    params: AWS.DynamoDB.DocumentClient.UpdateItemInput
+    params: AWS.DynamoDB.DocumentClient.UpdateItemInput,
+    skipLog?: boolean
   ): Promise<AWS.DynamoDB.DocumentClient.UpdateItemOutput> {
     return new Promise((resolve, reject) => {
       this.dynamo.update(params, (err: Error, data: AWS.DynamoDB.DocumentClient.UpdateItemOutput) => {
-        IdeaX.logger(`UPDATE ${params.TableName}`, err, JSON.stringify(params.Key));
+        if (!skipLog) IdeaX.logger(`UPDATE ${params.TableName}`, err, JSON.stringify(params.Key));
         if (err) reject(err);
         else resolve(data);
       });
@@ -161,11 +166,12 @@ export class DynamoDB {
    * Delete an item of a DynamoDB table.
    */
   public delete(
-    params: AWS.DynamoDB.DocumentClient.DeleteItemInput
+    params: AWS.DynamoDB.DocumentClient.DeleteItemInput,
+    skipLog?: boolean
   ): Promise<AWS.DynamoDB.DocumentClient.DeleteItemOutput> {
     return new Promise((resolve, reject) => {
       this.dynamo.delete(params, (err: Error, data: AWS.DynamoDB.DocumentClient.DeleteItemOutput) => {
-        IdeaX.logger(`DELETE ${params.TableName}`, err, JSON.stringify(params.Key));
+        if (!skipLog) IdeaX.logger(`DELETE ${params.TableName}`, err, JSON.stringify(params.Key));
         if (err) reject(err);
         else resolve(data);
       });
@@ -180,13 +186,14 @@ export class DynamoDB {
   public batchGet(
     table: string,
     keys: Array<AWS.DynamoDB.DocumentClient.Key>,
-    ignoreErr?: boolean
+    ignoreErr?: boolean,
+    skipLog?: boolean
   ): Promise<Array<AWS.DynamoDB.DocumentClient.AttributeMap | any>> {
     return new Promise((resolve, reject) => {
       if (!keys.length) {
-        IdeaX.logger(`BATCH GET ${table}`, null, `No elements to get`);
+        if (!skipLog) IdeaX.logger(`BATCH GET ${table}`, null, `No elements to get`);
         resolve([]);
-      } else this.batchGetHelper(table, keys, [], Boolean(ignoreErr), 0, 100, resolve, reject);
+      } else this.batchGetHelper(table, keys, [], Boolean(ignoreErr), 0, 100, resolve, reject, skipLog);
     });
   }
   protected batchGetHelper(
@@ -197,7 +204,8 @@ export class DynamoDB {
     curr: number,
     size: number,
     resolve: any,
-    reject: any
+    reject: any,
+    skipLog?: boolean
   ) {
     // prepare the structure for the bulk operation
     const batch: any = { RequestItems: {} };
@@ -205,7 +213,7 @@ export class DynamoDB {
     batch.RequestItems[t].Keys = keys.slice(curr, curr + size);
     // execute the bulk operation
     this.dynamo.batchGet(batch, (err: Error, data: AWS.DynamoDB.DocumentClient.BatchGetItemOutput) => {
-      IdeaX.logger(`BATCH GET ${t}`, err, `${curr} of ${keys.length}`);
+      if (!skipLog) IdeaX.logger(`BATCH GET ${t}`, err, `${curr} of ${keys.length}`);
       if (err && !iErr) return reject(err);
       // concat the results
       elements = elements.concat(data.Responses[t]);
@@ -223,25 +231,31 @@ export class DynamoDB {
   public batchPut(
     table: string,
     items: Array<AWS.DynamoDB.DocumentClient.AttributeMap>,
-    ignoreErr?: boolean
+    ignoreErr?: boolean,
+    skipLog?: boolean
   ): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!items.length) {
-        IdeaX.logger(`BATCH WRITE (PUT) ${table}`, null, `No elements to write`);
+        if (!skipLog) IdeaX.logger(`BATCH WRITE (PUT) ${table}`, null, `No elements to write`);
         resolve();
-      } else this.batchWriteHelper(table, items, true, Boolean(ignoreErr), 0, 25, resolve, reject);
+      } else this.batchWriteHelper(table, items, true, Boolean(ignoreErr), 0, 25, resolve, reject, skipLog);
     });
   }
   /**
    * Delete an array of items from a DynamoDb table, avoiding the limits of DynamoDB's BatchWriteItem.
    * @param ignoreErr if true, ignore the errors and continue the bulk op.
    */
-  public batchDelete(table: string, keys: Array<AWS.DynamoDB.DocumentClient.Key>, ignoreErr?: boolean): Promise<void> {
+  public batchDelete(
+    table: string,
+    keys: Array<AWS.DynamoDB.DocumentClient.Key>,
+    ignoreErr?: boolean,
+    skipLog?: boolean
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       if (keys.length === 0) {
-        IdeaX.logger(`BATCH WRITE (DELETE) ${table}`, null, `No elements to write`);
+        if (!skipLog) IdeaX.logger(`BATCH WRITE (DELETE) ${table}`, null, `No elements to write`);
         resolve();
-      } else this.batchWriteHelper(table, keys, false, Boolean(ignoreErr), 0, 25, resolve, reject);
+      } else this.batchWriteHelper(table, keys, false, Boolean(ignoreErr), 0, 25, resolve, reject, skipLog);
     });
   }
   protected batchWriteHelper(
@@ -252,7 +266,8 @@ export class DynamoDB {
     curr: number,
     size: number,
     resolve: any,
-    reject: any
+    reject: any,
+    skipLog?: boolean
   ) {
     // prepare the structure for the bulk operation
     const batch: any = { RequestItems: {} };
@@ -268,7 +283,7 @@ export class DynamoDB {
     }
     // execute the bulk operation
     this.dynamo.batchWrite(batch, (err: Error) => {
-      IdeaX.logger(`BATCH WRITE (${isPut ? 'PUT' : 'DELETE'}) ${t}`, err, `${curr} of ${items.length}`);
+      if (!skipLog) IdeaX.logger(`BATCH WRITE (${isPut ? 'PUT' : 'DELETE'}) ${t}`, err, `${curr} of ${items.length}`);
       if (err && !iErr) reject(err);
       // if there are still chunks to manage, go on recursively
       else if (curr + size < items.length)
@@ -283,10 +298,11 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   public query(
-    params: AWS.DynamoDB.DocumentClient.QueryInput
+    params: AWS.DynamoDB.DocumentClient.QueryInput,
+    skipLog?: boolean
   ): Promise<Array<AWS.DynamoDB.DocumentClient.AttributeMap | any>> {
     return new Promise((resolve, reject) => {
-      this.queryScanHelper(params, [], true, resolve, reject);
+      this.queryScanHelper(params, [], true, resolve, reject, skipLog);
     });
   }
   /**
@@ -294,10 +310,11 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   public scan(
-    params: AWS.DynamoDB.DocumentClient.ScanInput
+    params: AWS.DynamoDB.DocumentClient.ScanInput,
+    skipLog?: boolean
   ): Promise<Array<AWS.DynamoDB.DocumentClient.AttributeMap | any>> {
     return new Promise((resolve, reject) => {
-      this.queryScanHelper(params, [], false, resolve, reject);
+      this.queryScanHelper(params, [], false, resolve, reject, skipLog);
     });
   }
   protected queryScanHelper(
@@ -305,14 +322,15 @@ export class DynamoDB {
     items: Array<AWS.DynamoDB.DocumentClient.AttributeMap>,
     isQuery: boolean,
     resolve: any,
-    reject: any
+    reject: any,
+    skipLog?: boolean
   ) {
     const f = isQuery ? 'query' : 'scan';
     (this.dynamo as any)[f](
       params,
       (err: Error, data: AWS.DynamoDB.DocumentClient.QueryOutput | AWS.DynamoDB.DocumentClient.ScanOutput) => {
         if (err || !data || !data.Items) {
-          IdeaX.logger(`${f.toUpperCase()} ${params.TableName}`, err, JSON.stringify(data));
+          if (!skipLog) IdeaX.logger(`${f.toUpperCase()} ${params.TableName}`, err, JSON.stringify(data));
           return reject(err);
         }
         items = items.concat(data.Items);
@@ -320,7 +338,7 @@ export class DynamoDB {
           params.ExclusiveStartKey = data.LastEvaluatedKey;
           this.queryScanHelper(params, items, isQuery, resolve, reject);
         } else {
-          IdeaX.logger(`${f.toUpperCase()} ${params.TableName}`, null, items.length.toString());
+          if (!skipLog) IdeaX.logger(`${f.toUpperCase()} ${params.TableName}`, null, items.length.toString());
           resolve(items);
         }
       }
@@ -332,10 +350,11 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   public queryClassic(
-    params: AWS.DynamoDB.DocumentClient.QueryInput
+    params: AWS.DynamoDB.DocumentClient.QueryInput,
+    skipLog?: boolean
   ): Promise<Array<AWS.DynamoDB.DocumentClient.QueryOutput>> {
     return new Promise((resolve, reject) => {
-      this.queryScanClassicHelper(params, true, resolve, reject);
+      this.queryScanClassicHelper(params, true, resolve, reject, skipLog);
     });
   }
   /**
@@ -343,27 +362,30 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   public scanClassic(
-    params: AWS.DynamoDB.DocumentClient.ScanInput
+    params: AWS.DynamoDB.DocumentClient.ScanInput,
+    skipLog?: boolean
   ): Promise<Array<AWS.DynamoDB.DocumentClient.ScanOutput>> {
     return new Promise((resolve, reject) => {
-      this.queryScanClassicHelper(params, false, resolve, reject);
+      this.queryScanClassicHelper(params, false, resolve, reject, skipLog);
     });
   }
   protected queryScanClassicHelper(
     params: AWS.DynamoDB.DocumentClient.QueryInput | AWS.DynamoDB.DocumentClient.ScanInput,
     isQuery: boolean,
     resolve: any,
-    reject: any
+    reject: any,
+    skipLog?: boolean
   ) {
     const f = isQuery ? 'query' : 'scan';
     (this.dynamo as any)[f](
       params,
       (err: Error, data: AWS.DynamoDB.DocumentClient.QueryOutput | AWS.DynamoDB.DocumentClient.QueryOutput) => {
-        IdeaX.logger(
-          `${f.toUpperCase()} classic ${params.TableName}`,
-          err,
-          String(data && data.Items ? data.Items.length : 0)
-        );
+        if (!skipLog)
+          IdeaX.logger(
+            `${f.toUpperCase()} classic ${params.TableName}`,
+            err,
+            String(data && data.Items ? data.Items.length : 0)
+          );
         if (err || !data) reject(err);
         else resolve(data);
       }
@@ -374,14 +396,14 @@ export class DynamoDB {
    * Execute a series of max 10 write operations in a single transaction.
    * @param ops the operations to execute in the transaction
    */
-  public transactWrites(ops: Array<AWS.DynamoDB.DocumentClient.TransactWriteItem>): Promise<void> {
+  public transactWrites(ops: Array<AWS.DynamoDB.DocumentClient.TransactWriteItem>, skipLog?: boolean): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!ops.length) {
-        IdeaX.logger(`TRANSACTION WRITES`, null, `No elements to write`);
+        if (!skipLog) IdeaX.logger(`TRANSACTION WRITES`, null, `No elements to write`);
         resolve();
       } else
         this.dynamo.transactWrite({ TransactItems: ops.slice(0, 10) }, (err: Error) => {
-          IdeaX.logger(`TRANSACTION WRITES`, err, null);
+          if (!skipLog) IdeaX.logger(`TRANSACTION WRITES`, err, null);
           if (err) reject(err);
           else resolve();
         });
