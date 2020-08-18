@@ -1,6 +1,6 @@
 {
   "name": "idea-aws",
-  "version": "2.11.12",
+  "version": "2.11.13",
   "description": "AWS wrappers to use in IDEA's back-ends",
   "engines": {
     "node": ">=6.0.0"
@@ -33,14 +33,13 @@
   },
   "homepage": "https://uatisdeproblem.github.io/IDEA-AWS",
   "dependencies": {
-    "idea-toolbox": "^5.23.10",
+    "idea-toolbox": "^5.23.11",
     "nodemailer": "^5.1.1",
     "shortid": "^2.2.14",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.19",
-    "@types/aws-sdk": "^2.7.0",
     "@types/node": "^10.12.27",
     "@types/nodemailer": "^4.6.6",
     "@types/shortid": "0.0.29",
@@ -52,7 +51,7 @@
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.3.0",
     "typedoc": "^0.17.8",
-    "typescript": "^3.4.3",
+    "typescript": "^3.9.7",
     "typescript-tslint-plugin": "^0.3.1"
   }
 }
