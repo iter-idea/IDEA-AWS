@@ -135,6 +135,46 @@ export class S3 {
       });
     });
   }
+
+  /**
+   * Delete an object from an S3 bucket.
+   */
+  public deleteObject(options: DeleteObjectOptions): Promise<AWS.S3.PutObjectOutput> {
+    return new Promise((resolve, reject) => {
+      this.s3.deleteObject({ Bucket: options.bucket, Key: options.key }, (err: Error, o: AWS.S3.DeleteObjectOutput) => {
+        IdeaX.logger('S3 DELETE OBJECT', err, options.key);
+        if (err) reject(err);
+        else resolve(o);
+      });
+    });
+  }
+
+  /**
+   * List the objects of an S3 bucket.
+   */
+  public listObjects(options: ListObjectsOptions): Promise<AWS.S3.ListObjectsOutput> {
+    return new Promise((resolve, reject) => {
+      this.s3.listObjects(
+        { Bucket: options.bucket, Prefix: options.prefix },
+        (err: Error, o: AWS.S3.ListObjectsOutput) => {
+          IdeaX.logger('S3 LIST OBJECTS', err, options.prefix);
+          if (err) reject(err);
+          else resolve(o);
+        }
+      );
+    });
+  }
+
+  /**
+   * List the objects keys of an S3 bucket.
+   */
+  public listObjectsKeys(options: ListObjectsOptions): Promise<Array<string>> {
+    return new Promise((resolve, reject) => {
+      this.listObjects(options)
+        .then(list => resolve(list.Contents.map(obj => obj.Key)))
+        .catch(err => reject(err));
+    });
+  }
 }
 
 /**
@@ -235,4 +275,32 @@ export interface PutObjectOptions {
    * A set of metadata as attributes
    */
   metadata?: any;
+}
+
+/**
+ * Options for deleting an object.
+ */
+export interface DeleteObjectOptions {
+  /**
+   * The bucket from which to delete the file.
+   */
+  bucket: string;
+  /**
+   * The complete filepath to the file to delete.
+   */
+  key: string;
+}
+
+/**
+ * Options for listing a bucket's objects.
+ */
+export interface ListObjectsOptions {
+  /**
+   * The bucket from which to list the objects.
+   */
+  bucket: string;
+  /**
+   * The prefix to filter the objects to select, based on the key.
+   */
+  prefix?: string;
 }
