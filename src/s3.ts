@@ -175,6 +175,19 @@ export class S3 {
         .catch(err => reject(err));
     });
   }
+
+  /**
+   * Check whether an object on an S3 bucket exists.
+   */
+  public doesObjectExist(options: GetObjectOptions): Promise<boolean> {
+    return new Promise(resolve => {
+      this.s3.headObject({ Bucket: options.bucket, Key: options.key }, (err: Error, h: AWS.S3.HeadObjectOutput) => {
+        IdeaX.logger('S3 HEAD OBJECT', err, options.key);
+        if (err) resolve(false);
+        else resolve(true);
+      });
+    });
+  }
 }
 
 /**
