@@ -84,15 +84,11 @@ export abstract class ResourceController {
     this.logRequestsWithKey = options.logRequestsWithKey;
 
     // print the initial log
-    const logStr = {
-      httpMethod: this.httpMethod,
-      path: this.path,
-      resourceId: this.resourceId,
-      principalId: this.principalId,
-      queryParams: this.queryParams,
-      body: this.body
-    };
-    IdeaX.logger('START', null, logStr, true);
+    const info: any = {};
+    if (this.principalId) info.principalId = this.principalId;
+    if (this.queryParams) info.queryParams = this.queryParams;
+    if (this.body) info.body = this.body;
+    IdeaX.logger(`START: ${this.httpMethod} ${this.path}/${this.resourceId}`, null, info, true);
   }
 
   ///
@@ -156,7 +152,6 @@ export abstract class ResourceController {
         // execute the API request
         if (!request) this.done(new Error('UNSUPPORTED_METHOD'));
         else {
-          IdeaX.logger(`REQUEST ${this.httpMethod}`, null, this.resourceId || '', true);
           request.then((res: any) => this.done(null, res)).catch((err: Error) => this.done(err));
         }
       })
