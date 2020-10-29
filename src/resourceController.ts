@@ -18,6 +18,7 @@ export abstract class ResourceController {
   protected callback: any;
 
   protected event: any;
+  protected stage: string;
 
   protected authorization: string;
   protected claims: any;
@@ -57,9 +58,9 @@ export abstract class ResourceController {
    */
   constructor(event: any, callback: any, options?: ResourceControllerOptions) {
     options = options || ({} as ResourceControllerOptions);
-    IdeaX.logger('START', null, JSON.stringify(event), true);
 
     this.event = event;
+    this.stage = event.requestContext ? event.requestContext.stage : null;
 
     this.callback = callback;
 
@@ -81,6 +82,17 @@ export abstract class ResourceController {
     this.tables = options.tables || {};
 
     this.logRequestsWithKey = options.logRequestsWithKey;
+
+    // print the initial log
+    const logStr = {
+      httpMethod: this.httpMethod,
+      path: this.path,
+      resourceId: this.resourceId,
+      principalId: this.principalId,
+      queryParams: this.queryParams,
+      body: this.body
+    };
+    IdeaX.logger('START', null, logStr, true);
   }
 
   ///
@@ -144,7 +156,7 @@ export abstract class ResourceController {
         // execute the API request
         if (!request) this.done(new Error('UNSUPPORTED_METHOD'));
         else {
-          IdeaX.logger('REQUEST', null, this.httpMethod, true);
+          IdeaX.logger(`REQUEST ${this.httpMethod}`, null, this.resourceId || '', true);
           request.then((res: any) => this.done(null, res)).catch((err: Error) => this.done(err));
         }
       })
@@ -162,7 +174,7 @@ export abstract class ResourceController {
    * @param res if err, the error string, otherwise the result (a JSON to parse)
    */
   protected done(err: Error, res?: any): any {
-    IdeaX.logger(`DONE`, err, res, true);
+    IdeaX.logger(err ? 'DONE WITH ERRORS' : 'DONE', err, res, true);
     // if configured, store the log of the request
     if (this.logRequestsWithKey) this.storeLog(!err);
     // send the response

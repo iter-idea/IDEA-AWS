@@ -34,7 +34,7 @@ export class SNS {
       new AWS.SNS({ apiVersion: '2010-03-31', region: snsParams.region }).createPlatformEndpoint(
         { PlatformApplicationArn: platformARN, Token: token },
         (err: Error, data: AWS.SNS.CreateEndpointResponse) => {
-          IdeaX.logger('SNS ADD PLATFORM ENDPOINT', err, JSON.stringify(data));
+          IdeaX.logger('SNS ADD PLATFORM ENDPOINT', err);
           if (err || !data.EndpointArn) reject(err);
           else resolve(data.EndpointArn);
         }
@@ -70,7 +70,7 @@ export class SNS {
           TargetArn: params.endpoint
         },
         (err: Error, data: AWS.SNS.PublishResponse) => {
-          IdeaX.logger('SNS PUBLISH IN TOPIC', err, JSON.stringify(data));
+          IdeaX.logger('SNS PUBLISH IN TOPIC', err);
           if (err) reject(err);
           else resolve(data);
         }

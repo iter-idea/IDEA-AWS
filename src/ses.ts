@@ -32,10 +32,9 @@ export class SES {
       if (!emailData.html && !emailData.text) sesData.Message.Body.Text = { Charset: 'UTF-8', Data: '' };
       sesData.Source = `${sesParams.sourceName} <${sesParams.source}>`;
       sesData.SourceArn = sesParams.sourceArn;
-      IdeaX.logger('SES DATA PREPARATION', null, sesData);
       // send email
       new AWS.SES({ region: sesParams.region }).sendEmail(sesData, (err: Error, data: AWS.SES.SendEmailResponse) => {
-        IdeaX.logger('SES SEND EMAIL', err, JSON.stringify(data));
+        IdeaX.logger('SES SEND EMAIL', err);
         if (err) reject(err);
         else resolve();
       });
@@ -54,12 +53,11 @@ export class SES {
       if (emailData.html) mailOptions.html = emailData.html;
       if (emailData.text) mailOptions.text = emailData.text;
       mailOptions.attachments = emailData.attachments;
-      IdeaX.logger('NODEMAILER OPTION PREPARATION', null, mailOptions);
       // create Nodemailer SES transporter and send the email
       Nodemailer.createTransport({ SES: new AWS.SES({ region: sesParams.region }) }).sendMail(
         mailOptions,
-        (err: Error, data: any) => {
-          IdeaX.logger('SES SEND EMAIL (NODEMAILER)', err, data);
+        (err: Error) => {
+          IdeaX.logger('SES SEND EMAIL (NODEMAILER)', err);
           if (err) reject(err);
           else resolve();
         }

@@ -85,7 +85,7 @@ export class Cognito {
       new AWS.CognitoIdentityServiceProvider().adminCreateUser(
         params,
         (err: Error, data: AWS.CognitoIdentityServiceProvider.AdminCreateUserResponse) => {
-          IdeaX.logger('COGNITO CREATE USER', err, JSON.stringify(data));
+          IdeaX.logger('COGNITO CREATE USER', err);
           if (err)
             switch (err.name) {
               case 'UsernameExistsException':
@@ -119,7 +119,7 @@ export class Cognito {
       new AWS.CognitoIdentityServiceProvider().adminCreateUser(
         params,
         (err: Error, data: AWS.CognitoIdentityServiceProvider.AdminCreateUserResponse) => {
-          IdeaX.logger('COGNITO RESEND PASSWORD', err, JSON.stringify(data));
+          IdeaX.logger('COGNITO RESEND PASSWORD', err);
           if (err)
             switch (err.name) {
               case 'UnsupportedUserStateException':
@@ -142,7 +142,7 @@ export class Cognito {
       new AWS.CognitoIdentityServiceProvider().adminDeleteUser(
         { UserPoolId: cognitoUserPoolId, Username: email },
         (err: Error) => {
-          IdeaX.logger('COGNITO DELETE USER', err, `${email} (${cognitoUserPoolId})`);
+          IdeaX.logger('COGNITO DELETE USER', err);
           if (err) reject(new Error('DELETION_FAILED'));
           else resolve();
         }
@@ -168,7 +168,7 @@ export class Cognito {
           AuthParameters: { USERNAME: email, PASSWORD: password }
         },
         (err: Error, data: AWS.CognitoIdentityServiceProvider.AdminInitiateAuthResponse) => {
-          IdeaX.logger('COGNITO SIGN IN', err, JSON.stringify(data));
+          IdeaX.logger('COGNITO SIGN IN', err);
           if (err || !data.AuthenticationResult) reject(err);
           else resolve(data.AuthenticationResult);
         }
@@ -192,7 +192,7 @@ export class Cognito {
           ]
         },
         (err: Error) => {
-          IdeaX.logger('COGNITO UPDATE EMAIL', err, newEmail);
+          IdeaX.logger('COGNITO UPDATE EMAIL', err);
           if (err) reject(err);
           // sign out the user from all its devices and resolve
           else
@@ -227,7 +227,7 @@ export class Cognito {
               ProposedPassword: newPassword
             },
             (err: Error, _: any) => {
-              IdeaX.logger('COGNITO UPDATE PASSWORD', err, '*******');
+              IdeaX.logger('COGNITO UPDATE PASSWORD', err);
               if (err) reject(err);
               else resolve();
             }
@@ -245,7 +245,7 @@ export class Cognito {
       new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' }).adminUserGlobalSignOut(
         { Username: email, UserPoolId: cognitoUserPoolId },
         (err: Error) => {
-          IdeaX.logger('COGNITO GLOBAL SIGN OUT', err, email);
+          IdeaX.logger('COGNITO GLOBAL SIGN OUT', err);
           if (err) reject(err);
           else resolve();
         }
@@ -265,7 +265,7 @@ export class Cognito {
       new AWS.CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' }).confirmSignUp(
         { Username: email, ConfirmationCode: confirmationCode, ClientId: cognitoUserPoolClientId },
         (err: Error) => {
-          IdeaX.logger('COGNITO CONFIRM SIGN UP', err, `${email} ${confirmationCode}`);
+          IdeaX.logger('COGNITO CONFIRM SIGN UP', err);
           if (err) reject(err);
           else resolve();
         }

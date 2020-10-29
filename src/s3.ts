@@ -88,7 +88,7 @@ export class S3 {
       this.s3.copyObject(
         { CopySource: options.copySource, Bucket: options.bucket, Key: options.key },
         (err: Error, d: AWS.S3.CopyObjectOutput) => {
-          IdeaX.logger('S3 COPY OBJECT', err, JSON.stringify(d));
+          IdeaX.logger('S3 COPY OBJECT', err, options.key);
           if (err) reject(err);
           else resolve();
         }
@@ -129,7 +129,7 @@ export class S3 {
       if (options.acl) params.ACL = options.acl;
       if (options.metadata) params.Metadata = options.metadata;
       this.s3.putObject(params, (err: Error, d: AWS.S3.PutObjectOutput) => {
-        IdeaX.logger('S3 PUT OBJECT', err, JSON.stringify(d));
+        IdeaX.logger('S3 PUT OBJECT', err, options.key);
         if (err) reject(err);
         else resolve(d);
       });
