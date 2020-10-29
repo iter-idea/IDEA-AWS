@@ -86,8 +86,9 @@ export abstract class ResourceController {
     // print the initial log
     const info: any = {};
     if (this.principalId) info.principalId = this.principalId;
-    if (this.queryParams) info.queryParams = this.queryParams;
-    if (this.body) info.body = this.body;
+    const empty = JSON.stringify({});
+    if (JSON.stringify(this.queryParams) !== empty) info.queryParams = this.queryParams;
+    if (JSON.stringify(this.body) !== empty) info.body = this.body;
     IdeaX.logger(`START: ${this.httpMethod} ${this.path}/${this.resourceId}`, null, info, true);
   }
 
