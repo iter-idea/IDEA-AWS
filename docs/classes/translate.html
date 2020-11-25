@@ -2763,6 +2763,9 @@ img {
 					<a href="translate.html#terminologynames" class="tsd-kind-icon">terminology<wbr>Names</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="translate.html#pdftemplate" class="tsd-kind-icon">pdf<wbr>Template</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="translate.html#text" class="tsd-kind-icon">text</a>
 				</li>
 			</ul>
@@ -2825,10 +2828,16 @@ img {
 			<a href="../globals.html#fs" class="tsd-kind-icon">Fs</a>
 		</li>
 		<li class=" tsd-kind-variable">
+			<a href="../globals.html#handlebars" class="tsd-kind-icon">Handlebars</a>
+		</li>
+		<li class=" tsd-kind-variable">
 			<a href="../globals.html#ideax" class="tsd-kind-icon">IdeaX</a>
 		</li>
 		<li class=" tsd-kind-variable">
 			<a href="../globals.html#nodemailer" class="tsd-kind-icon">Nodemailer</a>
+		</li>
+		<li class=" tsd-kind-variable">
+			<a href="../globals.html#pdf_template" class="tsd-kind-icon">PDF_<wbr>TEMPLATE</a>
 		</li>
 		<li class=" tsd-kind-variable">
 			<a href="../globals.html#shortid" class="tsd-kind-icon">ShortID</a>
@@ -2876,6 +2885,7 @@ img {
 					<section class="tsd-index-section ">
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="translate.html#pdftemplate" class="tsd-kind-icon">pdf<wbr>Template</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="translate.html#text" class="tsd-kind-icon">text</a></li>
 						</ul>
 					</section>
@@ -2894,7 +2904,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/f17117d/src/translate.ts#L19">src/translate.ts:19</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/ef2cf1e/src/translate.ts#L20">src/translate.ts:20</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2915,7 +2925,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">source<wbr>Language<wbr>Code<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/f17117d/src/translate.ts#L11">src/translate.ts:11</a></li>
+						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/ef2cf1e/src/translate.ts#L12">src/translate.ts:12</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2930,7 +2940,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">target<wbr>Language<wbr>Code<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/f17117d/src/translate.ts#L15">src/translate.ts:15</a></li>
+						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/ef2cf1e/src/translate.ts#L16">src/translate.ts:16</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2945,7 +2955,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">terminology<wbr>Names<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/f17117d/src/translate.ts#L19">src/translate.ts:19</a></li>
+						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/ef2cf1e/src/translate.ts#L20">src/translate.ts:20</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
@@ -2958,6 +2968,45 @@ img {
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Methods</h2>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="pdftemplate" class="tsd-anchor"></a>
+				<h3>pdf<wbr>Template</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">pdf<wbr>Template<span class="tsd-signature-symbol">(</span>entity<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">PDFEntity</span>, template<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">PDFTemplateSection</span><span class="tsd-signature-symbol">&gt;</span>, language<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, languages<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Languages</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/ef2cf1e/src/translate.ts#L65">src/translate.ts:65</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Get the contents of a PDF template (against a PDFEntity) translated in the desired language,
+								if the latter isn&#39;t between the ones already available.</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>entity: <span class="tsd-signature-type">PDFEntity</span></h5>
+							</li>
+							<li>
+								<h5>template: <span class="tsd-signature-type">Array</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">PDFTemplateSection</span><span class="tsd-signature-symbol">&gt;</span></h5>
+							</li>
+							<li>
+								<h5>language: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5>languages: <span class="tsd-signature-type">Languages</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-symbol">{}</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						<p>an object that maps original texts with their translations (or nothing).</p>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 				<a name="text" class="tsd-anchor"></a>
 				<h3>text</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -2967,7 +3016,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/f17117d/src/translate.ts#L35">src/translate.ts:35</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/ef2cf1e/src/translate.ts#L36">src/translate.ts:36</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
