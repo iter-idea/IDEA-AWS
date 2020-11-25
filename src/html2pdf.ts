@@ -1,4 +1,5 @@
 import { Lambda } from 'aws-sdk';
+import Handlebars = require('handlebars');
 import IdeaX = require('idea-toolbox');
 import { S3 } from './s3';
 
@@ -66,6 +67,45 @@ export class HTML2PDF {
         .catch(err => reject(err));
     });
   }
+
+  /**
+   * Helper function to prepare Handlebar's helper for the `IdeaX.PDFTemplateSection` standard.
+   */
+  public getHandlebarHelpersForPDFTemplate(
+    language: string,
+    languages: IdeaX.Languages,
+    htmlInnerTemplate: string,
+    additionalTranslations?: { [term: string]: string }
+  ): any {
+    return {
+      get: (context: any, x: string) => context[x],
+      getOrDash: (context: any, x: string) => (context[x] !== null && context[x] !== undefined ? context[x] : '-'),
+      doesColumnContainAField: (section: IdeaX.PDFTemplateSection, colIndex: number) =>
+        section.doesColumnContainAField(colIndex),
+      getColumnFieldSize: (section: IdeaX.PDFTemplateSection, colIndex: number) => section.getColumnFieldSize(colIndex),
+      substituteVars: (data: any, str: string) => {
+        if (!str || !data) return str || '';
+        str = String(str);
+        const matches = str.match(/@\w*/gm);
+        if (matches)
+          matches.forEach(attr => {
+            if (data[attr] !== undefined) str = str.replace(attr, data[attr]);
+          });
+        return new Handlebars.SafeString(str);
+      },
+      inception: (_template: any, _data: any) => {
+        const variables = { _template, _data };
+        return new Handlebars.SafeString(Handlebars.compile(htmlInnerTemplate, { compat: true })(variables));
+      },
+      isFieldABoolean: (data: any, value: any) => typeof data[value] === 'boolean',
+      isFieldANumber: (data: any, value: any) => typeof data[value] === 'number',
+      ifEqual: (a: any, b: any, opt: any) => (a === b ? opt.fn(this) : opt.inverse(this)),
+      label: (label: IdeaX.Label) => (label ? label[language] || label[languages.default] : null),
+      mdToHTML: (s: string) => new Handlebars.SafeString(IdeaX.mdToHtml(s)),
+      translate: (s: string) =>
+        s && additionalTranslations && additionalTranslations[s] ? additionalTranslations[s] : s
+    };
+  }
 }
 
 export interface HTML2PDFParameters {
@@ -86,3 +126,193 @@ export interface HTML2PDFParameters {
    */
   pdfOptions: any;
 }
+
+export const PDF_TEMPLATE = `
+  <!DOCTYPE html>
+  <html>
+
+  <head>
+    <meta charset="utf8" />
+    <title>
+      PDF template
+    </title>
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        font-size: 10pt;
+        font-family: 'Lato', Arial, Helvetica, sans-serif;
+      }
+
+      table {
+        width: 100%;
+        table-layout: fixed;
+        font-size: 1rem;
+      }
+
+      table,
+      tr,
+      td {
+        margin: 0;
+        padding: 0;
+        border-spacing: 0;
+        border-collapse: collapse;
+        vertical-align: middle;
+      }
+
+      .dontBreak {
+        page-break-inside: avoid !important;
+      }
+      .pageBreak {
+        page-break-after: always;
+      }
+
+      table.border td {
+        border: 1px solid #eee;
+      }
+
+      td > p {
+        margin: 3px 0;
+        padding: 0;
+      }
+
+      .normalRow td {
+        padding: 6px 8px;
+        letter-spacing: -0.2px;
+      }
+
+      td .label {
+        display: block;
+        padding-bottom: 2px;
+        font-size: 0.8rem;
+        font-weight: bold;
+        color: #555;
+      }
+
+      .headerTable {
+        margin-top: 20px;
+        page-break-inside: avoid;
+      }
+      .headerTable::after {
+        /* trick to avoid a page break right after the header */
+        content: "-";
+        color: white;
+        display: block;
+        height: 150px;
+        margin-bottom: -150px;
+      }
+      .headerTitle {
+        padding: 4px 8px;
+        background-color: #444;
+        border: 1px solid transparent;
+        border-radius: 5px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: white;
+      }
+
+      .numericField {
+        text-align: right;
+      }
+      .checkbox {
+        width: 14px;
+      }
+    </style>
+  </head>
+
+  <body>
+
+    <!-- PDF TEMPLATE BEGIN -->
+
+    <div class="pdfTemplate">
+      {{#each _template as |section|}}
+        {{! page break }}
+        {{#ifEqual section.type 0}}
+          <div class="pageBreak"></div>
+        {{/ifEqual}}
+        {{! empty row }}
+        {{#ifEqual section.type 1}}
+          <br />
+        {{/ifEqual}}
+        {{! row }}
+        {{#ifEqual section.type 2}}
+          <table class="normalRow dontBreak {{#if row.border}}border{{/if}}">
+            <tr>
+              {{#each section.columns as |content|}}
+                {{#if content}}
+                  {{#if (doesColumnContainAField section @index)}}{{! field (that may be repeated for more cols) }}
+                    {{#with content as |field|}}
+                      {{! simple field }}
+                      {{#if field.code}}
+                        <td
+                          colspan="{{getColumnFieldSize section @index}}"
+                          class="{{#if (isFieldANumber _data field.code)}}numericField{{/if}}"
+                        >
+                          <span class="label">
+                            {{translate (label field.label)}}
+                          </span>
+                          {{#if (isFieldABoolean _data field.code)}}
+                            {{#if (get _data field.code)}}
+                              <img
+                                class="checkbox"
+                                src="https://s3.eu-west-2.amazonaws.com/scarlett-app/assets/icons/check-true.png"
+                              />
+                            {{else}}
+                              <img
+                                class="checkbox"
+                                src="https://s3.eu-west-2.amazonaws.com/scarlett-app/assets/icons/check-false.png"
+                              />
+                            {{/if}}
+                          {{else}}
+                            {{translate (getOrDash _data field.code)}}
+                          {{/if}}
+                        </td>
+                      {{! complext field }}
+                      {{else}}
+                        <td colspan="{{getColumnFieldSize section @index}}">
+                          {{substituteVars _data (mdToHTML (translate (label field.content)))}}
+                        </td>
+                      {{/if}}
+                    {{/with}}
+                  {{/if}}
+                {{else}}
+                {{! empty col }}
+                  <td colspan="1"></td>
+                {{/if}}
+              {{/each}}
+            </tr>
+          </table>
+        {{/ifEqual}}
+        {{! header }}
+        {{#ifEqual section.type 3}}
+          <table class="headerTable">
+            <tr>
+              <td class="headerTitle">
+                {{substituteVars _data (mdToHTML (translate (label section.title)))}}
+              </td>
+            </tr>
+          </table>
+        {{/ifEqual}}
+        {{! inner section }}
+        {{#ifEqual section.type 4}}
+          {{#if (get _data section.context)}}
+            {{inception section.innerTemplate (get _data section.context)}}
+          {{/if}}
+        {{/ifEqual}}
+        {{! repeated inner section }}
+        {{#ifEqual section.type 5}}
+          {{#with (get _data section.context) as |innerSections|}}
+            {{#each innerSections as |innerSection|}}
+              {{inception section.innerTemplate innerSection}}
+            {{/each}}
+          {{/with}}
+        {{/ifEqual}}
+      {{/each}}
+    </div>
+
+  </body>
+
+  </html>
+`;
