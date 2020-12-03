@@ -91,7 +91,7 @@ export class HTML2PDF {
           matches.forEach(attr => {
             if (data[attr] !== undefined) str = str.replace(attr, data[attr]);
           });
-        return new Handlebars.SafeString(str);
+        return str;
       },
       inception: (_template: any, _data: any) => {
         const variables = { _template, _data };
@@ -101,7 +101,7 @@ export class HTML2PDF {
       isFieldANumber: (data: any, value: any) => typeof data[value] === 'number',
       ifEqual: (a: any, b: any, opt: any) => (a === b ? opt.fn(this) : opt.inverse(this)),
       label: (label: IdeaX.Label) => (label ? label[language] || label[languages.default] : null),
-      mdToHTML: (s: string) => new Handlebars.SafeString(IdeaX.mdToHtml(s)),
+      mdToHTML: (s: string) => (typeof s === 'string' ? new Handlebars.SafeString(IdeaX.mdToHtml(s)) : s),
       translate: (s: string) =>
         s && additionalTranslations && additionalTranslations[s] ? additionalTranslations[s] : s
     };
@@ -191,10 +191,6 @@ export const PDF_TEMPLATE = `
         color: #555;
       }
 
-      td span.content {
-        white-space: pre-wrap;
-      }
-
       .headerTable {
         margin-top: 20px;
         page-break-inside: avoid;
@@ -254,9 +250,11 @@ export const PDF_TEMPLATE = `
                           colspan="{{getColumnFieldSize section @index}}"
                           class="{{#if (isFieldANumber _data field.code)}}numericField{{/if}}"
                         >
-                          <span class="label">
-                            {{translate (label field.label)}}
-                          </span>
+                          {{#if (label field.label)}}
+                            <span class="label">
+                              {{translate (label field.label)}}
+                            </span>
+                          {{/if}}
                           {{#if (isFieldABoolean _data field.code)}}
                             {{#if (get _data field.code)}}
                               <img
@@ -270,15 +268,13 @@ export const PDF_TEMPLATE = `
                               />
                             {{/if}}
                           {{else}}
-                            <span class="content>{{translate (getOrDash _data field.code)}}</span>
+                            {{mdToHTML (translate (getOrDash _data field.code))}}
                           {{/if}}
                         </td>
                       {{! complext field }}
                       {{else}}
                         <td colspan="{{getColumnFieldSize section @index}}">
-                          <span class="content>
-                            {{substituteVars _data (mdToHTML (translate (label field.content)))}}
-                          </span>
+                          {{mdToHTML (substituteVars _data (translate (label field.content)))}}
                         </td>
                       {{/if}}
                     {{/with}}
@@ -296,7 +292,7 @@ export const PDF_TEMPLATE = `
           <table class="headerTable">
             <tr>
               <td class="headerTitle">
-                {{substituteVars _data (mdToHTML (translate (label section.title)))}}
+                {{mdToHTML (substituteVars _data (translate (label section.title)))}}
               </td>
             </tr>
           </table>
