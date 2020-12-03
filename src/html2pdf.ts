@@ -191,6 +191,10 @@ export const PDF_TEMPLATE = `
         color: #555;
       }
 
+      td span.content {
+        white-space: pre-wrap;
+      }
+
       .headerTable {
         margin-top: 20px;
         page-break-inside: avoid;
@@ -266,13 +270,15 @@ export const PDF_TEMPLATE = `
                               />
                             {{/if}}
                           {{else}}
-                            {{translate (getOrDash _data field.code)}}
+                            <span class="content>{{translate (getOrDash _data field.code)}}</span>
                           {{/if}}
                         </td>
                       {{! complext field }}
                       {{else}}
                         <td colspan="{{getColumnFieldSize section @index}}">
-                          {{substituteVars _data (mdToHTML (translate (label field.content)))}}
+                          <span class="content>
+                            {{substituteVars _data (mdToHTML (translate (label field.content)))}}
+                          </span>
                         </td>
                       {{/if}}
                     {{/with}}
