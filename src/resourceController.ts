@@ -84,12 +84,8 @@ export abstract class ResourceController {
     this.logRequestsWithKey = options.logRequestsWithKey;
 
     // print the initial log
-    const info: any = {};
-    if (this.principalId) info.principalId = this.principalId;
-    const empty = JSON.stringify({});
-    if (JSON.stringify(this.queryParams) !== empty) info.queryParams = this.queryParams;
-    if (JSON.stringify(this.body) !== empty) info.body = this.body;
-    IdeaX.logger(`START: ${this.httpMethod} ${this.path}/${this.resourceId}`, null, info, true);
+    const info = { principalId: this.principalId, queryParams: this.queryParams, body: this.body };
+    IdeaX.logger(`START: ${this.httpMethod} ${this.stage}/${this.path}`, null, info, true);
   }
 
   ///
