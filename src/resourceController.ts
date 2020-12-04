@@ -85,7 +85,7 @@ export abstract class ResourceController {
 
     // print the initial log
     const info = { principalId: this.principalId, queryParams: this.queryParams, body: this.body };
-    IdeaX.logger(`START: ${this.httpMethod} ${this.stage}/${this.path}`, null, info, true);
+    IdeaX.logger(`START: ${this.httpMethod} ${this.stage} ${this.path}`, null, info, true);
   }
 
   ///
