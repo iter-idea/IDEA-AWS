@@ -89,7 +89,7 @@ export class HTML2PDF {
         const matches = str.match(/@\w*/gm);
         if (matches)
           matches.forEach(attr => {
-            if (data[attr] !== undefined) str = str.replace(attr, data[attr]);
+            if (data[attr] !== undefined) str = str.replace(attr, data[attr] === null ? '' : data[attr]);
           });
         return str;
       },
