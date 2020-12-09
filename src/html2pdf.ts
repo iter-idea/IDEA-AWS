@@ -300,12 +300,32 @@ export const PDF_TEMPLATE = `
         {{! inner section }}
         {{#ifEqual section.type 4}}
           {{#if (get _data section.context)}}
+            {{#if (label section.title)}}
+              <table class="headerTable">
+                <tr>
+                  <td class="headerTitle">
+                    {{translate (label section.title)}}
+                  </td>
+                </tr>
+              </table>
+            {{/if}}
             {{inception section.innerTemplate (get _data section.context)}}
           {{/if}}
         {{/ifEqual}}
         {{! repeated inner section }}
         {{#ifEqual section.type 5}}
           {{#with (get _data section.context) as |innerSections|}}
+            {{#if innerSections.length}}
+              {{#if (label section.title)}}
+                <table class="headerTable">
+                  <tr>
+                    <td class="headerTitle">
+                      {{translate (label section.title)}}
+                    </td>
+                  </tr>
+                </table>
+              {{/if}}
+            {{/if}}
             {{#each innerSections as |innerSection|}}
               {{inception section.innerTemplate innerSection}}
             {{/each}}
