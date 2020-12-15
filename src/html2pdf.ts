@@ -174,7 +174,7 @@ export const PDF_TEMPLATE = `
       }
 
       td > p {
-        margin: 3px 0;
+        margin: 0;
         padding: 0;
       }
 
@@ -185,7 +185,6 @@ export const PDF_TEMPLATE = `
 
       td .label {
         display: block;
-        padding-bottom: 2px;
         font-size: 0.8rem;
         font-weight: bold;
         color: #555;
@@ -217,7 +216,8 @@ export const PDF_TEMPLATE = `
         text-align: right;
       }
       .checkbox {
-        width: 14px;
+        width: 12px;
+        padding-top: 2px;
       }
     </style>
   </head>
@@ -250,11 +250,9 @@ export const PDF_TEMPLATE = `
                           colspan="{{getColumnFieldSize section @index}}"
                           class="{{#if (isFieldANumber _data field.code)}}numericField{{/if}}"
                         >
-                          {{#if (label field.label)}}
-                            <span class="label">
-                              {{translate (label field.label)}}
-                            </span>
-                          {{/if}}
+                          <span class="label">
+                            {{translate (label field.label)}}&nbsp;
+                          </span>
                           {{#if (isFieldABoolean _data field.code)}}
                             {{#if (get _data field.code)}}
                               <img
@@ -274,6 +272,11 @@ export const PDF_TEMPLATE = `
                       {{! complext field }}
                       {{else}}
                         <td colspan="{{getColumnFieldSize section @index}}">
+                          {{#ifEqual 12 (getColumnFieldSize section @index)}}
+                            {{! no extra spacing }}
+                          {{else}}
+                            <span class="label">&nbsp;</span>
+                          {{/ifEqual}}
                           {{mdToHTML (substituteVars _data (translate (label field.content)))}}
                         </td>
                       {{/if}}
