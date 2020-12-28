@@ -116,11 +116,11 @@ export interface HTML2PDFParameters {
   /**
    * An optional html header, repeated in every page.
    */
-  header: string;
+  header?: string;
   /**
    * An optional html footer, repeated in every page.
    */
-  footer: string;
+  footer?: string;
   /**
    * Options following the standard of Puppeteer.
    */
