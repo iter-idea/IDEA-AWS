@@ -101,7 +101,7 @@ export class HTML2PDF {
       isFieldANumber: (data: any, value: any) => typeof data[value] === 'number',
       ifEqual: (a: any, b: any, opt: any) => (a === b ? opt.fn(this) : opt.inverse(this)),
       label: (label: IdeaX.Label) => (label ? label[language] || label[languages.default] : null),
-      mdToHTML: (s: string) => (typeof s === 'string' ? new Handlebars.SafeString(IdeaX.mdToHTML(s)) : s),
+      mdToHTML: (s: string) => (typeof s === 'string' ? new Handlebars.SafeString(IdeaX.mdToHtml(s)) : s),
       translate: (s: string) =>
         s && additionalTranslations && additionalTranslations[s] ? additionalTranslations[s] : s
     };
