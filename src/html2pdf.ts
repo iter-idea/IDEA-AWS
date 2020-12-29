@@ -1,6 +1,5 @@
 import { Lambda } from 'aws-sdk';
 import Handlebars = require('handlebars');
-import { Converter } from 'showdown';
 import IdeaX = require('idea-toolbox');
 import { S3 } from './s3';
 
@@ -78,7 +77,6 @@ export class HTML2PDF {
     htmlInnerTemplate: string,
     additionalTranslations?: { [term: string]: string }
   ): any {
-    const mdConverter = new Converter({ simpleLineBreaks: true });
     return {
       get: (context: any, x: string) => context[x],
       getOrDash: (context: any, x: string) => (context[x] !== null && context[x] !== undefined ? context[x] : '-'),
@@ -103,7 +101,7 @@ export class HTML2PDF {
       isFieldANumber: (data: any, value: any) => typeof data[value] === 'number',
       ifEqual: (a: any, b: any, opt: any) => (a === b ? opt.fn(this) : opt.inverse(this)),
       label: (label: IdeaX.Label) => (label ? label[language] || label[languages.default] : null),
-      mdToHTML: (s: string) => (typeof s === 'string' ? new Handlebars.SafeString(mdConverter.makeHtml(s)) : s),
+      mdToHTML: (s: string) => (typeof s === 'string' ? new Handlebars.SafeString(IdeaX.mdToHTML(s)) : s),
       translate: (s: string) =>
         s && additionalTranslations && additionalTranslations[s] ? additionalTranslations[s] : s
     };
