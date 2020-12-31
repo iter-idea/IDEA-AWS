@@ -1,5 +1,5 @@
+import UUIDV4 = require('uuid/v4');
 import { DynamoDB as DDB } from 'aws-sdk';
-import UUIDV4 from 'uuid/v4';
 import { characters as ShortIdCharacters, generate as ShortIdGenerate } from 'shortid';
 import { logger } from 'idea-toolbox';
 
