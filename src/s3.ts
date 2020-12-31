@@ -1,11 +1,11 @@
-import AWS = require('aws-sdk');
-import IdeaX = require('idea-toolbox');
+import { S3 as AWSS3 } from 'aws-sdk';
+import { logger, SignedURL } from 'idea-toolbox';
 
 /**
  * A wrapper for AWS Simple Storage Service.
  */
 export class S3 {
-  protected s3: AWS.S3;
+  protected s3: AWSS3;
 
   protected DEFAULT_DOWNLOAD_BUCKET_PREFIX = 'common';
   protected DEFAULT_DOWNLOAD_BUCKET = 'idea-downloads';
@@ -16,17 +16,14 @@ export class S3 {
    * Initialize a new S3 helper object.
    */
   constructor() {
-    this.s3 = new AWS.S3({ apiVersion: '2006-03-01', signatureVersion: 'v4' });
+    this.s3 = new AWSS3({ apiVersion: '2006-03-01', signatureVersion: 'v4' });
   }
 
   /**
    * Create a download link of a piece of data (through S3).
    * *Pratically*, it uploads the file on an S3 bucket, generating and returning a url to it.
    */
-  public createDownloadURLFromData(
-    data: Buffer | any,
-    options?: CreateDownloadURLFromDataOptions
-  ): Promise<IdeaX.SignedURL> {
+  public createDownloadURLFromData(data: Buffer | any, options?: CreateDownloadURLFromDataOptions): Promise<SignedURL> {
     return new Promise((resolve, reject) => {
       // if needed, randomly generates the key
       if (!options.key) options.key = new Date().getTime().toString().concat(Math.random().toString(36).slice(2));
@@ -44,7 +41,7 @@ export class S3 {
           ContentType: options.contentType
         },
         (err: Error) => {
-          IdeaX.logger('S3 UPLOAD', err);
+          logger('S3 UPLOAD', err);
           if (err) reject(err);
           else resolve(this.signedURLGet(options.bucket, options.key, options.secToExp));
         }
@@ -56,8 +53,8 @@ export class S3 {
    * Get a signed URL to put a file on a S3 bucket.
    * @param expires seconds after which the signed URL expires
    */
-  public signedURLPut(bucket: string, key: string, expires?: number): IdeaX.SignedURL {
-    return new IdeaX.SignedURL({
+  public signedURLPut(bucket: string, key: string, expires?: number): SignedURL {
+    return new SignedURL({
       url: this.s3.getSignedUrl('putObject', {
         Bucket: bucket,
         Key: key,
@@ -70,8 +67,8 @@ export class S3 {
    * Get a signed URL to get a file on a S3 bucket.
    * @param expires seconds after which the signed URL expires
    */
-  public signedURLGet(bucket: string, key: string, expires?: number): IdeaX.SignedURL {
-    return new IdeaX.SignedURL({
+  public signedURLGet(bucket: string, key: string, expires?: number): SignedURL {
+    return new SignedURL({
       url: this.s3.getSignedUrl('getObject', {
         Bucket: bucket,
         Key: key,
@@ -87,8 +84,8 @@ export class S3 {
     return new Promise((resolve, reject) => {
       this.s3.copyObject(
         { CopySource: options.copySource, Bucket: options.bucket, Key: options.key },
-        (err: Error, d: AWS.S3.CopyObjectOutput) => {
-          IdeaX.logger('S3 COPY OBJECT', err, options.key);
+        (err: Error, d: AWSS3.CopyObjectOutput) => {
+          logger('S3 COPY OBJECT', err, options.key);
           if (err) reject(err);
           else resolve();
         }
@@ -101,8 +98,8 @@ export class S3 {
    */
   public getObject(options: GetObjectOptions): Promise<any> {
     return new Promise((resolve, reject) => {
-      this.s3.getObject({ Bucket: options.bucket, Key: options.key }, (err: Error, d: AWS.S3.GetObjectOutput) => {
-        IdeaX.logger('S3 GET OBJECT', err, options.type);
+      this.s3.getObject({ Bucket: options.bucket, Key: options.key }, (err: Error, d: AWSS3.GetObjectOutput) => {
+        logger('S3 GET OBJECT', err, options.type);
         if (err) reject(err);
         else
           switch (options.type) {
@@ -122,14 +119,14 @@ export class S3 {
   /**
    * Put an object in a S3 bucket.
    */
-  public putObject(options: PutObjectOptions): Promise<AWS.S3.PutObjectOutput> {
+  public putObject(options: PutObjectOptions): Promise<AWSS3.PutObjectOutput> {
     return new Promise((resolve, reject) => {
       const params: any = { Bucket: options.bucket, Key: options.key, Body: options.body };
       if (options.contentType) params.ContentType = options.contentType;
       if (options.acl) params.ACL = options.acl;
       if (options.metadata) params.Metadata = options.metadata;
-      this.s3.putObject(params, (err: Error, d: AWS.S3.PutObjectOutput) => {
-        IdeaX.logger('S3 PUT OBJECT', err, options.key);
+      this.s3.putObject(params, (err: Error, d: AWSS3.PutObjectOutput) => {
+        logger('S3 PUT OBJECT', err, options.key);
         if (err) reject(err);
         else resolve(d);
       });
@@ -139,10 +136,10 @@ export class S3 {
   /**
    * Delete an object from an S3 bucket.
    */
-  public deleteObject(options: DeleteObjectOptions): Promise<AWS.S3.PutObjectOutput> {
+  public deleteObject(options: DeleteObjectOptions): Promise<AWSS3.PutObjectOutput> {
     return new Promise((resolve, reject) => {
-      this.s3.deleteObject({ Bucket: options.bucket, Key: options.key }, (err: Error, o: AWS.S3.DeleteObjectOutput) => {
-        IdeaX.logger('S3 DELETE OBJECT', err, options.key);
+      this.s3.deleteObject({ Bucket: options.bucket, Key: options.key }, (err: Error, o: AWSS3.DeleteObjectOutput) => {
+        logger('S3 DELETE OBJECT', err, options.key);
         if (err) reject(err);
         else resolve(o);
       });
@@ -152,12 +149,12 @@ export class S3 {
   /**
    * List the objects of an S3 bucket.
    */
-  public listObjects(options: ListObjectsOptions): Promise<AWS.S3.ListObjectsOutput> {
+  public listObjects(options: ListObjectsOptions): Promise<AWSS3.ListObjectsOutput> {
     return new Promise((resolve, reject) => {
       this.s3.listObjects(
         { Bucket: options.bucket, Prefix: options.prefix },
-        (err: Error, o: AWS.S3.ListObjectsOutput) => {
-          IdeaX.logger('S3 LIST OBJECTS', err, options.prefix);
+        (err: Error, o: AWSS3.ListObjectsOutput) => {
+          logger('S3 LIST OBJECTS', err, options.prefix);
           if (err) reject(err);
           else resolve(o);
         }
@@ -181,8 +178,8 @@ export class S3 {
    */
   public doesObjectExist(options: GetObjectOptions): Promise<boolean> {
     return new Promise(resolve => {
-      this.s3.headObject({ Bucket: options.bucket, Key: options.key }, (err: Error, h: AWS.S3.HeadObjectOutput) => {
-        IdeaX.logger('S3 HEAD OBJECT', err, options.key);
+      this.s3.headObject({ Bucket: options.bucket, Key: options.key }, (err: Error, h: AWSS3.HeadObjectOutput) => {
+        logger('S3 HEAD OBJECT', err, options.key);
         if (err) resolve(false);
         else resolve(true);
       });

@@ -1,6 +1,6 @@
 import { Lambda } from 'aws-sdk';
-import Handlebars = require('handlebars');
-import IdeaX = require('idea-toolbox');
+import Handlebars from 'handlebars';
+import { Label, Languages, logger, mdToHtml, PDFTemplateSection, SignedURL } from 'idea-toolbox';
 import { S3 } from './s3';
 
 /**
@@ -41,7 +41,7 @@ export class HTML2PDF {
         },
         (err: Error, data: any) => {
           if (err) {
-            IdeaX.logger('PDF creation failed', err, alternativeLambda || this.LAMBDA_NAME);
+            logger('PDF creation failed', err, alternativeLambda || this.LAMBDA_NAME);
             reject(err);
           } else resolve(Buffer.from(data.Payload, 'base64'));
         }
@@ -56,11 +56,7 @@ export class HTML2PDF {
    * @param downloadOptions the parameters create the download link
    * @return the URL to download the PDF
    */
-  public createLink(
-    params: HTML2PDFParameters,
-    alternativeLambda?: string,
-    downloadOptions?: any
-  ): Promise<IdeaX.SignedURL> {
+  public createLink(params: HTML2PDFParameters, alternativeLambda?: string, downloadOptions?: any): Promise<SignedURL> {
     return new Promise((resolve, reject) => {
       this.create(params, alternativeLambda)
         .then(pdfData => resolve(this.s3.createDownloadURLFromData(pdfData, downloadOptions)))
@@ -69,20 +65,20 @@ export class HTML2PDF {
   }
 
   /**
-   * Helper function to prepare Handlebar's helper for the `IdeaX.PDFTemplateSection` standard.
+   * Helper function to prepare Handlebar's helper for the `PDFTemplateSection` standard.
    */
   public getHandlebarHelpersForPDFTemplate(
     language: string,
-    languages: IdeaX.Languages,
+    languages: Languages,
     htmlInnerTemplate: string,
     additionalTranslations?: { [term: string]: string }
   ): any {
     return {
       get: (context: any, x: string) => context[x],
       getOrDash: (context: any, x: string) => (context[x] !== null && context[x] !== undefined ? context[x] : '-'),
-      doesColumnContainAField: (section: IdeaX.PDFTemplateSection, colIndex: number) =>
+      doesColumnContainAField: (section: PDFTemplateSection, colIndex: number) =>
         section.doesColumnContainAField(colIndex),
-      getColumnFieldSize: (section: IdeaX.PDFTemplateSection, colIndex: number) => section.getColumnFieldSize(colIndex),
+      getColumnFieldSize: (section: PDFTemplateSection, colIndex: number) => section.getColumnFieldSize(colIndex),
       substituteVars: (data: any, str: string) => {
         if (!str || !data) return str || '';
         str = String(str);
@@ -100,8 +96,8 @@ export class HTML2PDF {
       isFieldABoolean: (data: any, value: any) => typeof data[value] === 'boolean',
       isFieldANumber: (data: any, value: any) => typeof data[value] === 'number',
       ifEqual: (a: any, b: any, opt: any) => (a === b ? opt.fn(this) : opt.inverse(this)),
-      label: (label: IdeaX.Label) => (label ? label[language] || label[languages.default] : null),
-      mdToHTML: (s: string) => (typeof s === 'string' ? new Handlebars.SafeString(IdeaX.mdToHtml(s)) : s),
+      label: (label: Label) => (label ? label[language] || label[languages.default] : null),
+      mdToHTML: (s: string) => (typeof s === 'string' ? new Handlebars.SafeString(mdToHtml(s)) : s),
       translate: (s: string) =>
         s && additionalTranslations && additionalTranslations[s] ? additionalTranslations[s] : s
     };

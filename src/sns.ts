@@ -1,5 +1,5 @@
-import AWS = require('aws-sdk');
-import IdeaX = require('idea-toolbox');
+import { SNS as AWSSNS } from 'aws-sdk';
+import { PushNotificationsPlatforms, logger } from 'idea-toolbox';
 
 /**
  * A wrapper for AWS Simple Notification Service.
@@ -10,7 +10,7 @@ export class SNS {
    * @return platform endpoint ARN
    */
   public createPushPlatormEndpoint(
-    platform: IdeaX.PushNotificationsPlatforms,
+    platform: PushNotificationsPlatforms,
     token: string,
     snsParams: SNSParams
   ): Promise<string> {
@@ -18,23 +18,23 @@ export class SNS {
       let platformARN: string;
       // identify the platform ARN
       switch (platform) {
-        case IdeaX.PushNotificationsPlatforms.APNS:
+        case PushNotificationsPlatforms.APNS:
           platformARN = snsParams.appleArn;
           break;
-        case IdeaX.PushNotificationsPlatforms.APNS_SANDBOX:
+        case PushNotificationsPlatforms.APNS_SANDBOX:
           platformARN = snsParams.appleDevArn;
           break;
-        case IdeaX.PushNotificationsPlatforms.FCM:
+        case PushNotificationsPlatforms.FCM:
           platformARN = snsParams.androidArn;
           break;
         default:
           return reject(new Error('UNSUPPORTED_PLATFORM'));
       }
       // create a new endpoint in the platform
-      new AWS.SNS({ apiVersion: '2010-03-31', region: snsParams.region }).createPlatformEndpoint(
+      new AWSSNS({ apiVersion: '2010-03-31', region: snsParams.region }).createPlatformEndpoint(
         { PlatformApplicationArn: platformARN, Token: token },
         (err: Error, data: AWS.SNS.CreateEndpointResponse) => {
-          IdeaX.logger('SNS ADD PLATFORM ENDPOINT', err);
+          logger('SNS ADD PLATFORM ENDPOINT', err);
           if (err || !data.EndpointArn) reject(err);
           else resolve(data.EndpointArn);
         }
@@ -51,26 +51,26 @@ export class SNS {
       if (params.json) structuredMessage = { default: JSON.stringify(params.json) };
       else
         switch (params.platform) {
-          case IdeaX.PushNotificationsPlatforms.APNS:
+          case PushNotificationsPlatforms.APNS:
             structuredMessage = { APNS: JSON.stringify({ aps: { alert: params.message } }) };
             break;
-          case IdeaX.PushNotificationsPlatforms.APNS_SANDBOX:
+          case PushNotificationsPlatforms.APNS_SANDBOX:
             structuredMessage = { APNS_SANDBOX: JSON.stringify({ aps: { alert: params.message } }) };
             break;
-          case IdeaX.PushNotificationsPlatforms.FCM:
+          case PushNotificationsPlatforms.FCM:
             structuredMessage = { GCM: JSON.stringify({ notification: { text: params.message } }) };
             break;
           default:
             return reject(new Error('UNSUPPORTED_PLATFORM'));
         }
-      new AWS.SNS({ apiVersion: '2010-03-31', region: params.region }).publish(
+      new AWSSNS({ apiVersion: '2010-03-31', region: params.region }).publish(
         {
           MessageStructure: 'json',
           Message: JSON.stringify(structuredMessage),
           TargetArn: params.endpoint
         },
         (err: Error, data: AWS.SNS.PublishResponse) => {
-          IdeaX.logger('SNS PUBLISH IN TOPIC', err);
+          logger('SNS PUBLISH IN TOPIC', err);
           if (err) reject(err);
           else resolve(data);
         }
@@ -117,7 +117,7 @@ export interface SNSPublishParams {
   /**
    * The platform receiver; used to structure the message.
    */
-  platform?: IdeaX.PushNotificationsPlatforms;
+  platform?: PushNotificationsPlatforms;
   /**
    * If set, message and platform will be ignored and the content of this attribute will be preferred.
    */

@@ -1,11 +1,18 @@
-import AWS = require('aws-sdk');
-import IdeaX = require('idea-toolbox');
+import { Translate as AWSTranslate } from 'aws-sdk';
+import {
+  Languages,
+  PDFEntity,
+  PDFTemplateComplexField,
+  PDFTemplateSection,
+  PDFTemplateSectionTypes,
+  PDFTemplateSimpleField
+} from 'idea-toolbox';
 
 /**
  * A wrapper for Amazon Translate.
  */
 export class Translate {
-  protected translate: AWS.Translate;
+  protected translate: AWSTranslate;
   /**
    * Default input language code.
    */
@@ -23,7 +30,7 @@ export class Translate {
    * Initialize a new Translate helper object.
    */
   constructor() {
-    this.translate = new AWS.Translate({ apiVersion: '2017-07-01' });
+    this.translate = new AWSTranslate({ apiVersion: '2017-07-01' });
     this.sourceLanguageCode = 'en';
     this.targetLanguageCode = 'en';
     this.terminologyNames = new Array<string>();
@@ -63,14 +70,14 @@ export class Translate {
    * @return an object that maps original texts with their translations (or nothing).
    */
   public pdfTemplate(
-    entity: IdeaX.PDFEntity,
-    template: Array<IdeaX.PDFTemplateSection>,
+    entity: PDFEntity,
+    template: Array<PDFTemplateSection>,
     language: string,
-    languages: IdeaX.Languages
+    languages: Languages
   ): Promise<{ [original: string]: string }> {
     return new Promise(resolve => {
       // if the language is included in the ones supported by the team, skip
-      if (languages.available.some(l => l === language)) return resolve();
+      if (languages.available.some(l => l === language)) return resolve(null);
       // analyse the template to extract terms to translate based on the entity (using a sourceLanguage as reference)
       this.analysePDFTemplateForTermsToTranslate(template, entity, languages.default).then(termsToTranslate => {
         const translations: { [original: string]: string } = {};
@@ -93,27 +100,27 @@ export class Translate {
    * Analyse a PDFTemplate to extract terms to translate based on a PDFEntity (using a sourceLanguage as reference).
    */
   protected analysePDFTemplateForTermsToTranslate(
-    template: Array<IdeaX.PDFTemplateSection>,
-    entity: IdeaX.PDFEntity,
+    template: Array<PDFTemplateSection>,
+    entity: PDFEntity,
     sourceLanguage: string
   ): Promise<Set<string>> {
     return new Promise(resolve => {
       const toTranslate = new Set<string>();
       // gather the terms to translate from contents available on this level
       template
-        .filter(s => s.isEither(IdeaX.PDFTemplateSectionTypes.ROW, IdeaX.PDFTemplateSectionTypes.HEADER))
+        .filter(s => s.isEither(PDFTemplateSectionTypes.ROW, PDFTemplateSectionTypes.HEADER))
         .forEach(s => {
           switch (s.type) {
-            case IdeaX.PDFTemplateSectionTypes.ROW:
+            case PDFTemplateSectionTypes.ROW:
               s.columns
                 .filter((_, index) => s.doesColumnContainAField(index))
                 .forEach(field => {
-                  field = field as IdeaX.PDFTemplateSimpleField | IdeaX.PDFTemplateComplexField;
+                  field = field as PDFTemplateSimpleField | PDFTemplateComplexField;
                   if (field.isComplex()) {
-                    const complex = field as IdeaX.PDFTemplateComplexField;
+                    const complex = field as PDFTemplateComplexField;
                     toTranslate.add(complex.content[sourceLanguage]);
                   } else {
-                    const simple = field as IdeaX.PDFTemplateSimpleField;
+                    const simple = field as PDFTemplateSimpleField;
                     toTranslate.add(simple.label[sourceLanguage]);
                     // try to consider only notes (long fields)
                     if (typeof entity[simple.code] === 'string' && entity[simple.code].length > 50)
@@ -121,24 +128,22 @@ export class Translate {
                   }
                 });
               break;
-            case IdeaX.PDFTemplateSectionTypes.HEADER:
+            case PDFTemplateSectionTypes.HEADER:
               toTranslate.add(s.title[sourceLanguage]);
               break;
           }
         });
       // gather inner sections in a flat structure for further elaboraton
-      const innerSections = new Array<{ data: any; template: Array<IdeaX.PDFTemplateSection> }>();
+      const innerSections = new Array<{ data: any; template: Array<PDFTemplateSection> }>();
       template
-        .filter(s =>
-          s.isEither(IdeaX.PDFTemplateSectionTypes.INNER_SECTION, IdeaX.PDFTemplateSectionTypes.REPEATED_INNER_SECTION)
-        )
+        .filter(s => s.isEither(PDFTemplateSectionTypes.INNER_SECTION, PDFTemplateSectionTypes.REPEATED_INNER_SECTION))
         .forEach(s => {
           switch (s.type) {
-            case IdeaX.PDFTemplateSectionTypes.INNER_SECTION:
+            case PDFTemplateSectionTypes.INNER_SECTION:
               innerSections.push({ data: entity[s.context], template: s.innerTemplate });
               break;
-            case IdeaX.PDFTemplateSectionTypes.REPEATED_INNER_SECTION:
-              entity[s.context].forEach((element: IdeaX.PDFEntity) =>
+            case PDFTemplateSectionTypes.REPEATED_INNER_SECTION:
+              entity[s.context].forEach((element: PDFEntity) =>
                 innerSections.push({ data: element, template: s.innerTemplate })
               );
               break;

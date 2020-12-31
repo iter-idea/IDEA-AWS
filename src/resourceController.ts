@@ -1,6 +1,6 @@
-import Fs = require('fs');
+import { existsSync, readFileSync } from 'fs';
 import { Lambda } from 'aws-sdk';
-import IdeaX = require('idea-toolbox');
+import { APIRequestLog, logger } from 'idea-toolbox';
 
 import { DynamoDB } from './dynamoDB';
 import { Cognito } from './cognito';
@@ -44,8 +44,6 @@ export abstract class ResourceController {
   protected _attachments: Attachments;
   protected _html2pdf: HTML2PDF;
 
-  protected X = IdeaX;
-
   protected currentLang: string;
   protected defaultLang: string;
   protected translations: any;
@@ -83,9 +81,9 @@ export abstract class ResourceController {
 
     this.logRequestsWithKey = options.logRequestsWithKey;
 
-    // print the initial log
+    // print the initial log, making sure it
     const info = { principalId: this.principalId, queryParams: this.queryParams, body: this.body };
-    IdeaX.logger(`START: ${this.httpMethod} ${this.stage} ${this.path}`, null, info, true);
+    logger(`START: ${this.httpMethod} ${this.stage} ${this.path}`, null, info, true);
   }
 
   ///
@@ -166,7 +164,7 @@ export abstract class ResourceController {
    * @param res if err, the error string, otherwise the result (a JSON to parse)
    */
   protected done(err: Error, res?: any): any {
-    IdeaX.logger(err ? 'DONE WITH ERRORS' : 'DONE', err, res, true);
+    logger(err ? 'DONE WITH ERRORS' : 'DONE', err, res, true);
     // if configured, store the log of the request
     if (this.logRequestsWithKey) this.storeLog(!err);
     // send the response
@@ -324,7 +322,7 @@ export abstract class ResourceController {
    */
   protected storeLog(succeeded: boolean) {
     // create the log
-    const log = new IdeaX.APIRequestLog({
+    const log = new APIRequestLog({
       logId: this.logRequestsWithKey,
       userId: this.principalId,
       resource: this.resource,
@@ -342,7 +340,7 @@ export abstract class ResourceController {
    * Check whether shared resource exists in the back-end (translation, template, etc.).
    */
   protected sharedResourceExists(path: string): boolean {
-    return Fs.existsSync(`./_shared/${path}`);
+    return existsSync(`./_shared/${path}`);
   }
   /**
    * Load a shared resource in the back-end (translation, template, etc.).
@@ -350,7 +348,7 @@ export abstract class ResourceController {
    */
   protected loadSharedResource(path: string, encoding?: string) {
     encoding = encoding || 'utf-8';
-    return Fs.readFileSync(`./_shared/${path}`);
+    return readFileSync(`./_shared/${path}`);
   }
 
   ///

@@ -1,6 +1,6 @@
-import AWS = require('aws-sdk');
-import Nodemailer = require('nodemailer');
-import IdeaX = require('idea-toolbox');
+import { SES as AWSSES } from 'aws-sdk';
+import { createTransport as NodemailerCreateTransport } from 'nodemailer';
+import { logger } from 'idea-toolbox';
 
 /**
  * A wrapper for AWS Simple Email Service.
@@ -18,7 +18,7 @@ export class SES {
   private sendEmailSES(emailData: EmailData, sesParams: SESParams): Promise<void> {
     return new Promise((resolve, reject) => {
       // prepare SES email data
-      const sesData: AWS.SES.SendEmailRequest | any = {};
+      const sesData: AWSSES.SendEmailRequest | any = {};
       sesData.Destination = {};
       if (emailData.toAddresses) sesData.Destination.ToAddresses = emailData.toAddresses;
       if (emailData.ccAddresses) sesData.Destination.CcAddresses = emailData.ccAddresses;
@@ -33,8 +33,8 @@ export class SES {
       sesData.Source = `${sesParams.sourceName} <${sesParams.source}>`;
       sesData.SourceArn = sesParams.sourceArn;
       // send email
-      new AWS.SES({ region: sesParams.region }).sendEmail(sesData, (err: Error, data: AWS.SES.SendEmailResponse) => {
-        IdeaX.logger('SES SEND EMAIL', err);
+      new AWSSES({ region: sesParams.region }).sendEmail(sesData, (err: Error, data: AWSSES.SendEmailResponse) => {
+        logger('SES SEND EMAIL', err);
         if (err) reject(err);
         else resolve();
       });
@@ -54,10 +54,10 @@ export class SES {
       if (emailData.text) mailOptions.text = emailData.text;
       mailOptions.attachments = emailData.attachments;
       // create Nodemailer SES transporter and send the email
-      Nodemailer.createTransport({ SES: new AWS.SES({ region: sesParams.region }) }).sendMail(
+      NodemailerCreateTransport({ SES: new AWSSES({ region: sesParams.region }) }).sendMail(
         mailOptions,
         (err: Error) => {
-          IdeaX.logger('SES SEND EMAIL (NODEMAILER)', err);
+          logger('SES SEND EMAIL (NODEMAILER)', err);
           if (err) reject(err);
           else resolve();
         }
