@@ -41,18 +41,18 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.19",
-    "@types/node": "^10.12.27",
+    "@types/node": "^11.9.5",
     "@types/nodemailer": "^4.6.6",
     "@types/shortid": "0.0.29",
     "@types/showdown": "^1.9.2",
     "@types/uuid": "^3.4.4",
+    "@typescript-eslint/eslint-plugin": "^4.10.0",
+    "@typescript-eslint/parser": "^4.10.0",
     "aws-sdk": "^2.411.0",
-    "prettier": "^2.0.5",
-    "tslint": "^5.13.0",
-    "tslint-config-prettier": "^1.18.0",
-    "tslint-plugin-prettier": "^2.3.0",
+    "eslint": "^7.15.0",
+    "eslint-plugin-prettier": "^3.3.0",
+    "prettier": "^2.2.1",
     "typedoc": "^0.17.8",
-    "typescript": "^3.9.7",
-    "typescript-tslint-plugin": "^0.3.1"
+    "typescript": "^3.9.7"
   }
 }
