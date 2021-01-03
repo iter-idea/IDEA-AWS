@@ -82,14 +82,11 @@ export class S3 {
    */
   public copyObject(options: CopyObjectOptions): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.s3.copyObject(
-        { CopySource: options.copySource, Bucket: options.bucket, Key: options.key },
-        (err: Error, d: AWSS3.CopyObjectOutput) => {
-          logger('S3 COPY OBJECT', err, options.key);
-          if (err) reject(err);
-          else resolve();
-        }
-      );
+      this.s3.copyObject({ CopySource: options.copySource, Bucket: options.bucket, Key: options.key }, (err: Error) => {
+        logger('S3 COPY OBJECT', err, options.key);
+        if (err) reject(err);
+        else resolve();
+      });
     });
   }
 
@@ -165,7 +162,7 @@ export class S3 {
   /**
    * List the objects keys of an S3 bucket.
    */
-  public listObjectsKeys(options: ListObjectsOptions): Promise<Array<string>> {
+  public listObjectsKeys(options: ListObjectsOptions): Promise<string[]> {
     return new Promise((resolve, reject) => {
       this.listObjects(options)
         .then(list => resolve(list.Contents.map(obj => obj.Key)))
@@ -178,7 +175,7 @@ export class S3 {
    */
   public doesObjectExist(options: GetObjectOptions): Promise<boolean> {
     return new Promise(resolve => {
-      this.s3.headObject({ Bucket: options.bucket, Key: options.key }, (err: Error, h: AWSS3.HeadObjectOutput) => {
+      this.s3.headObject({ Bucket: options.bucket, Key: options.key }, (err: Error) => {
         logger('S3 HEAD OBJECT', err, options.key);
         if (err) resolve(false);
         else resolve(true);

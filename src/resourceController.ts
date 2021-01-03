@@ -1,3 +1,4 @@
+/* eslint-disable no-invalid-this */
 import { existsSync, readFileSync } from 'fs';
 import { Lambda } from 'aws-sdk';
 import { APIRequestLog, logger } from 'idea-toolbox';
@@ -47,7 +48,7 @@ export abstract class ResourceController {
   protected currentLang: string;
   protected defaultLang: string;
   protected translations: any;
-  protected templateMatcher: RegExp = /{{\s?([^{}\s]*)\s?}}/g;
+  protected templateMatcher = /{{\s?([^{}\s]*)\s?}}/g;
 
   /**
    * Initialize a new ResourceController helper object.
@@ -351,7 +352,7 @@ export abstract class ResourceController {
    */
   protected loadSharedResource(path: string, encoding?: string) {
     encoding = encoding || 'utf-8';
-    return readFileSync(`./_shared/${path}`);
+    return readFileSync(`./_shared/${path}`, { encoding });
   }
 
   ///
@@ -374,7 +375,8 @@ export abstract class ResourceController {
       event.body = JSON.stringify(params.body || {});
       // parse the path
       event.path = event.resource;
-      for (const p in event.pathParameters) event.resource = event.resource.replace(`{${p}}`, event.pathParameters[p]);
+      for (const p in event.pathParameters)
+        if (event.pathParameters[p]) event.resource = event.resource.replace(`{${p}}`, event.pathParameters[p]);
       // set a flag to make the invoked to recognise that is an internal request
       event.internalAPIRequest = true;
       // invoke the lambda with the event prepaired, simulating an API request
@@ -431,7 +433,7 @@ export abstract class ResourceController {
    * Get a translated term by key, optionally interpolating variables (e.g. `{{user}}`).
    * If the term doesn't exist in the current language, it is searched in the default language.
    */
-  protected t(key: string, interpolateParams?: object): string {
+  protected t(key: string, interpolateParams?: any): string {
     if (!this.translations || !this.currentLang) return;
     if (!this.isDefined(key) || !key.length) return;
     let res = this.interpolate(this.getValue(this.translations[this.currentLang], key), interpolateParams);

@@ -33,7 +33,7 @@ export class SES {
       sesData.Source = `${sesParams.sourceName} <${sesParams.source}>`;
       sesData.SourceArn = sesParams.sourceArn;
       // send email
-      new AWSSES({ region: sesParams.region }).sendEmail(sesData, (err: Error, data: AWSSES.SendEmailResponse) => {
+      new AWSSES({ region: sesParams.region }).sendEmail(sesData, (err: Error) => {
         logger('SES SEND EMAIL', err);
         if (err) reject(err);
         else resolve();
@@ -73,19 +73,19 @@ export interface EmailData {
   /**
    * Array of TO email addresses.
    */
-  toAddresses: Array<string>;
+  toAddresses: string[];
   /**
    * Array of CC email addresses.
    */
-  ccAddresses?: Array<string>;
+  ccAddresses?: string[];
   /**
    * Array of BCC email addresses.
    */
-  bccAddresses?: Array<string>;
+  bccAddresses?: string[];
   /**
    * Array of Reply-To email addresses.
    */
-  replyToAddresses?: Array<string>;
+  replyToAddresses?: string[];
   /**
    * Subject of the email.
    */
@@ -101,7 +101,7 @@ export interface EmailData {
   /**
    * The array of attachments. Ref. https://community.nodemailer.com/using-attachments/
    */
-  attachments?: Array<EmailAttachment>;
+  attachments?: EmailAttachment[];
 }
 
 /**

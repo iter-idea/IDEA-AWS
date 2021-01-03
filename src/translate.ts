@@ -24,7 +24,7 @@ export class Translate {
   /**
    * Default terminology list.
    */
-  public terminologyNames: Array<string>;
+  public terminologyNames: string[];
 
   /**
    * Initialize a new Translate helper object.
@@ -71,7 +71,7 @@ export class Translate {
    */
   public pdfTemplate(
     entity: PDFEntity,
-    template: Array<PDFTemplateSection>,
+    template: PDFTemplateSection[],
     language: string,
     languages: Languages
   ): Promise<{ [original: string]: string }> {
@@ -100,7 +100,7 @@ export class Translate {
    * Analyse a PDFTemplate to extract terms to translate based on a PDFEntity (using a sourceLanguage as reference).
    */
   protected analysePDFTemplateForTermsToTranslate(
-    template: Array<PDFTemplateSection>,
+    template: PDFTemplateSection[],
     entity: PDFEntity,
     sourceLanguage: string
   ): Promise<Set<string>> {
@@ -134,7 +134,7 @@ export class Translate {
           }
         });
       // gather inner sections in a flat structure for further elaboraton
-      const innerSections = new Array<{ data: any; template: Array<PDFTemplateSection> }>();
+      const innerSections = new Array<{ data: any; template: PDFTemplateSection[] }>();
       template
         .filter(s => s.isEither(PDFTemplateSectionTypes.INNER_SECTION, PDFTemplateSectionTypes.REPEATED_INNER_SECTION))
         .forEach(s => {
@@ -177,5 +177,5 @@ export interface TranslateParameters {
    * The name of the terminology list file to be used in the TranslateText request.
    * Terminology lists can contain a maximum of 256 terms.
    */
-  terminologyNames?: Array<string>;
+  terminologyNames?: string[];
 }

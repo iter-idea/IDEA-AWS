@@ -116,20 +116,17 @@ export class Cognito {
         MessageAction: 'RESEND'
       };
       if (options.temporaryPassword) params.TemporaryPassword = options.temporaryPassword;
-      new CognitoIdentityServiceProvider().adminCreateUser(
-        params,
-        (err: Error, data: CognitoIdentityServiceProvider.AdminCreateUserResponse) => {
-          logger('COGNITO RESEND PASSWORD', err);
-          if (err)
-            switch (err.name) {
-              case 'UnsupportedUserStateException':
-                return reject(new Error('USER_ALREADY_CONFIRMED_PASSWORD'));
-              default:
-                return reject(err);
-            }
-          else resolve();
-        }
-      );
+      new CognitoIdentityServiceProvider().adminCreateUser(params, (err: Error) => {
+        logger('COGNITO RESEND PASSWORD', err);
+        if (err)
+          switch (err.name) {
+            case 'UnsupportedUserStateException':
+              return reject(new Error('USER_ALREADY_CONFIRMED_PASSWORD'));
+            default:
+              return reject(err);
+          }
+        else resolve();
+      });
     });
   }
 
@@ -226,7 +223,7 @@ export class Cognito {
               PreviousPassword: oldPassword,
               ProposedPassword: newPassword
             },
-            (err: Error, _: any) => {
+            (err: Error) => {
               logger('COGNITO UPDATE PASSWORD', err);
               if (err) reject(err);
               else resolve();

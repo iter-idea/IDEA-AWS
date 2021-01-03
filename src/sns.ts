@@ -121,5 +121,5 @@ export interface SNSPublishParams {
   /**
    * If set, message and platform will be ignored and the content of this attribute will be preferred.
    */
-  json?: object;
+  json?: any;
 }

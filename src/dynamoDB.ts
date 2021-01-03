@@ -169,20 +169,20 @@ export class DynamoDB {
    */
   public batchGet(
     table: string,
-    keys: Array<DDB.DocumentClient.Key>,
+    keys: DDB.DocumentClient.Key[],
     ignoreErr?: boolean
-  ): Promise<Array<DDB.DocumentClient.AttributeMap | any>> {
+  ): Promise<(DDB.DocumentClient.AttributeMap | any)[]> {
     return new Promise((resolve, reject) => {
       if (!keys.length) {
-        logger(`BATCH GET ${table}`, null, `No elements to get`);
+        logger(`BATCH GET ${table}`, null, 'No elements to get');
         resolve([]);
       } else this.batchGetHelper(table, keys, [], Boolean(ignoreErr), 0, 100, resolve, reject);
     });
   }
   protected batchGetHelper(
     t: string,
-    keys: Array<DDB.DocumentClient.Key>,
-    elements: Array<DDB.DocumentClient.AttributeMap>,
+    keys: DDB.DocumentClient.Key[],
+    elements: DDB.DocumentClient.AttributeMap[],
     iErr: boolean,
     curr: number,
     size: number,
@@ -210,10 +210,10 @@ export class DynamoDB {
    * Put an array of items in a DynamoDb table, avoiding the limits of DynamoDB's BatchWriteItem.
    * @param ignoreErr if true, ignore the errors and continue the bulk op
    */
-  public batchPut(table: string, items: Array<DDB.DocumentClient.AttributeMap>, ignoreErr?: boolean): Promise<void> {
+  public batchPut(table: string, items: DDB.DocumentClient.AttributeMap[], ignoreErr?: boolean): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!items.length) {
-        logger(`BATCH WRITE (PUT) ${table}`, null, `No elements to write`);
+        logger(`BATCH WRITE (PUT) ${table}`, null, 'No elements to write');
         resolve();
       } else this.batchWriteHelper(table, items, true, Boolean(ignoreErr), 0, 25, resolve, reject);
     });
@@ -222,17 +222,17 @@ export class DynamoDB {
    * Delete an array of items from a DynamoDb table, avoiding the limits of DynamoDB's BatchWriteItem.
    * @param ignoreErr if true, ignore the errors and continue the bulk op.
    */
-  public batchDelete(table: string, keys: Array<DDB.DocumentClient.Key>, ignoreErr?: boolean): Promise<void> {
+  public batchDelete(table: string, keys: DDB.DocumentClient.Key[], ignoreErr?: boolean): Promise<void> {
     return new Promise((resolve, reject) => {
       if (keys.length === 0) {
-        logger(`BATCH WRITE (DELETE) ${table}`, null, `No elements to write`);
+        logger(`BATCH WRITE (DELETE) ${table}`, null, 'No elements to write');
         resolve();
       } else this.batchWriteHelper(table, keys, false, Boolean(ignoreErr), 0, 25, resolve, reject);
     });
   }
   protected batchWriteHelper(
     t: string,
-    items: Array<DDB.DocumentClient.AttributeMap>,
+    items: DDB.DocumentClient.AttributeMap[],
     isPut: boolean,
     iErr: boolean,
     curr: number,
@@ -243,14 +243,10 @@ export class DynamoDB {
     // prepare the structure for the bulk operation
     const batch: any = { RequestItems: {} };
     if (isPut) {
-      batch.RequestItems[t] = items.slice(curr, curr + size).map(i => {
-        return { PutRequest: { Item: i } };
-      });
+      batch.RequestItems[t] = items.slice(curr, curr + size).map(i => ({ PutRequest: { Item: i } }));
     } else {
       // isDelete
-      batch.RequestItems[t] = items.slice(curr, curr + size).map(k => {
-        return { DeleteRequest: { Key: k } };
-      });
+      batch.RequestItems[t] = items.slice(curr, curr + size).map(k => ({ DeleteRequest: { Key: k } }));
     }
     // execute the bulk operation
     this.dynamo.batchWrite(batch, (err: Error) => {
@@ -268,7 +264,7 @@ export class DynamoDB {
    * Query a DynamoDb table, avoiding the limits of DynamoDB's Query.
    * @param params the params to apply to DynamoDB's function
    */
-  public query(params: DDB.DocumentClient.QueryInput): Promise<Array<DDB.DocumentClient.AttributeMap | any>> {
+  public query(params: DDB.DocumentClient.QueryInput): Promise<(DDB.DocumentClient.AttributeMap | any)[]> {
     return new Promise((resolve, reject) => {
       this.queryScanHelper(params, [], true, resolve, reject);
     });
@@ -277,14 +273,14 @@ export class DynamoDB {
    * Scan a DynamoDb table, avoiding the limits of DynamoDB's Query.
    * @param params the params to apply to DynamoDB's function
    */
-  public scan(params: DDB.DocumentClient.ScanInput): Promise<Array<DDB.DocumentClient.AttributeMap | any>> {
+  public scan(params: DDB.DocumentClient.ScanInput): Promise<(DDB.DocumentClient.AttributeMap | any)[]> {
     return new Promise((resolve, reject) => {
       this.queryScanHelper(params, [], false, resolve, reject);
     });
   }
   protected queryScanHelper(
     params: DDB.DocumentClient.QueryInput | DDB.DocumentClient.ScanInput,
-    items: Array<DDB.DocumentClient.AttributeMap>,
+    items: DDB.DocumentClient.AttributeMap[],
     isQuery: boolean,
     resolve: any,
     reject: any
@@ -313,7 +309,7 @@ export class DynamoDB {
    * Query a DynamoDb table in the traditional way (no pagination or data mapping).
    * @param params the params to apply to DynamoDB's function
    */
-  public queryClassic(params: DDB.DocumentClient.QueryInput): Promise<Array<DDB.DocumentClient.QueryOutput>> {
+  public queryClassic(params: DDB.DocumentClient.QueryInput): Promise<DDB.DocumentClient.QueryOutput[]> {
     return new Promise((resolve, reject) => {
       this.queryScanClassicHelper(params, true, resolve, reject);
     });
@@ -322,7 +318,7 @@ export class DynamoDB {
    * Scan a DynamoDb table in the traditional way (no pagination or data mapping).
    * @param params the params to apply to DynamoDB's function
    */
-  public scanClassic(params: DDB.DocumentClient.ScanInput): Promise<Array<DDB.DocumentClient.ScanOutput>> {
+  public scanClassic(params: DDB.DocumentClient.ScanInput): Promise<DDB.DocumentClient.ScanOutput[]> {
     return new Promise((resolve, reject) => {
       this.queryScanClassicHelper(params, false, resolve, reject);
     });
@@ -348,14 +344,14 @@ export class DynamoDB {
    * Execute a series of max 10 write operations in a single transaction.
    * @param ops the operations to execute in the transaction
    */
-  public transactWrites(ops: Array<DDB.DocumentClient.TransactWriteItem>): Promise<void> {
+  public transactWrites(ops: DDB.DocumentClient.TransactWriteItem[]): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!ops.length) {
-        logger(`TRANSACTION WRITES`, null, `No elements to write`);
+        logger('TRANSACTION WRITES', null, 'No elements to write');
         resolve();
       } else
         this.dynamo.transactWrite({ TransactItems: ops.slice(0, 10) }, (err: Error) => {
-          logger(`TRANSACTION WRITES`, err);
+          logger('TRANSACTION WRITES', err);
           if (err) reject(err);
           else resolve();
         });
@@ -366,7 +362,7 @@ export class DynamoDB {
    * Creates a set of elements (DynamoDB format) inferring the type of set from the type of the first element.
    */
   public createSet(
-    array: Array<number> | Array<string>,
+    array: number[] | string[],
     options?: DDB.DocumentClient.CreateSetOptions
   ): DDB.DocumentClient.DynamoDbSet {
     return this.dynamo.createSet(array, options);
