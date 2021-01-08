@@ -59,7 +59,7 @@ export class SNS {
             break;
           case PushNotificationsPlatforms.FCM:
             structuredMessage = {
-              GCM: JSON.stringify({ notification: { body: params.message, title: params.title } })
+              GCM: JSON.stringify({ notification: { body: params.message, title: params.message } })
             };
             break;
           default:
@@ -112,11 +112,6 @@ export interface SNSPublishParams {
    * The endpoint of the notification.
    */
   endpoint: string;
-  /**
-   * The title of the notification.
-   * Note: iOS devices require it to fire, Android devices will ignore it.
-   */
-  title: string;
   /**
    * The message to send.
    */
