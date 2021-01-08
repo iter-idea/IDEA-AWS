@@ -1,9 +1,8 @@
-export { ResourceController, ResourceControllerOptions } from './resourceController';
-export { DynamoDB } from './dynamoDB';
-export { Cognito } from './cognito';
-export { S3 } from './s3';
-export { SES } from './ses';
-export { SNS } from './sns';
-export { Translate, TranslateParameters } from './translate';
-export { Attachments } from './attachments';
-export { HTML2PDF, HTML2PDFParameters, PDF_TEMPLATE } from './html2pdf';
+export * from './resourceController';
+export * from './dynamoDB';
+export * from './cognito';
+export * from './s3';
+export * from './ses';
+export * from './sns';
+export * from './translate';
+export * from './attachments';

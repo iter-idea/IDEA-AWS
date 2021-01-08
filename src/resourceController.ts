@@ -10,7 +10,6 @@ import { SES } from './ses';
 import { SNS } from './sns';
 import { Translate } from './translate';
 import { Attachments } from './attachments';
-import { HTML2PDF } from './html2pdf';
 
 /**
  * An abstract class to inherit to manage API requests (AWS API Gateway) in an AWS Lambda function.
@@ -43,7 +42,6 @@ export abstract class ResourceController {
   protected _sns: SNS;
   protected _translate: Translate;
   protected _attachments: Attachments;
-  protected _html2pdf: HTML2PDF;
 
   protected currentLang: string;
   protected defaultLang: string;
@@ -312,16 +310,6 @@ export abstract class ResourceController {
     this._attachments = attachments;
   }
   /**
-   * Manage PDF creation from HTML source.
-   */
-  get html2pdf(): HTML2PDF {
-    if (!this._html2pdf) this._html2pdf = new HTML2PDF();
-    return this._html2pdf;
-  }
-  set html2pdf(html2pdf: HTML2PDF) {
-    this._html2pdf = html2pdf;
-  }
-  /**
    * Store the log associated to the request (no response/error handling).
    */
   protected storeLog(succeeded: boolean) {
@@ -344,7 +332,7 @@ export abstract class ResourceController {
    * Check whether shared resource exists in the back-end (translation, template, etc.).
    */
   protected sharedResourceExists(path: string): boolean {
-    return existsSync(`./_shared/${path}`);
+    return existsSync(`assets/${path}`);
   }
   /**
    * Load a shared resource in the back-end (translation, template, etc.).
@@ -352,7 +340,7 @@ export abstract class ResourceController {
    */
   protected loadSharedResource(path: string, encoding?: string) {
     encoding = encoding || 'utf-8';
-    return readFileSync(`./_shared/${path}`, { encoding });
+    return readFileSync(`assets/${path}`, { encoding });
   }
 
   ///

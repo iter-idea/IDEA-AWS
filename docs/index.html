@@ -2733,9 +2733,6 @@ img {
 			<a href="classes/dynamodb.html" class="tsd-kind-icon">DynamoDB</a>
 		</li>
 		<li class=" tsd-kind-class">
-			<a href="classes/html2pdf.html" class="tsd-kind-icon">HTML2PDF</a>
-		</li>
-		<li class=" tsd-kind-class">
 			<a href="classes/resourcecontroller.html" class="tsd-kind-icon">Resource<wbr>Controller</a>
 		</li>
 		<li class=" tsd-kind-class">
@@ -2775,9 +2772,6 @@ img {
 			<a href="interfaces/getobjectoptions.html" class="tsd-kind-icon">Get<wbr>Object<wbr>Options</a>
 		</li>
 		<li class=" tsd-kind-interface">
-			<a href="interfaces/html2pdfparameters.html" class="tsd-kind-icon">HTML2PDFParameters</a>
-		</li>
-		<li class=" tsd-kind-interface">
 			<a href="interfaces/internalapirequestparams.html" class="tsd-kind-icon">InternalAPIRequest<wbr>Params</a>
 		</li>
 		<li class=" tsd-kind-interface">
@@ -2802,9 +2796,6 @@ img {
 			<a href="interfaces/translateparameters.html" class="tsd-kind-icon">Translate<wbr>Parameters</a>
 		</li>
 		<li class=" tsd-kind-variable">
-			<a href="globals.html#pdf_template" class="tsd-kind-icon">PDF_<wbr>TEMPLATE</a>
-		</li>
-		<li class=" tsd-kind-variable">
 			<a href="globals.html#uuidv4" class="tsd-kind-icon">UUIDV4</a>
 		</li>
 	</ul>
@@ -2819,11 +2810,11 @@ img {
 			<a href="#installation" id="installation" style="color: inherit; text-decoration: none;">
 				<h2>Installation</h2>
 			</a>
-			<p><code>npm install idea-aws</code></p>
-			<a href="#usage" id="usage" style="color: inherit; text-decoration: none;">
-				<h2>Usage</h2>
+			<p><code>npm i idea-aws</code></p>
+			<a href="#usage-example" id="usage-example" style="color: inherit; text-decoration: none;">
+				<h2>Usage example</h2>
 			</a>
-			<pre><code><span class="hljs-keyword">import</span> IdeaAWS = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;idea-aws&#x27;</span>);</code></pre>
+			<pre><code><span class="hljs-keyword">import</span> { ResourceController } <span class="hljs-keyword">from</span> <span class="hljs-string">&#x27;idea-aws&#x27;</span>;</code></pre>
 			<a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">
 				<h2>Documentation</h2>
 			</a>
@@ -2831,10 +2822,7 @@ img {
 			<a href="#notes" id="notes" style="color: inherit; text-decoration: none;">
 				<h2>Notes</h2>
 			</a>
-			<ul>
-				<li>The AWS-SDK is a back-end only package, which is already pre-installed in any Lambda Function;
-				therefore, we included it only as devDependency.</li>
-			</ul>
+			<p>The AWS-SDK is already pre-installed in every Lambda Function; therefore, it&#39;s a devDependency.</p>
 		</div>
 		<div style="position:relative;"><a name="typedoc-main-index" class="tsd-anchor"></a></div>
 		<section class="tsd-panel-group tsd-index-group">
@@ -2853,7 +2841,6 @@ img {
 							<li class="tsd-kind-class"><a href="classes/attachments.html" class="tsd-kind-icon">Attachments</a></li>
 							<li class="tsd-kind-class"><a href="classes/cognito.html" class="tsd-kind-icon">Cognito</a></li>
 							<li class="tsd-kind-class"><a href="classes/dynamodb.html" class="tsd-kind-icon">DynamoDB</a></li>
-							<li class="tsd-kind-class"><a href="classes/html2pdf.html" class="tsd-kind-icon">HTML2PDF</a></li>
 							<li class="tsd-kind-class"><a href="classes/resourcecontroller.html" class="tsd-kind-icon">Resource<wbr>Controller</a></li>
 							<li class="tsd-kind-class"><a href="classes/s3.html" class="tsd-kind-icon">S3</a></li>
 							<li class="tsd-kind-class"><a href="classes/ses.html" class="tsd-kind-icon">SES</a></li>
@@ -2872,7 +2859,6 @@ img {
 							<li class="tsd-kind-interface"><a href="interfaces/emailattachment.html" class="tsd-kind-icon">Email<wbr>Attachment</a></li>
 							<li class="tsd-kind-interface"><a href="interfaces/emaildata.html" class="tsd-kind-icon">Email<wbr>Data</a></li>
 							<li class="tsd-kind-interface"><a href="interfaces/getobjectoptions.html" class="tsd-kind-icon">Get<wbr>Object<wbr>Options</a></li>
-							<li class="tsd-kind-interface"><a href="interfaces/html2pdfparameters.html" class="tsd-kind-icon">HTML2PDFParameters</a></li>
 							<li class="tsd-kind-interface"><a href="interfaces/internalapirequestparams.html" class="tsd-kind-icon">InternalAPIRequest<wbr>Params</a></li>
 							<li class="tsd-kind-interface"><a href="interfaces/listobjectsoptions.html" class="tsd-kind-icon">List<wbr>Objects<wbr>Options</a></li>
 							<li class="tsd-kind-interface"><a href="interfaces/putobjectoptions.html" class="tsd-kind-icon">Put<wbr>Object<wbr>Options</a></li>
@@ -2886,7 +2872,6 @@ img {
 					<section class="tsd-index-section ">
 						<h3>Variables</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-variable"><a href="globals.html#pdf_template" class="tsd-kind-icon">PDF_<wbr>TEMPLATE</a></li>
 							<li class="tsd-kind-variable"><a href="globals.html#uuidv4" class="tsd-kind-icon">UUIDV4</a></li>
 						</ul>
 					</section>
@@ -2896,22 +2881,12 @@ img {
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Variables</h2>
 			<section class="tsd-panel tsd-member tsd-kind-variable">
-				<a name="pdf_template" class="tsd-anchor"></a>
-				<h3><span class="tsd-flag ts-flagConst">Const</span> PDF_<wbr>TEMPLATE</h3>
-				<div class="tsd-signature tsd-kind-icon">PDF_<wbr>TEMPLATE<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">"&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;head&gt;&lt;meta charset&#x3D;&quot;utf8&quot; /&gt;&lt;title&gt;PDF template&lt;/title&gt;&lt;link href&#x3D;&quot;https://fonts.googleapis.com/css?family&#x3D;Lato&quot; rel&#x3D;&quot;stylesheet&quot;&gt;&lt;style&gt;html,body {margin: 0;padding: 0;font-size: 10pt;font-family: &#x27;Lato&#x27;, Arial, Helvetica, sans-serif;}table {width: 100%;table-layout: fixed;font-size: 1rem;}table,tr,td {margin: 0;padding: 0;border-spacing: 0;border-collapse: collapse;vertical-align: middle;}.dontBreak {page-break-inside: avoid !important;}.pageBreak {page-break-after: always;}table.border td {border: 1px solid #eee;}td &gt; p {margin: 0;padding: 0;}.normalRow td {padding: 6px 8px;letter-spacing: -0.2px;}td .label {display: block;font-size: 0.8rem;font-weight: bold;color: #555;}.headerTable {margin-top: 20px;page-break-inside: avoid;}.headerTable::after {/* trick to avoid a page break right after the header */content: &quot;-&quot;;color: white;display: block;height: 150px;margin-bottom: -150px;}.headerTitle {padding: 4px 8px;background-color: #444;border: 1px solid transparent;border-radius: 5px;font-size: 0.9rem;font-weight: 500;color: white;}.numericField {text-align: right;}.checkbox {width: 12px;padding-top: 2px;}&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;!-- PDF TEMPLATE BEGIN --&gt;&lt;div class&#x3D;&quot;pdfTemplate&quot;&gt;{{#each _template as |section|}}{{! page break }}{{#ifEqual section.type 0}}&lt;div class&#x3D;&quot;pageBreak&quot;&gt;&lt;/div&gt;{{/ifEqual}}{{! empty row }}{{#ifEqual section.type 1}}&lt;br /&gt;{{/ifEqual}}{{! row }}{{#ifEqual section.type 2}}&lt;table class&#x3D;&quot;normalRow dontBreak {{#if row.border}}border{{/if}}&quot;&gt;&lt;tr&gt;{{#each section.columns as |content|}}{{#if content}}{{#if (doesColumnContainAField section @index)}}{{! field (that may be repeated for more cols) }}{{#with content as |field|}}{{! simple field }}{{#if field.code}}&lt;tdcolspan&#x3D;&quot;{{getColumnFieldSize section @index}}&quot;class&#x3D;&quot;{{#if (isFieldANumber _data field.code)}}numericField{{/if}}&quot;&gt;&lt;span class&#x3D;&quot;label&quot;&gt;{{translate (label field.label)}}&amp;nbsp;&lt;/span&gt;{{#if (isFieldABoolean _data field.code)}}{{#if (get _data field.code)}}&lt;imgclass&#x3D;&quot;checkbox&quot;src&#x3D;&quot;https://s3.eu-west-2.amazonaws.com/scarlett-app/assets/icons/check-true.png&quot;/&gt;{{else}}&lt;imgclass&#x3D;&quot;checkbox&quot;src&#x3D;&quot;https://s3.eu-west-2.amazonaws.com/scarlett-app/assets/icons/check-false.png&quot;/&gt;{{/if}}{{else}}{{mdToHTML (translate (getOrDash _data field.code))}}{{/if}}&lt;/td&gt;{{! complext field }}{{else}}&lt;td colspan&#x3D;&quot;{{getColumnFieldSize section @index}}&quot;&gt;{{#ifEqual 12 (getColumnFieldSize section @index)}}{{! no extra spacing }}{{else}}&lt;span class&#x3D;&quot;label&quot;&gt;&amp;nbsp;&lt;/span&gt;{{/ifEqual}}{{mdToHTML (substituteVars _data (translate (label field.content)))}}&lt;/td&gt;{{/if}}{{/with}}{{/if}}{{else}}{{! empty col }}&lt;td colspan&#x3D;&quot;1&quot;&gt;&lt;/td&gt;{{/if}}{{/each}}&lt;/tr&gt;&lt;/table&gt;{{/ifEqual}}{{! header }}{{#ifEqual section.type 3}}&lt;table class&#x3D;&quot;headerTable&quot;&gt;&lt;tr&gt;&lt;td class&#x3D;&quot;headerTitle&quot;&gt;{{mdToHTML (substituteVars _data (translate (label section.title)))}}&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;{{/ifEqual}}{{! inner section }}{{#ifEqual section.type 4}}{{#if (get _data section.context)}}{{#if (label section.title)}}&lt;table class&#x3D;&quot;headerTable&quot;&gt;&lt;tr&gt;&lt;td class&#x3D;&quot;headerTitle&quot;&gt;{{translate (label section.title)}}&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;{{/if}}{{inception section.innerTemplate (get _data section.context)}}{{/if}}{{/ifEqual}}{{! repeated inner section }}{{#ifEqual section.type 5}}{{#with (get _data section.context) as |innerSections|}}{{#if innerSections.length}}{{#if (label section.title)}}&lt;table class&#x3D;&quot;headerTable&quot;&gt;&lt;tr&gt;&lt;td class&#x3D;&quot;headerTitle&quot;&gt;{{translate (label section.title)}}&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;{{/if}}{{/if}}{{#each innerSections as |innerSection|}}{{inception section.innerTemplate innerSection}}{{/each}}{{/with}}{{/ifEqual}}{{/each}}&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;"</span><span class="tsd-signature-symbol"> = &#x60;&lt;!DOCTYPE html&gt;&lt;html&gt;&lt;head&gt;&lt;meta charset&#x3D;&quot;utf8&quot; /&gt;&lt;title&gt;PDF template&lt;/title&gt;&lt;link href&#x3D;&quot;https://fonts.googleapis.com/css?family&#x3D;Lato&quot; rel&#x3D;&quot;stylesheet&quot;&gt;&lt;style&gt;html,body {margin: 0;padding: 0;font-size: 10pt;font-family: &#x27;Lato&#x27;, Arial, Helvetica, sans-serif;}table {width: 100%;table-layout: fixed;font-size: 1rem;}table,tr,td {margin: 0;padding: 0;border-spacing: 0;border-collapse: collapse;vertical-align: middle;}.dontBreak {page-break-inside: avoid !important;}.pageBreak {page-break-after: always;}table.border td {border: 1px solid #eee;}td &gt; p {margin: 0;padding: 0;}.normalRow td {padding: 6px 8px;letter-spacing: -0.2px;}td .label {display: block;font-size: 0.8rem;font-weight: bold;color: #555;}.headerTable {margin-top: 20px;page-break-inside: avoid;}.headerTable::after {/* trick to avoid a page break right after the header */content: &quot;-&quot;;color: white;display: block;height: 150px;margin-bottom: -150px;}.headerTitle {padding: 4px 8px;background-color: #444;border: 1px solid transparent;border-radius: 5px;font-size: 0.9rem;font-weight: 500;color: white;}.numericField {text-align: right;}.checkbox {width: 12px;padding-top: 2px;}&lt;/style&gt;&lt;/head&gt;&lt;body&gt;&lt;!-- PDF TEMPLATE BEGIN --&gt;&lt;div class&#x3D;&quot;pdfTemplate&quot;&gt;{{#each _template as |section|}}{{! page break }}{{#ifEqual section.type 0}}&lt;div class&#x3D;&quot;pageBreak&quot;&gt;&lt;/div&gt;{{/ifEqual}}{{! empty row }}{{#ifEqual section.type 1}}&lt;br /&gt;{{/ifEqual}}{{! row }}{{#ifEqual section.type 2}}&lt;table class&#x3D;&quot;normalRow dontBreak {{#if row.border}}border{{/if}}&quot;&gt;&lt;tr&gt;{{#each section.columns as |content|}}{{#if content}}{{#if (doesColumnContainAField section @index)}}{{! field (that may be repeated for more cols) }}{{#with content as |field|}}{{! simple field }}{{#if field.code}}&lt;tdcolspan&#x3D;&quot;{{getColumnFieldSize section @index}}&quot;class&#x3D;&quot;{{#if (isFieldANumber _data field.code)}}numericField{{/if}}&quot;&gt;&lt;span class&#x3D;&quot;label&quot;&gt;{{translate (label field.label)}}&amp;nbsp;&lt;/span&gt;{{#if (isFieldABoolean _data field.code)}}{{#if (get _data field.code)}}&lt;imgclass&#x3D;&quot;checkbox&quot;src&#x3D;&quot;https://s3.eu-west-2.amazonaws.com/scarlett-app/assets/icons/check-true.png&quot;/&gt;{{else}}&lt;imgclass&#x3D;&quot;checkbox&quot;src&#x3D;&quot;https://s3.eu-west-2.amazonaws.com/scarlett-app/assets/icons/check-false.png&quot;/&gt;{{/if}}{{else}}{{mdToHTML (translate (getOrDash _data field.code))}}{{/if}}&lt;/td&gt;{{! complext field }}{{else}}&lt;td colspan&#x3D;&quot;{{getColumnFieldSize section @index}}&quot;&gt;{{#ifEqual 12 (getColumnFieldSize section @index)}}{{! no extra spacing }}{{else}}&lt;span class&#x3D;&quot;label&quot;&gt;&amp;nbsp;&lt;/span&gt;{{/ifEqual}}{{mdToHTML (substituteVars _data (translate (label field.content)))}}&lt;/td&gt;{{/if}}{{/with}}{{/if}}{{else}}{{! empty col }}&lt;td colspan&#x3D;&quot;1&quot;&gt;&lt;/td&gt;{{/if}}{{/each}}&lt;/tr&gt;&lt;/table&gt;{{/ifEqual}}{{! header }}{{#ifEqual section.type 3}}&lt;table class&#x3D;&quot;headerTable&quot;&gt;&lt;tr&gt;&lt;td class&#x3D;&quot;headerTitle&quot;&gt;{{mdToHTML (substituteVars _data (translate (label section.title)))}}&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;{{/ifEqual}}{{! inner section }}{{#ifEqual section.type 4}}{{#if (get _data section.context)}}{{#if (label section.title)}}&lt;table class&#x3D;&quot;headerTable&quot;&gt;&lt;tr&gt;&lt;td class&#x3D;&quot;headerTitle&quot;&gt;{{translate (label section.title)}}&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;{{/if}}{{inception section.innerTemplate (get _data section.context)}}{{/if}}{{/ifEqual}}{{! repeated inner section }}{{#ifEqual section.type 5}}{{#with (get _data section.context) as |innerSections|}}{{#if innerSections.length}}{{#if (label section.title)}}&lt;table class&#x3D;&quot;headerTable&quot;&gt;&lt;tr&gt;&lt;td class&#x3D;&quot;headerTitle&quot;&gt;{{translate (label section.title)}}&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;{{/if}}{{/if}}{{#each innerSections as |innerSection|}}{{inception section.innerTemplate innerSection}}{{/each}}{{/with}}{{/ifEqual}}{{/each}}&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;&#x60;</span></div>
-				<aside class="tsd-sources">
-					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/3d1563d/src/html2pdf.ts#L126">src/html2pdf.ts:126</a></li>
-					</ul>
-				</aside>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-variable">
 				<a name="uuidv4" class="tsd-anchor"></a>
 				<h3>UUIDV4</h3>
 				<div class="tsd-signature tsd-kind-icon">UUIDV4<span class="tsd-signature-symbol">:</span> &lt;T&gt;<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">V4Options</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">undefined</span>, buffer<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">T</span>, offset<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">T</span><span class="tsd-signature-symbol"> &amp; </span><span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">V4Options</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol"> =&gt; </span><span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/3d1563d/src/dynamoDB.ts#L1">src/dynamoDB.ts:1</a></li>
+						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/6346a74/src/dynamoDB.ts#L1">src/dynamoDB.ts:1</a></li>
 					</ul>
 				</aside>
 			</section>

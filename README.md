@@ -4,12 +4,12 @@ AWS wrappers to use in IDEA's back-ends
 
 ## Installation
 
-`npm install idea-aws`
+`npm i idea-aws`
 
-## Usage
+## Usage example
 
 ```
-import IdeaAWS = require('idea-aws');
+import { ResourceController } from 'idea-aws';
 ```
 
 ## Documentation
@@ -18,5 +18,4 @@ Documentation generated with TypeDoc: [link](https://uatisdeproblem.github.io/ID
 
 ## Notes
 
-- The AWS-SDK is a back-end only package, which is already pre-installed in any Lambda Function;
-  therefore, we included it only as devDependency.
+The AWS-SDK is already pre-installed in every Lambda Function; therefore, it's a devDependency.

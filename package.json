@@ -1,6 +1,6 @@
 {
   "name": "idea-aws",
-  "version": "3.2.3",
+  "version": "3.2.5",
   "description": "AWS wrappers to use in IDEA's back-ends",
   "engines": {
     "node": ">=6.0.0"
@@ -33,8 +33,7 @@
   },
   "homepage": "https://uatisdeproblem.github.io/IDEA-AWS",
   "dependencies": {
-    "handlebars": "^4.7.6",
-    "idea-toolbox": "^6.2.0",
+    "idea-toolbox": "^6.2.1",
     "nodemailer": "^5.1.1",
     "shortid": "^2.2.14",
     "uuid": "^3.3.2"
@@ -44,7 +43,6 @@
     "@types/node": "^11.9.5",
     "@types/nodemailer": "^4.6.6",
     "@types/shortid": "0.0.29",
-    "@types/showdown": "^1.9.2",
     "@types/uuid": "^3.4.4",
     "@typescript-eslint/eslint-plugin": "4.3.0",
     "@typescript-eslint/parser": "4.3.0",
@@ -53,7 +51,11 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jsdoc": "^30.7.9",
     "eslint-plugin-prefer-arrow": "^1.2.2",
+    "ts-loader": "^8.0.14",
     "typedoc": "^0.17.8",
-    "typescript": "^3.9.7"
+    "typescript": "^3.9.7",
+    "webpack": "^5.11.1",
+    "webpack-cli": "^4.3.1",
+    "webpack-node-externals": "^2.5.2"
   }
 }
