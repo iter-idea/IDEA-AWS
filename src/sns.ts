@@ -58,7 +58,9 @@ export class SNS {
             structuredMessage = { APNS_SANDBOX: JSON.stringify({ aps: { alert: params.message } }) };
             break;
           case PushNotificationsPlatforms.FCM:
-            structuredMessage = { GCM: JSON.stringify({ notification: { text: params.message } }) };
+            structuredMessage = {
+              GCM: JSON.stringify({ notification: { body: params.message, title: params.title } })
+            };
             break;
           default:
             return reject(new Error('UNSUPPORTED_PLATFORM'));
@@ -110,6 +112,11 @@ export interface SNSPublishParams {
    * The endpoint of the notification.
    */
   endpoint: string;
+  /**
+   * The title of the notification.
+   * Note: iOS devices require it to fire, Android devices will ignore it.
+   */
+  title: string;
   /**
    * The message to send.
    */
