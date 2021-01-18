@@ -174,6 +174,32 @@ export class Cognito {
   }
 
   /**
+   * Given a username and a refresh token (and pool data), refresh the session and return the new tokens.
+   */
+  public refreshSession(
+    email: string,
+    refreshToken: string,
+    cognitoUserPoolId: string,
+    cognitoUserPoolClientId: string
+  ): Promise<CognitoIdentityServiceProvider.AuthenticationResultType> {
+    return new Promise((resolve, reject) => {
+      new CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' }).adminInitiateAuth(
+        {
+          UserPoolId: cognitoUserPoolId,
+          ClientId: cognitoUserPoolClientId,
+          AuthFlow: 'REFRESH_TOKEN_AUTH',
+          AuthParameters: { USERNAME: email, REFRESH_TOKEN: refreshToken }
+        },
+        (err: Error, data: CognitoIdentityServiceProvider.AdminInitiateAuthResponse) => {
+          logger('COGNITO REFRESH TOKEN', err);
+          if (err || !data.AuthenticationResult) reject(err);
+          else resolve(data.AuthenticationResult);
+        }
+      );
+    });
+  }
+
+  /**
    * Change the email address (== username) associated to a user.
    */
   public updateEmail(email: string, newEmail: string, cognitoUserPoolId: string): Promise<void> {
