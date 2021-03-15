@@ -83,8 +83,20 @@ export abstract class ResourceController {
     // set the logs to print objects deeper
     require('util').inspect.defaultOptions.depth = null;
 
-    // print the initial log, making sure it
-    const info = { principalId: this.principalId, queryParams: this.queryParams, body: this.body };
+    // acquire some info about the client, if available
+    let version = '?',
+      platform = '?';
+    if (this.queryParams['_v']) {
+      version = this.queryParams['_v'];
+      delete this.queryParams['_v'];
+    }
+    if (this.queryParams['_p']) {
+      platform = this.queryParams['_p'];
+      delete this.queryParams['_p'];
+    }
+
+    // print the initial log
+    const info = { principalId: this.principalId, queryParams: this.queryParams, body: this.body, version, platform };
     logger(`START: ${this.httpMethod} ${this.stage} ${this.path}`, null, info, true);
   }
 
