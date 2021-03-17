@@ -24,7 +24,8 @@
     "sns",
     "lambda",
     "translate",
-    "cognito"
+    "cognito",
+    "comprehend"
   ],
   "author": "ITER IDEA <info@iter-idea.com> (https://iter-idea.com)",
   "license": "ISC",
