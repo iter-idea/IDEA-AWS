@@ -10,6 +10,7 @@ import { SES } from './ses';
 import { SNS } from './sns';
 import { Translate } from './translate';
 import { Attachments } from './attachments';
+import { Comprehend } from './comprehend';
 
 /**
  * An abstract class to inherit to manage API requests (AWS API Gateway) in an AWS Lambda function.
@@ -42,6 +43,7 @@ export abstract class ResourceController {
   protected _sns: SNS;
   protected _translate: Translate;
   protected _attachments: Attachments;
+  protected _comprehend: Comprehend;
 
   protected currentLang: string;
   protected defaultLang: string;
@@ -305,6 +307,13 @@ export abstract class ResourceController {
   }
   set translate(translate: Translate) {
     this._translate = translate;
+  }
+  get comprehend(): Comprehend {
+    if (!this._comprehend) this._comprehend = new Comprehend();
+    return this._comprehend;
+  }
+  set comprehend(comprehend: Comprehend) {
+    this._comprehend = comprehend;
   }
 
   ///
