@@ -34,7 +34,7 @@
   },
   "homepage": "https://uatisdeproblem.github.io/IDEA-AWS",
   "dependencies": {
-    "idea-toolbox": "^6.2.14",
+    "idea-toolbox": "^6.3.0",
     "nodemailer": "^5.1.1",
     "shortid": "^2.2.14",
     "uuid": "^3.3.2"

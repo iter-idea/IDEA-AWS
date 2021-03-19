@@ -1,4 +1,5 @@
 import { AWSError, Comprehend as AmazonComprehend } from 'aws-sdk';
+import { Sentiment } from 'idea-toolbox';
 
 /**
  * A wrapper for Amazon Comprehend.
@@ -16,16 +17,16 @@ export class Comprehend {
   /**
    * Inspects text and returns an inference of the prevailing sentiment (POSITIVE, NEUTRAL, MIXED, or NEGATIVE).
    */
-  public detectSentiment(params: ComprehendParameters): Promise<string> {
+  public detectSentiment(params: ComprehendParameters): Promise<Sentiment> {
     return new Promise((resolve, reject) => {
       // check for obligatory params
-      if (!params.languageCode || !params.text) return reject(new Error('MISSING_PARAMETERS'));
+      if (!params.language || !params.text) return reject(new Error('MISSING_PARAMETERS'));
       // execute the sentiment detection
       this.comprehend.detectSentiment(
-        { LanguageCode: params.languageCode, Text: params.text },
+        { LanguageCode: params.language, Text: params.text },
         (err: AWSError, data: AmazonComprehend.DetectSentimentResponse) => {
           if (err) reject(err);
-          else resolve(data.Sentiment);
+          else resolve(data.Sentiment as Sentiment);
         }
       );
     });
@@ -34,11 +35,11 @@ export class Comprehend {
 
 export interface ComprehendParameters {
   /**
-   * The language of the input documents. You can specify any of the primary languages supported by Amazon Comprehend.
-   * All documents must be in the same language. Required.
+   * The language of the input contents. You can specify any of the primary languages supported by Amazon Comprehend.
+   * All contents must be in the same language. Required.
    * Valid Values: en | es | fr | de | it | pt | ar | hi | ja | ko | zh | zh-TW
    */
-  languageCode: string;
+  language: string;
   /**
    * The text to analyze. Required.
    * A UTF-8 text string. Each string must contain fewer that 5,000 bytes of UTF-8 encoded characters.
