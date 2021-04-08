@@ -377,6 +377,7 @@ export abstract class ResourceController {
       // create a copy of the event
       const event = JSON.parse(JSON.stringify(this.event));
       // change only the event attributes we need; e.g. the authorization is unchanged
+      event.stage = params.stage || this.stage;
       event.httpMethod = params.httpMethod;
       event.resource = params.resource;
       event.pathParameters = params.pathParams || {};
@@ -390,7 +391,12 @@ export abstract class ResourceController {
       event.internalAPIRequest = true;
       // invoke the lambda with the event prepaired, simulating an API request
       new Lambda().invoke(
-        { FunctionName: params.lambda, InvocationType: 'RequestResponse', Payload: JSON.stringify(event) },
+        {
+          FunctionName: params.lambda,
+          Qualifier: event.stage,
+          InvocationType: 'RequestResponse',
+          Payload: JSON.stringify(event)
+        },
         (err: Error, res: any) => {
           // reject in case of internal error
           if (err) reject(err);
@@ -512,6 +518,10 @@ export interface InternalAPIRequestParams {
    * The name of the lambda function receiving the request; e.g. `project_memberships`.
    */
   lambda: string;
+  /**
+   * The alias of the lambda function to invoke. Default: the value of the current API stage.
+   */
+  stage?: string;
   /**
    * The http method to use.
    */
