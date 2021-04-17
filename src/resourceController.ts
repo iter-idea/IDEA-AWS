@@ -26,13 +26,13 @@ export abstract class ResourceController {
   protected principalId: string;
 
   protected httpMethod: string;
-  protected body: any;
-  protected queryParams: any;
+  public body: any;
+  public queryParams: any;
   protected resource: string;
   protected path: string;
   protected resourceId: string;
 
-  protected tables: any;
+  public tables: any;
 
   protected logRequestsWithKey: string;
 
@@ -352,14 +352,14 @@ export abstract class ResourceController {
   /**
    * Check whether shared resource exists in the back-end (translation, template, etc.).
    */
-  protected sharedResourceExists(path: string): boolean {
+  public sharedResourceExists(path: string): boolean {
     return existsSync(`assets/${path}`);
   }
   /**
    * Load a shared resource in the back-end (translation, template, etc.).
    * @param encoding default: `utf-8`
    */
-  protected loadSharedResource(path: string, encoding?: string) {
+  public loadSharedResource(path: string, encoding?: string) {
     encoding = encoding || 'utf-8';
     return readFileSync(`assets/${path}`, { encoding });
   }
@@ -427,7 +427,7 @@ export abstract class ResourceController {
   /**
    * Load the translations from the shared resources and set them with a fallback language.
    */
-  protected loadTranslations(lang: string, defLang?: string) {
+  public loadTranslations(lang: string, defLang?: string) {
     // check for the existance of the mandatory source file
     if (!this.sharedResourceExists(`i18n/${lang}.json`)) return;
     // set the languages
@@ -448,7 +448,7 @@ export abstract class ResourceController {
    * Get a translated term by key, optionally interpolating variables (e.g. `{{user}}`).
    * If the term doesn't exist in the current language, it is searched in the default language.
    */
-  protected t(key: string, interpolateParams?: any): string {
+  public t(key: string, interpolateParams?: any): string {
     if (!this.translations || !this.currentLang) return;
     if (!this.isDefined(key) || !key.length) return;
     let res = this.interpolate(this.getValue(this.translations[this.currentLang], key), interpolateParams);
