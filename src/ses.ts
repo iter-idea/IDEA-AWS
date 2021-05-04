@@ -125,7 +125,7 @@ export interface EmailData {
 /**
  * Email attachment interface of Nodemailer.
  */
-interface EmailAttachment {
+export interface EmailAttachment {
   /**
    * String, Buffer or a Stream contents for the attachmentent
    */
