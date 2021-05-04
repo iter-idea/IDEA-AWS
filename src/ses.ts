@@ -1,6 +1,7 @@
 import { SES as AWSSES } from 'aws-sdk';
 import { createTransport as NodemailerCreateTransport } from 'nodemailer';
 import { logger } from 'idea-toolbox';
+import { DynamoDB } from './dynamoDB';
 
 /**
  * A wrapper for AWS Simple Email Service.
@@ -10,12 +11,29 @@ export class SES {
    * Send an email through AWS Simple Email Service.
    */
   public sendEmail(emailData: EmailData, sesParams: SESParams): Promise<void> {
-    // if the email includes attachments, send through Nodemailer
-    if (emailData.attachments && emailData.attachments.length) return this.sendEmailNodemailer(emailData, sesParams);
-    // otherwise via SES (more secure)
-    else return this.sendEmailSES(emailData, sesParams);
+    return new Promise((resolve, reject) => {
+      // if requested, check whether there is a custom SES configuration to apply for the team
+      this.searchForCustomSESConfigByTeamId(sesParams.teamId).then(customSESConfig => {
+        let promise: Promise<void>;
+        // if the email includes attachments, send with Nodemailer (to avoid size limitations)
+        if (emailData.attachments?.length)
+          promise = this.sendEmailWithNodemailer(emailData, customSESConfig || sesParams);
+        // otherwise, send with SES (more secure)
+        else promise = this.sendEmailWithSES(emailData, customSESConfig || sesParams);
+        promise.then(res => resolve(res)).catch(err => reject(err));
+      });
+    });
   }
-  private sendEmailSES(emailData: EmailData, sesParams: SESParams): Promise<void> {
+  private searchForCustomSESConfigByTeamId(teamId: string): Promise<SESParams> {
+    return new Promise(resolve => {
+      if (!teamId) return resolve(null);
+      new DynamoDB()
+        .get({ TableName: 'idea_teamsSES', Key: { teamId } })
+        .then((customConfig: SESParams) => resolve(customConfig))
+        .catch(() => resolve(null));
+    });
+  }
+  private sendEmailWithSES(emailData: EmailData, sesParams: SESParams): Promise<void> {
     return new Promise((resolve, reject) => {
       // prepare SES email data
       const sesData: AWSSES.SendEmailRequest | any = {};
@@ -40,7 +58,7 @@ export class SES {
       });
     });
   }
-  private sendEmailNodemailer(emailData: EmailData, sesParams: SESParams): Promise<void> {
+  private sendEmailWithNodemailer(emailData: EmailData, sesParams: SESParams): Promise<void> {
     return new Promise((resolve, reject) => {
       // set the mail options in Nodemailer's format
       const mailOptions: any = {};
@@ -162,4 +180,8 @@ export interface SESParams {
    * The SES region to use.
    */
   region: string;
+  /**
+   * If set, a custom SES configuration to use for the team will be searched in the table `idea_teamsSES`.
+   */
+  teamId?: string;
 }
