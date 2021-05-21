@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>CognitoUserData | idea-aws</title>
+	<title>CognitoGroupData | idea-aws</title>
 	<meta name="description" content="Documentation for idea-aws">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
@@ -2750,19 +2750,19 @@ img {
 		<li class=" tsd-kind-class">
 			<a href="../classes/translate.html" class="tsd-kind-icon">Translate</a>
 		</li>
-		<li class=" tsd-kind-interface">
-			<a href="cognitogroupdata.html" class="tsd-kind-icon">Cognito<wbr>Group<wbr>Data</a>
-		</li>
 		<li class="current tsd-kind-interface">
-			<a href="cognitouserdata.html" class="tsd-kind-icon">Cognito<wbr>User<wbr>Data</a>
+			<a href="cognitogroupdata.html" class="tsd-kind-icon">Cognito<wbr>Group<wbr>Data</a>
 			<ul>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="cognitouserdata.html#email" class="tsd-kind-icon">email</a>
+					<a href="cognitogroupdata.html#description" class="tsd-kind-icon">description</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-interface">
-					<a href="cognitouserdata.html#userid" class="tsd-kind-icon">user<wbr>Id</a>
+					<a href="cognitogroupdata.html#name" class="tsd-kind-icon">name</a>
 				</li>
 			</ul>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="cognitouserdata.html" class="tsd-kind-icon">Cognito<wbr>User<wbr>Data</a>
 		</li>
 		<li class=" tsd-kind-interface">
 			<a href="comprehendparameters.html" class="tsd-kind-icon">Comprehend<wbr>Parameters</a>
@@ -2822,7 +2822,7 @@ img {
 		<section class="tsd-panel tsd-comment">
 			<div class="tsd-comment tsd-typography">
 				<div class="lead">
-					<p>The attributes of a Cognito user.</p>
+					<p>The attributes of a Cognito group.</p>
 				</div>
 			</div>
 		</section>
@@ -2830,18 +2830,9 @@ img {
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
 				<li>
-					<span class="target">CognitoUserData</span>
+					<span class="target">CognitoGroupData</span>
 				</li>
 			</ul>
-		</section>
-		<section class="tsd-panel tsd-kind-interface">
-			<h3 class="tsd-before-signature">Indexable</h3>
-			<div class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">[</span>attribute: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><span class="tsd-signature-type">string</span></div>
-			<div class="tsd-comment tsd-typography">
-				<div class="lead">
-					<p>Cognito can have custom attributes.</p>
-				</div>
-			</div>
 		</section>
 		<section class="tsd-panel-group tsd-index-group">
 			<h2>Index</h2>
@@ -2850,8 +2841,8 @@ img {
 					<section class="tsd-index-section ">
 						<h3>Properties</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="cognitouserdata.html#email" class="tsd-kind-icon">email</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="cognitouserdata.html#userid" class="tsd-kind-icon">user<wbr>Id</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="cognitogroupdata.html#description" class="tsd-kind-icon">description</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-interface"><a href="cognitogroupdata.html#name" class="tsd-kind-icon">name</a></li>
 						</ul>
 					</section>
 				</div>
@@ -2860,32 +2851,32 @@ img {
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Properties</h2>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="email" class="tsd-anchor"></a>
-				<h3>email</h3>
-				<div class="tsd-signature tsd-kind-icon">email<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<a name="description" class="tsd-anchor"></a>
+				<h3>description</h3>
+				<div class="tsd-signature tsd-kind-icon">description<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/e4578f5/src/cognito.ts#L382">src/cognito.ts:382</a></li>
+						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/e4578f5/src/cognito.ts#L414">src/cognito.ts:414</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>The email (=== username).</p>
+						<p>The description of the group.</p>
 					</div>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-				<a name="userid" class="tsd-anchor"></a>
-				<h3>user<wbr>Id</h3>
-				<div class="tsd-signature tsd-kind-icon">user<wbr>Id<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
+				<a name="name" class="tsd-anchor"></a>
+				<h3>name</h3>
+				<div class="tsd-signature tsd-kind-icon">name<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/e4578f5/src/cognito.ts#L378">src/cognito.ts:378</a></li>
+						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/e4578f5/src/cognito.ts#L410">src/cognito.ts:410</a></li>
 					</ul>
 				</aside>
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>The user id (sub).</p>
+						<p>The name (and id) of the group.</p>
 					</div>
 				</div>
 			</section>

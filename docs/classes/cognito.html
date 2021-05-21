@@ -2729,6 +2729,12 @@ img {
 		<li class="current tsd-kind-class">
 			<a href="cognito.html" class="tsd-kind-icon">Cognito</a>
 			<ul>
+				<li class=" tsd-kind-constructor tsd-parent-kind-class">
+					<a href="cognito.html#constructor" class="tsd-kind-icon">constructor</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="cognito.html#addusertogroup" class="tsd-kind-icon">add<wbr>User<wbr>ToGroup</a>
+				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="cognito.html#confirmsignup" class="tsd-kind-icon">confirm<wbr>Sign<wbr>Up</a>
 				</li>
@@ -2751,7 +2757,16 @@ img {
 					<a href="cognito.html#globalsignout" class="tsd-kind-icon">global<wbr>Sign<wbr>Out</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="cognito.html#listgroups" class="tsd-kind-icon">list<wbr>Groups</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="cognito.html#listusersingroup" class="tsd-kind-icon">list<wbr>Users<wbr>InGroup</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="cognito.html#refreshsession" class="tsd-kind-icon">refresh<wbr>Session</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="cognito.html#removeuserfromgroup" class="tsd-kind-icon">remove<wbr>User<wbr>From<wbr>Group</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="cognito.html#resendpassword" class="tsd-kind-icon">resend<wbr>Password</a>
@@ -2787,6 +2802,9 @@ img {
 		</li>
 		<li class=" tsd-kind-class">
 			<a href="translate.html" class="tsd-kind-icon">Translate</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/cognitogroupdata.html" class="tsd-kind-icon">Cognito<wbr>Group<wbr>Data</a>
 		</li>
 		<li class=" tsd-kind-interface">
 			<a href="../interfaces/cognitouserdata.html" class="tsd-kind-icon">Cognito<wbr>User<wbr>Data</a>
@@ -2866,8 +2884,15 @@ img {
 			<section class="tsd-panel tsd-index-panel">
 				<div class="tsd-index-content">
 					<section class="tsd-index-section ">
+						<h3>Constructors</h3>
+						<ul class="tsd-index-list">
+							<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="cognito.html#constructor" class="tsd-kind-icon">constructor</a></li>
+						</ul>
+					</section>
+					<section class="tsd-index-section ">
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="cognito.html#addusertogroup" class="tsd-kind-icon">add<wbr>User<wbr>ToGroup</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="cognito.html#confirmsignup" class="tsd-kind-icon">confirm<wbr>Sign<wbr>Up</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="cognito.html#createuser" class="tsd-kind-icon">create<wbr>User</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="cognito.html#deleteuser" class="tsd-kind-icon">delete<wbr>User</a></li>
@@ -2875,7 +2900,10 @@ img {
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="cognito.html#getuserbyemail" class="tsd-kind-icon">get<wbr>User<wbr>ByEmail</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="cognito.html#getuserbysub" class="tsd-kind-icon">get<wbr>User<wbr>BySub</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="cognito.html#globalsignout" class="tsd-kind-icon">global<wbr>Sign<wbr>Out</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="cognito.html#listgroups" class="tsd-kind-icon">list<wbr>Groups</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="cognito.html#listusersingroup" class="tsd-kind-icon">list<wbr>Users<wbr>InGroup</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="cognito.html#refreshsession" class="tsd-kind-icon">refresh<wbr>Session</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="cognito.html#removeuserfromgroup" class="tsd-kind-icon">remove<wbr>User<wbr>From<wbr>Group</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="cognito.html#resendpassword" class="tsd-kind-icon">resend<wbr>Password</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="cognito.html#signin" class="tsd-kind-icon">sign<wbr>In</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="cognito.html#updateemail" class="tsd-kind-icon">update<wbr>Email</a></li>
@@ -2886,7 +2914,61 @@ img {
 			</section>
 		</section>
 		<section class="tsd-panel-group tsd-member-group ">
+			<h2>Constructors</h2>
+			<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+				<a name="constructor" class="tsd-anchor"></a>
+				<h3>constructor</h3>
+				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">new <wbr>Cognito<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="cognito.html" class="tsd-signature-type">Cognito</a></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/e4578f5/src/cognito.ts#L8">src/cognito.ts:8</a></li>
+							</ul>
+						</aside>
+						<h4 class="tsd-returns-title">Returns <a href="cognito.html" class="tsd-signature-type">Cognito</a></h4>
+					</li>
+				</ul>
+			</section>
+		</section>
+		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Methods</h2>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="addusertogroup" class="tsd-anchor"></a>
+				<h3>add<wbr>User<wbr>ToGroup</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">add<wbr>User<wbr>ToGroup<span class="tsd-signature-symbol">(</span>email<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, group<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, cognitoUserPoolId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">User</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/e4578f5/src/cognito.ts#L336">src/cognito.ts:336</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Add a user (by email) to a group in the user pool.</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>email: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5>group: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5>cognitoUserPoolId: <span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">User</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 				<a name="confirmsignup" class="tsd-anchor"></a>
 				<h3>confirm<wbr>Sign<wbr>Up</h3>
@@ -2897,7 +2979,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/3ec933a/src/cognito.ts#L282">src/cognito.ts:282</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/e4578f5/src/cognito.ts#L282">src/cognito.ts:282</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2931,7 +3013,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/3ec933a/src/cognito.ts#L70">src/cognito.ts:70</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/e4578f5/src/cognito.ts#L76">src/cognito.ts:76</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2966,7 +3048,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/3ec933a/src/cognito.ts#L136">src/cognito.ts:136</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/e4578f5/src/cognito.ts#L142">src/cognito.ts:142</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2997,7 +3079,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/3ec933a/src/cognito.ts#L13">src/cognito.ts:13</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/e4578f5/src/cognito.ts#L19">src/cognito.ts:19</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3029,7 +3111,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/3ec933a/src/cognito.ts#L27">src/cognito.ts:27</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/e4578f5/src/cognito.ts#L33">src/cognito.ts:33</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3060,7 +3142,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/3ec933a/src/cognito.ts#L48">src/cognito.ts:48</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/e4578f5/src/cognito.ts#L54">src/cognito.ts:54</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3091,7 +3173,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/3ec933a/src/cognito.ts#L266">src/cognito.ts:266</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/e4578f5/src/cognito.ts#L269">src/cognito.ts:269</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3113,6 +3195,65 @@ img {
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="listgroups" class="tsd-anchor"></a>
+				<h3>list<wbr>Groups</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">list<wbr>Groups<span class="tsd-signature-symbol">(</span>cognitoUserPoolId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/cognitogroupdata.html" class="tsd-signature-type">CognitoGroupData</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/e4578f5/src/cognito.ts#L302">src/cognito.ts:302</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>List the groups of the user pool.</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>cognitoUserPoolId: <span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/cognitogroupdata.html" class="tsd-signature-type">CognitoGroupData</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="listusersingroup" class="tsd-anchor"></a>
+				<h3>list<wbr>Users<wbr>InGroup</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">list<wbr>Users<wbr>InGroup<span class="tsd-signature-symbol">(</span>group<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, cognitoUserPoolId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">User</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/e4578f5/src/cognito.ts#L316">src/cognito.ts:316</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>List the users part of a group in the user pool.</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>group: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5>cognitoUserPoolId: <span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">User</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 				<a name="refreshsession" class="tsd-anchor"></a>
 				<h3>refresh<wbr>Session</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -3122,7 +3263,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/3ec933a/src/cognito.ts#L179">src/cognito.ts:179</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/e4578f5/src/cognito.ts#L182">src/cognito.ts:182</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3150,6 +3291,40 @@ img {
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="removeuserfromgroup" class="tsd-anchor"></a>
+				<h3>remove<wbr>User<wbr>From<wbr>Group</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">remove<wbr>User<wbr>From<wbr>Group<span class="tsd-signature-symbol">(</span>email<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, group<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span>, cognitoUserPoolId<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">User</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/e4578f5/src/cognito.ts#L354">src/cognito.ts:354</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Remove a user (by email) from a group in the user pool.</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>email: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5>group: <span class="tsd-signature-type">string</span></h5>
+							</li>
+							<li>
+								<h5>cognitoUserPoolId: <span class="tsd-signature-type">string</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">User</span><span class="tsd-signature-symbol">&gt;</span></h4>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 				<a name="resendpassword" class="tsd-anchor"></a>
 				<h3>resend<wbr>Password</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -3159,7 +3334,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/3ec933a/src/cognito.ts#L109">src/cognito.ts:109</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/e4578f5/src/cognito.ts#L115">src/cognito.ts:115</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3193,7 +3368,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/3ec933a/src/cognito.ts#L153">src/cognito.ts:153</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/e4578f5/src/cognito.ts#L156">src/cognito.ts:156</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3230,7 +3405,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/3ec933a/src/cognito.ts#L205">src/cognito.ts:205</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/e4578f5/src/cognito.ts#L208">src/cognito.ts:208</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3264,7 +3439,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/3ec933a/src/cognito.ts#L233">src/cognito.ts:233</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/e4578f5/src/cognito.ts#L236">src/cognito.ts:236</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
