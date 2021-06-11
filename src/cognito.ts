@@ -12,6 +12,14 @@ export class Cognito {
   }
 
   /**
+   * Change the region in which to find the user pool.
+   * Default: the runner's (e.g. Lambda function) region.
+   */
+  public setRegion(region: string) {
+    this.cognito.config.region = region;
+  }
+
+  /**
    * Get the attributes of the user, from the authorizer claims.
    * @param claims authorizer claims
    * @return user's data
