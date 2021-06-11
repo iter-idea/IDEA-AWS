@@ -16,6 +16,7 @@ export class Cognito {
    * Default: the runner's (e.g. Lambda function) region.
    */
   public setRegion(region: string) {
+    this.cognito.config.endpoint = this.cognito.config.endpoint.replace(this.cognito.config.region, region);
     this.cognito.config.region = region;
   }
 
