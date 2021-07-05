@@ -1,4 +1,5 @@
 import UUIDV4 = require('uuid/v4');
+import { nanoid as NanoID } from 'nanoid';
 import { DynamoDB as DDB } from 'aws-sdk';
 import { characters as ShortIdCharacters, generate as ShortIdGenerate } from 'shortid';
 import { logger } from 'idea-toolbox';
@@ -27,6 +28,7 @@ export class DynamoDB {
    * Returns an IUID: IDEA's Unique IDentifier, which is an id unique through all IDEA's projects.
    * Note: there's no need of an authorization check for extrernal uses: the permissions depend
    * from the context in which it's executed.
+   * @deprecated use IUNID instead (nano version)
    * @param project project code
    * @return the IUID
    */
@@ -52,6 +54,38 @@ export class DynamoDB {
         .catch(() =>
           // ID exists, try again
           this.iuidHelper(project, attempt + 1, maxAttempts, resolve, reject)
+        );
+    }
+  }
+
+  /**
+   * Returns an IUNID: IDEA's Unique Nano IDentifier, which is an id unique through all IDEA's projects.
+   * Note: no need of an auth check for external uses: the permissions depend from the context in which it's executed.
+   * @param project project code
+   * @return the IUNID
+   */
+  public IUNID(project: string): Promise<string> {
+    const MAX_ATTEMPTS = 3;
+    return new Promise((resolve, reject) => {
+      if (!project) reject();
+      else this.iunidHelper(project, 0, MAX_ATTEMPTS, resolve, reject);
+    });
+  }
+  protected iunidHelper(project: string, attempt: number, maxAttempts: number, resolve: any, reject: any) {
+    if (attempt > maxAttempts) reject();
+    else {
+      const id = NanoID();
+      this.put({
+        TableName: 'idea_IUNID',
+        Item: { project, id },
+        ConditionExpression: 'NOT (#p = :project AND #id = :id)',
+        ExpressionAttributeNames: { '#p': 'project', '#id': 'id' },
+        ExpressionAttributeValues: { ':project': project, ':id': id }
+      })
+        .then(() => resolve(`${project}#${id}`))
+        .catch(() =>
+          // ID exists, try again
+          this.iunidHelper(project, attempt + 1, maxAttempts, resolve, reject)
         );
     }
   }
