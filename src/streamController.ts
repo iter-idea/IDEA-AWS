@@ -11,8 +11,8 @@ export abstract class StreamController extends GenericController {
   constructor(event: any, callback: any, options?: GenericControllerOptions) {
     super(event, callback, options);
 
-    this.records = event.records;
+    this.records = event.Records || [];
 
-    logger(`START STREAM: ${this.records?.length || 0} records`, null, null, true);
+    logger(`START STREAM: ${this.records.length || 0} records`, null, null, true);
   }
 }
