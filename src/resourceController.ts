@@ -3,28 +3,17 @@ import { existsSync, readFileSync } from 'fs';
 import { Lambda } from 'aws-sdk';
 import { APIRequestLog, logger } from 'idea-toolbox';
 
-import { DynamoDB } from './dynamoDB';
-import { Cognito } from './cognito';
-import { S3 } from './s3';
-import { SES } from './ses';
-import { SNS } from './sns';
-import { Translate } from './translate';
-import { Attachments } from './attachments';
-import { Comprehend } from './comprehend';
+import { GenericController, GenericControllerOptions } from './genericController';
 
 /**
  * An abstract class to inherit to manage API requests (AWS API Gateway) in an AWS Lambda function.
  */
-export abstract class ResourceController {
-  protected callback: any;
-
-  protected event: any;
-  protected stage: string;
-
+export abstract class ResourceController extends GenericController {
   protected authorization: string;
   protected claims: any;
   protected principalId: string;
 
+  protected stage: string;
   protected httpMethod: string;
   public body: any;
   public queryParams: any;
@@ -32,43 +21,22 @@ export abstract class ResourceController {
   protected path: string;
   protected resourceId: string;
 
-  public tables: any;
-
   protected logRequestsWithKey: string;
-
-  protected _dynamoDB: DynamoDB;
-  protected _cognito: Cognito;
-  protected _s3: S3;
-  protected _ses: SES;
-  protected _sns: SNS;
-  protected _translate: Translate;
-  protected _attachments: Attachments;
-  protected _comprehend: Comprehend;
 
   protected currentLang: string;
   protected defaultLang: string;
   protected translations: any;
   protected templateMatcher = /{{\s?([^{}\s]*)\s?}}/g;
 
-  /**
-   * Initialize a new ResourceController helper object.
-   * @param event the event that invoked the AWS lambda function
-   * @param callback the callback to resolve or reject the execution
-   */
   constructor(event: any, callback: any, options?: ResourceControllerOptions) {
-    options = options || ({} as ResourceControllerOptions);
+    super(event, callback, options);
 
-    this.event = event;
-    this.stage = event.requestContext ? event.requestContext.stage : null;
+    this.authorization = event.headers?.Authorization;
+    this.claims = event.requestContext?.authorizer?.claims;
+    this.principalId = this.claims?.sub;
 
-    this.callback = callback;
-
-    this.authorization = event.headers ? event.headers.Authorization : null;
-    this.claims =
-      event.requestContext && event.requestContext.authorizer ? event.requestContext.authorizer.claims : null;
-    this.principalId = this.claims ? this.claims.sub : null;
-
-    this.httpMethod = event.httpMethod || null;
+    this.stage = event.requestContext?.stage;
+    this.httpMethod = event.httpMethod;
     this.resource = (event.resource || '').replace('+', ''); // {proxy+} -> {proxy}
     this.path = event.path || '';
     this.resourceId =
@@ -78,12 +46,7 @@ export abstract class ResourceController {
     this.queryParams = event.queryStringParameters || {};
     this.body = (event.body ? JSON.parse(event.body) : {}) || {};
 
-    this.tables = options.tables || {};
-
     this.logRequestsWithKey = options.logRequestsWithKey;
-
-    // set the logs to print objects deeper
-    require('util').inspect.defaultOptions.depth = null;
 
     // acquire some info about the client, if available
     let version = '?',
@@ -106,9 +69,6 @@ export abstract class ResourceController {
   /// REQUEST HANDLERS
   ///
 
-  /**
-   * The main function, that handle an API request redirected to a Lambda function.
-   */
   public handleRequest = () => {
     // check the authorizations and prepare the API request
     this.checkAuthBeforeRequest()
@@ -168,18 +128,7 @@ export abstract class ResourceController {
       })
       .catch(err => this.done(new Error(err && err.message ? err.message : 'FORBIDDEN')));
   };
-  /**
-   * To @override
-   */
-  protected checkAuthBeforeRequest(): Promise<void> {
-    return new Promise(resolve => resolve());
-  }
-  /**
-   * Default callback for IDEA's API resource controllers.
-   * @param err if not null, it contains the error raised
-   * @param res if err, the error string, otherwise the result (a JSON to parse)
-   */
-  protected done(err: Error | null, res?: any): any {
+  protected done(err: Error | null, res?: any) {
     logger(err ? 'DONE WITH ERRORS' : 'DONE', err, res, true);
     // if configured, store the log of the request
     if (this.logRequestsWithKey) this.storeLog(!err);
@@ -189,6 +138,13 @@ export abstract class ResourceController {
       body: err ? JSON.stringify({ message: err.message }) : JSON.stringify(res || {}),
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
+  }
+
+  /**
+   * To @override
+   */
+  protected checkAuthBeforeRequest(): Promise<void> {
+    return new Promise(resolve => resolve());
   }
   /**
    * To @override
@@ -264,72 +220,9 @@ export abstract class ResourceController {
   }
 
   ///
-  /// AWS SERVICES
-  ///
-  get dynamoDB(): DynamoDB {
-    if (!this._dynamoDB) this._dynamoDB = new DynamoDB();
-    return this._dynamoDB;
-  }
-  set dynamoDB(dynamoDB: DynamoDB) {
-    this._dynamoDB = dynamoDB;
-  }
-  get cognito(): Cognito {
-    if (!this._cognito) this._cognito = new Cognito();
-    return this._cognito;
-  }
-  set cognito(cognito: Cognito) {
-    this._cognito = cognito;
-  }
-  get s3(): S3 {
-    if (!this._s3) this._s3 = new S3();
-    return this._s3;
-  }
-  set s3(s3: S3) {
-    this._s3 = s3;
-  }
-  get ses(): SES {
-    if (!this._ses) this._ses = new SES();
-    return this._ses;
-  }
-  set ses(ses: SES) {
-    this._ses = ses;
-  }
-  get sns(): SNS {
-    if (!this._sns) this._sns = new SNS();
-    return this._sns;
-  }
-  set sns(sns: SNS) {
-    this._sns = sns;
-  }
-  get translate(): Translate {
-    if (!this._translate) this._translate = new Translate();
-    return this._translate;
-  }
-  set translate(translate: Translate) {
-    this._translate = translate;
-  }
-  get comprehend(): Comprehend {
-    if (!this._comprehend) this._comprehend = new Comprehend();
-    return this._comprehend;
-  }
-  set comprehend(comprehend: Comprehend) {
-    this._comprehend = comprehend;
-  }
-
-  ///
   /// HELPERS
   ///
 
-  /**
-   * Manage attachments (through SignedURLs).
-   */
-  get attachments(): Attachments {
-    if (!this._attachments) this._attachments = new Attachments();
-    return this._attachments;
-  }
-  set attachments(attachments: Attachments) {
-    this._attachments = attachments;
-  }
   /**
    * Store the log associated to the request (no response/error handling).
    */
@@ -495,11 +388,7 @@ export abstract class ResourceController {
 /**
  * The initial options for a constructor of class ResourceController.
  */
-export interface ResourceControllerOptions {
-  /**
-   * The tables involved an their names in DynamoDB; e.g. { users: 'project_users' }.
-   */
-  tables?: any;
+export interface ResourceControllerOptions extends GenericControllerOptions {
   /**
    * The resourceId of the API request, to specify if different from "proxy".
    */

@@ -1,4 +1,6 @@
 export * from './resourceController';
+export * from './streamController';
+
 export * from './dynamoDB';
 export * from './cognito';
 export * from './comprehend';
