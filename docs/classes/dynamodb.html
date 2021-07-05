@@ -2745,6 +2745,9 @@ img {
 					<a href="dynamodb.html#iuid" class="tsd-kind-icon">IUID</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
+					<a href="dynamodb.html#iunid" class="tsd-kind-icon">IUNID</a>
+				</li>
+				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="dynamodb.html#batchdelete" class="tsd-kind-icon">batch<wbr>Delete</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -2897,6 +2900,7 @@ img {
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="dynamodb.html#isid" class="tsd-kind-icon">ISID</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="dynamodb.html#iuid" class="tsd-kind-icon">IUID</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class"><a href="dynamodb.html#iunid" class="tsd-kind-icon">IUNID</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="dynamodb.html#batchdelete" class="tsd-kind-icon">batch<wbr>Delete</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="dynamodb.html#batchget" class="tsd-kind-icon">batch<wbr>Get</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="dynamodb.html#batchput" class="tsd-kind-icon">batch<wbr>Put</a></li>
@@ -2929,7 +2933,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/6edacc5/src/dynamoDB.ts#L10">src/dynamoDB.ts:10</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/dynamoDB.ts#L11">src/dynamoDB.ts:11</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2954,7 +2958,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/6edacc5/src/dynamoDB.ts#L66">src/dynamoDB.ts:66</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/dynamoDB.ts#L100">src/dynamoDB.ts:100</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2988,7 +2992,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/6edacc5/src/dynamoDB.ts#L33">src/dynamoDB.ts:33</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/dynamoDB.ts#L35">src/dynamoDB.ts:35</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -2997,6 +3001,11 @@ img {
 									Note: there&#39;s no need of an authorization check for extrernal uses: the permissions depend
 								from the context in which it&#39;s executed.</p>
 							</div>
+							<dl class="tsd-comment-tags">
+								<dt>deprecated</dt>
+								<dd><p>use IUNID instead (nano version)</p>
+								</dd>
+							</dl>
 						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
@@ -3013,6 +3022,39 @@ img {
 				</ul>
 			</section>
 			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+				<a name="iunid" class="tsd-anchor"></a>
+				<h3>IUNID</h3>
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+					<li class="tsd-signature tsd-kind-icon">IUNID<span class="tsd-signature-symbol">(</span>project<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/dynamoDB.ts#L67">src/dynamoDB.ts:67</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>Returns an IUNID: IDEA&#39;s Unique Nano IDentifier, which is an id unique through all IDEA&#39;s projects.
+								Note: no need of an auth check for external uses: the permissions depend from the context in which it&#39;s executed.</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>project: <span class="tsd-signature-type">string</span></h5>
+								<div class="tsd-comment tsd-typography">
+									<p>project code</p>
+								</div>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4>
+						<p>the IUNID</p>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
 				<a name="batchdelete" class="tsd-anchor"></a>
 				<h3>batch<wbr>Delete</h3>
 				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -3022,7 +3064,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/6edacc5/src/dynamoDB.ts#L225">src/dynamoDB.ts:225</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/dynamoDB.ts#L259">src/dynamoDB.ts:259</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3059,7 +3101,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/6edacc5/src/dynamoDB.ts#L170">src/dynamoDB.ts:170</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/dynamoDB.ts#L204">src/dynamoDB.ts:204</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3096,7 +3138,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/6edacc5/src/dynamoDB.ts#L213">src/dynamoDB.ts:213</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/dynamoDB.ts#L247">src/dynamoDB.ts:247</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3133,7 +3175,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/6edacc5/src/dynamoDB.ts#L364">src/dynamoDB.ts:364</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/dynamoDB.ts#L398">src/dynamoDB.ts:398</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3164,7 +3206,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/6edacc5/src/dynamoDB.ts#L156">src/dynamoDB.ts:156</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/dynamoDB.ts#L190">src/dynamoDB.ts:190</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3192,7 +3234,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/6edacc5/src/dynamoDB.ts#L117">src/dynamoDB.ts:117</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/dynamoDB.ts#L151">src/dynamoDB.ts:151</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3220,7 +3262,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/6edacc5/src/dynamoDB.ts#L99">src/dynamoDB.ts:99</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/dynamoDB.ts#L133">src/dynamoDB.ts:133</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3252,7 +3294,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/6edacc5/src/dynamoDB.ts#L130">src/dynamoDB.ts:130</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/dynamoDB.ts#L164">src/dynamoDB.ts:164</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3280,7 +3322,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/6edacc5/src/dynamoDB.ts#L267">src/dynamoDB.ts:267</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/dynamoDB.ts#L301">src/dynamoDB.ts:301</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3311,7 +3353,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/6edacc5/src/dynamoDB.ts#L312">src/dynamoDB.ts:312</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/dynamoDB.ts#L346">src/dynamoDB.ts:346</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3342,7 +3384,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/6edacc5/src/dynamoDB.ts#L276">src/dynamoDB.ts:276</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/dynamoDB.ts#L310">src/dynamoDB.ts:310</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3373,7 +3415,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/6edacc5/src/dynamoDB.ts#L321">src/dynamoDB.ts:321</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/dynamoDB.ts#L355">src/dynamoDB.ts:355</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3404,7 +3446,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/6edacc5/src/dynamoDB.ts#L347">src/dynamoDB.ts:347</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/dynamoDB.ts#L381">src/dynamoDB.ts:381</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3435,7 +3477,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/6edacc5/src/dynamoDB.ts#L22">src/dynamoDB.ts:22</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/dynamoDB.ts#L23">src/dynamoDB.ts:23</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3471,7 +3513,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/6edacc5/src/dynamoDB.ts#L143">src/dynamoDB.ts:143</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/dynamoDB.ts#L177">src/dynamoDB.ts:177</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
