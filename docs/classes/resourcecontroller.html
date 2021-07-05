@@ -2735,10 +2735,13 @@ img {
 		<li class=" tsd-kind-class">
 			<a href="dynamodb.html" class="tsd-kind-icon">DynamoDB</a>
 		</li>
+		<li class=" tsd-kind-class">
+			<a href="genericcontroller.html" class="tsd-kind-icon">Generic<wbr>Controller</a>
+		</li>
 		<li class="current tsd-kind-class">
 			<a href="resourcecontroller.html" class="tsd-kind-icon">Resource<wbr>Controller</a>
 			<ul>
-				<li class=" tsd-kind-constructor tsd-parent-kind-class">
+				<li class=" tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 					<a href="resourcecontroller.html#constructor" class="tsd-kind-icon">constructor</a>
 				</li>
 				<li class=" tsd-kind-property tsd-parent-kind-class">
@@ -2747,37 +2750,16 @@ img {
 				<li class=" tsd-kind-property tsd-parent-kind-class">
 					<a href="resourcecontroller.html#queryparams" class="tsd-kind-icon">query<wbr>Params</a>
 				</li>
-				<li class=" tsd-kind-property tsd-parent-kind-class">
+				<li class=" tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 					<a href="resourcecontroller.html#tables" class="tsd-kind-icon">tables</a>
 				</li>
-				<li class=" tsd-kind-accessor tsd-parent-kind-class">
+				<li class=" tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited">
 					<a href="resourcecontroller.html#attachments" class="tsd-kind-icon">attachments</a>
-				</li>
-				<li class=" tsd-kind-accessor tsd-parent-kind-class">
-					<a href="resourcecontroller.html#cognito" class="tsd-kind-icon">cognito</a>
-				</li>
-				<li class=" tsd-kind-accessor tsd-parent-kind-class">
-					<a href="resourcecontroller.html#comprehend" class="tsd-kind-icon">comprehend</a>
-				</li>
-				<li class=" tsd-kind-accessor tsd-parent-kind-class">
-					<a href="resourcecontroller.html#dynamodb" class="tsd-kind-icon">dynamoDB</a>
-				</li>
-				<li class=" tsd-kind-accessor tsd-parent-kind-class">
-					<a href="resourcecontroller.html#s3" class="tsd-kind-icon">s3</a>
-				</li>
-				<li class=" tsd-kind-accessor tsd-parent-kind-class">
-					<a href="resourcecontroller.html#ses" class="tsd-kind-icon">ses</a>
-				</li>
-				<li class=" tsd-kind-accessor tsd-parent-kind-class">
-					<a href="resourcecontroller.html#sns" class="tsd-kind-icon">sns</a>
-				</li>
-				<li class=" tsd-kind-accessor tsd-parent-kind-class">
-					<a href="resourcecontroller.html#translate" class="tsd-kind-icon">translate</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
 					<a href="resourcecontroller.html#comesfrominternalrequest" class="tsd-kind-icon">comes<wbr>From<wbr>Internal<wbr>Request</a>
 				</li>
-				<li class=" tsd-kind-method tsd-parent-kind-class">
+				<li class=" tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 					<a href="resourcecontroller.html#handlerequest" class="tsd-kind-icon">handle<wbr>Request</a>
 				</li>
 				<li class=" tsd-kind-method tsd-parent-kind-class">
@@ -2805,6 +2787,9 @@ img {
 		</li>
 		<li class=" tsd-kind-class">
 			<a href="sns.html" class="tsd-kind-icon">SNS</a>
+		</li>
+		<li class=" tsd-kind-class">
+			<a href="streamcontroller.html" class="tsd-kind-icon">Stream<wbr>Controller</a>
 		</li>
 		<li class=" tsd-kind-class">
 			<a href="translate.html" class="tsd-kind-icon">Translate</a>
@@ -2835,6 +2820,9 @@ img {
 		</li>
 		<li class=" tsd-kind-interface">
 			<a href="../interfaces/emaildata.html" class="tsd-kind-icon">Email<wbr>Data</a>
+		</li>
+		<li class=" tsd-kind-interface">
+			<a href="../interfaces/genericcontrolleroptions.html" class="tsd-kind-icon">Generic<wbr>Controller<wbr>Options</a>
 		</li>
 		<li class=" tsd-kind-interface">
 			<a href="../interfaces/getobjectoptions.html" class="tsd-kind-icon">Get<wbr>Object<wbr>Options</a>
@@ -2881,7 +2869,12 @@ img {
 			<h3>Hierarchy</h3>
 			<ul class="tsd-hierarchy">
 				<li>
-					<span class="target">ResourceController</span>
+					<a href="genericcontroller.html" class="tsd-signature-type">GenericController</a>
+					<ul class="tsd-hierarchy">
+						<li>
+							<span class="target">ResourceController</span>
+						</li>
+					</ul>
 				</li>
 			</ul>
 		</section>
@@ -2892,7 +2885,7 @@ img {
 					<section class="tsd-index-section ">
 						<h3>Constructors</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="resourcecontroller.html#constructor" class="tsd-kind-icon">constructor</a></li>
+							<li class="tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite"><a href="resourcecontroller.html#constructor" class="tsd-kind-icon">constructor</a></li>
 						</ul>
 					</section>
 					<section class="tsd-index-section ">
@@ -2900,27 +2893,20 @@ img {
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="resourcecontroller.html#body" class="tsd-kind-icon">body</a></li>
 							<li class="tsd-kind-property tsd-parent-kind-class"><a href="resourcecontroller.html#queryparams" class="tsd-kind-icon">query<wbr>Params</a></li>
-							<li class="tsd-kind-property tsd-parent-kind-class"><a href="resourcecontroller.html#tables" class="tsd-kind-icon">tables</a></li>
+							<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><a href="resourcecontroller.html#tables" class="tsd-kind-icon">tables</a></li>
 						</ul>
 					</section>
-					<section class="tsd-index-section ">
+					<section class="tsd-index-section tsd-is-inherited">
 						<h3>Accessors</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="resourcecontroller.html#attachments" class="tsd-kind-icon">attachments</a></li>
-							<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="resourcecontroller.html#cognito" class="tsd-kind-icon">cognito</a></li>
-							<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="resourcecontroller.html#comprehend" class="tsd-kind-icon">comprehend</a></li>
-							<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="resourcecontroller.html#dynamodb" class="tsd-kind-icon">dynamoDB</a></li>
-							<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="resourcecontroller.html#s3" class="tsd-kind-icon">s3</a></li>
-							<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="resourcecontroller.html#ses" class="tsd-kind-icon">ses</a></li>
-							<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="resourcecontroller.html#sns" class="tsd-kind-icon">sns</a></li>
-							<li class="tsd-kind-accessor tsd-parent-kind-class"><a href="resourcecontroller.html#translate" class="tsd-kind-icon">translate</a></li>
+							<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><a href="resourcecontroller.html#attachments" class="tsd-kind-icon">attachments</a></li>
 						</ul>
 					</section>
 					<section class="tsd-index-section ">
 						<h3>Methods</h3>
 						<ul class="tsd-index-list">
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="resourcecontroller.html#comesfrominternalrequest" class="tsd-kind-icon">comes<wbr>From<wbr>Internal<wbr>Request</a></li>
-							<li class="tsd-kind-method tsd-parent-kind-class"><a href="resourcecontroller.html#handlerequest" class="tsd-kind-icon">handle<wbr>Request</a></li>
+							<li class="tsd-kind-method tsd-parent-kind-class tsd-is-overwrite"><a href="resourcecontroller.html#handlerequest" class="tsd-kind-icon">handle<wbr>Request</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="resourcecontroller.html#invokeinternalapirequest" class="tsd-kind-icon">invoke<wbr>InternalAPIRequest</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="resourcecontroller.html#loadsharedresource" class="tsd-kind-icon">load<wbr>Shared<wbr>Resource</a></li>
 							<li class="tsd-kind-method tsd-parent-kind-class"><a href="resourcecontroller.html#loadtranslations" class="tsd-kind-icon">load<wbr>Translations</a></li>
@@ -2933,41 +2919,27 @@ img {
 		</section>
 		<section class="tsd-panel-group tsd-member-group ">
 			<h2>Constructors</h2>
-			<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class">
+			<section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 				<a name="constructor" class="tsd-anchor"></a>
 				<h3>constructor</h3>
-				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
+				<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class tsd-is-overwrite">
 					<li class="tsd-signature tsd-kind-icon">new <wbr>Resource<wbr>Controller<span class="tsd-signature-symbol">(</span>event<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, callback<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">any</span>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/resourcecontrolleroptions.html" class="tsd-signature-type">ResourceControllerOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="resourcecontroller.html" class="tsd-signature-type">ResourceController</a></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
+							<p>Overrides <a href="genericcontroller.html">GenericController</a>.<a href="genericcontroller.html#constructor">constructor</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L51">src/resourceController.ts:51</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/9352540/src/resourceController.ts#L29">src/resourceController.ts:29</a></li>
 							</ul>
 						</aside>
-						<div class="tsd-comment tsd-typography">
-							<div class="lead">
-								<p>Initialize a new ResourceController helper object.</p>
-							</div>
-						</div>
 						<h4 class="tsd-parameters-title">Parameters</h4>
 						<ul class="tsd-parameters">
 							<li>
 								<h5>event: <span class="tsd-signature-type">any</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<div class="lead">
-										<p>the event that invoked the AWS lambda function</p>
-									</div>
-								</div>
 							</li>
 							<li>
 								<h5>callback: <span class="tsd-signature-type">any</span></h5>
-								<div class="tsd-comment tsd-typography">
-									<div class="lead">
-										<p>the callback to resolve or reject the execution</p>
-									</div>
-								</div>
 							</li>
 							<li>
 								<h5><span class="tsd-flag ts-flagOptional">Optional</span> options: <a href="../interfaces/resourcecontrolleroptions.html" class="tsd-signature-type">ResourceControllerOptions</a></h5>
@@ -2986,7 +2958,7 @@ img {
 				<div class="tsd-signature tsd-kind-icon">body<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L29">src/resourceController.ts:29</a></li>
+						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/9352540/src/resourceController.ts#L18">src/resourceController.ts:18</a></li>
 					</ul>
 				</aside>
 			</section>
@@ -2996,35 +2968,37 @@ img {
 				<div class="tsd-signature tsd-kind-icon">query<wbr>Params<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 				<aside class="tsd-sources">
 					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L30">src/resourceController.ts:30</a></li>
+						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/9352540/src/resourceController.ts#L19">src/resourceController.ts:19</a></li>
 					</ul>
 				</aside>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+			<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-inherited">
 				<a name="tables" class="tsd-anchor"></a>
 				<h3>tables</h3>
 				<div class="tsd-signature tsd-kind-icon">tables<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div>
 				<aside class="tsd-sources">
+					<p>Inherited from <a href="genericcontroller.html">GenericController</a>.<a href="genericcontroller.html#tables">tables</a></p>
 					<ul>
-						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L35">src/resourceController.ts:35</a></li>
+						<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/9352540/src/genericController.ts#L30">src/genericController.ts:30</a></li>
 					</ul>
 				</aside>
 			</section>
 		</section>
-		<section class="tsd-panel-group tsd-member-group ">
+		<section class="tsd-panel-group tsd-member-group tsd-is-inherited">
 			<h2>Accessors</h2>
-			<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
+			<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited">
 				<a name="attachments" class="tsd-anchor"></a>
 				<h3>attachments</h3>
-				<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
+				<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited">
 					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> attachments<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="attachments.html" class="tsd-signature-type">Attachments</a></li>
 					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> attachments<span class="tsd-signature-symbol">(</span>attachments<span class="tsd-signature-symbol">: </span><a href="attachments.html" class="tsd-signature-type">Attachments</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
+							<p>Inherited from <a href="genericcontroller.html">GenericController</a>.<a href="genericcontroller.html#attachments">attachments</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L326">src/resourceController.ts:326</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/9352540/src/genericController.ts#L125">src/genericController.ts:125</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3036,8 +3010,9 @@ img {
 					</li>
 					<li class="tsd-description">
 						<aside class="tsd-sources">
+							<p>Inherited from <a href="genericcontroller.html">GenericController</a>.<a href="genericcontroller.html#attachments">attachments</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L330">src/resourceController.ts:330</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/9352540/src/genericController.ts#L129">src/genericController.ts:129</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3049,230 +3024,6 @@ img {
 						<ul class="tsd-parameters">
 							<li>
 								<h5>attachments: <a href="attachments.html" class="tsd-signature-type">Attachments</a></h5>
-							</li>
-						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-				<a name="cognito" class="tsd-anchor"></a>
-				<h3>cognito</h3>
-				<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> cognito<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="cognito.html" class="tsd-signature-type">Cognito</a></li>
-					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> cognito<span class="tsd-signature-symbol">(</span>cognito<span class="tsd-signature-symbol">: </span><a href="cognito.html" class="tsd-signature-type">Cognito</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-				</ul>
-				<ul class="tsd-descriptions">
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L276">src/resourceController.ts:276</a></li>
-							</ul>
-						</aside>
-						<h4 class="tsd-returns-title">Returns <a href="cognito.html" class="tsd-signature-type">Cognito</a></h4>
-					</li>
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L280">src/resourceController.ts:280</a></li>
-							</ul>
-						</aside>
-						<h4 class="tsd-parameters-title">Parameters</h4>
-						<ul class="tsd-parameters">
-							<li>
-								<h5>cognito: <a href="cognito.html" class="tsd-signature-type">Cognito</a></h5>
-							</li>
-						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-				<a name="comprehend" class="tsd-anchor"></a>
-				<h3>comprehend</h3>
-				<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> comprehend<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="comprehend.html" class="tsd-signature-type">Comprehend</a></li>
-					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> comprehend<span class="tsd-signature-symbol">(</span>comprehend<span class="tsd-signature-symbol">: </span><a href="comprehend.html" class="tsd-signature-type">Comprehend</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-				</ul>
-				<ul class="tsd-descriptions">
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L311">src/resourceController.ts:311</a></li>
-							</ul>
-						</aside>
-						<h4 class="tsd-returns-title">Returns <a href="comprehend.html" class="tsd-signature-type">Comprehend</a></h4>
-					</li>
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L315">src/resourceController.ts:315</a></li>
-							</ul>
-						</aside>
-						<h4 class="tsd-parameters-title">Parameters</h4>
-						<ul class="tsd-parameters">
-							<li>
-								<h5>comprehend: <a href="comprehend.html" class="tsd-signature-type">Comprehend</a></h5>
-							</li>
-						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-				<a name="dynamodb" class="tsd-anchor"></a>
-				<h3>dynamoDB</h3>
-				<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> dynamoDB<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="dynamodb.html" class="tsd-signature-type">DynamoDB</a></li>
-					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> dynamoDB<span class="tsd-signature-symbol">(</span>dynamoDB<span class="tsd-signature-symbol">: </span><a href="dynamodb.html" class="tsd-signature-type">DynamoDB</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-				</ul>
-				<ul class="tsd-descriptions">
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L269">src/resourceController.ts:269</a></li>
-							</ul>
-						</aside>
-						<h4 class="tsd-returns-title">Returns <a href="dynamodb.html" class="tsd-signature-type">DynamoDB</a></h4>
-					</li>
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L273">src/resourceController.ts:273</a></li>
-							</ul>
-						</aside>
-						<h4 class="tsd-parameters-title">Parameters</h4>
-						<ul class="tsd-parameters">
-							<li>
-								<h5>dynamoDB: <a href="dynamodb.html" class="tsd-signature-type">DynamoDB</a></h5>
-							</li>
-						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-				<a name="s3" class="tsd-anchor"></a>
-				<h3>s3</h3>
-				<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> s3<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="s3.html" class="tsd-signature-type">S3</a></li>
-					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> s3<span class="tsd-signature-symbol">(</span>s3<span class="tsd-signature-symbol">: </span><a href="s3.html" class="tsd-signature-type">S3</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-				</ul>
-				<ul class="tsd-descriptions">
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L283">src/resourceController.ts:283</a></li>
-							</ul>
-						</aside>
-						<h4 class="tsd-returns-title">Returns <a href="s3.html" class="tsd-signature-type">S3</a></h4>
-					</li>
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L287">src/resourceController.ts:287</a></li>
-							</ul>
-						</aside>
-						<h4 class="tsd-parameters-title">Parameters</h4>
-						<ul class="tsd-parameters">
-							<li>
-								<h5>s3: <a href="s3.html" class="tsd-signature-type">S3</a></h5>
-							</li>
-						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-				<a name="ses" class="tsd-anchor"></a>
-				<h3>ses</h3>
-				<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> ses<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="ses.html" class="tsd-signature-type">SES</a></li>
-					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> ses<span class="tsd-signature-symbol">(</span>ses<span class="tsd-signature-symbol">: </span><a href="ses.html" class="tsd-signature-type">SES</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-				</ul>
-				<ul class="tsd-descriptions">
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L290">src/resourceController.ts:290</a></li>
-							</ul>
-						</aside>
-						<h4 class="tsd-returns-title">Returns <a href="ses.html" class="tsd-signature-type">SES</a></h4>
-					</li>
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L294">src/resourceController.ts:294</a></li>
-							</ul>
-						</aside>
-						<h4 class="tsd-parameters-title">Parameters</h4>
-						<ul class="tsd-parameters">
-							<li>
-								<h5>ses: <a href="ses.html" class="tsd-signature-type">SES</a></h5>
-							</li>
-						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-				<a name="sns" class="tsd-anchor"></a>
-				<h3>sns</h3>
-				<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> sns<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="sns.html" class="tsd-signature-type">SNS</a></li>
-					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> sns<span class="tsd-signature-symbol">(</span>sns<span class="tsd-signature-symbol">: </span><a href="sns.html" class="tsd-signature-type">SNS</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-				</ul>
-				<ul class="tsd-descriptions">
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L297">src/resourceController.ts:297</a></li>
-							</ul>
-						</aside>
-						<h4 class="tsd-returns-title">Returns <a href="sns.html" class="tsd-signature-type">SNS</a></h4>
-					</li>
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L301">src/resourceController.ts:301</a></li>
-							</ul>
-						</aside>
-						<h4 class="tsd-parameters-title">Parameters</h4>
-						<ul class="tsd-parameters">
-							<li>
-								<h5>sns: <a href="sns.html" class="tsd-signature-type">SNS</a></h5>
-							</li>
-						</ul>
-						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
-					</li>
-				</ul>
-			</section>
-			<section class="tsd-panel tsd-member tsd-kind-accessor tsd-parent-kind-class">
-				<a name="translate" class="tsd-anchor"></a>
-				<h3>translate</h3>
-				<ul class="tsd-signatures tsd-kind-accessor tsd-parent-kind-class">
-					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">get</span> translate<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="translate.html" class="tsd-signature-type">Translate</a></li>
-					<li class="tsd-signature tsd-kind-icon"><span class="tsd-signature-symbol">set</span> translate<span class="tsd-signature-symbol">(</span>translate<span class="tsd-signature-symbol">: </span><a href="translate.html" class="tsd-signature-type">Translate</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
-				</ul>
-				<ul class="tsd-descriptions">
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L304">src/resourceController.ts:304</a></li>
-							</ul>
-						</aside>
-						<h4 class="tsd-returns-title">Returns <a href="translate.html" class="tsd-signature-type">Translate</a></h4>
-					</li>
-					<li class="tsd-description">
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L308">src/resourceController.ts:308</a></li>
-							</ul>
-						</aside>
-						<h4 class="tsd-parameters-title">Parameters</h4>
-						<ul class="tsd-parameters">
-							<li>
-								<h5>translate: <a href="translate.html" class="tsd-signature-type">Translate</a></h5>
 							</li>
 						</ul>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
@@ -3292,7 +3043,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L419">src/resourceController.ts:419</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/9352540/src/resourceController.ts#L312">src/resourceController.ts:312</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3304,24 +3055,20 @@ img {
 					</li>
 				</ul>
 			</section>
-			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class">
+			<section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 				<a name="handlerequest" class="tsd-anchor"></a>
 				<h3>handle<wbr>Request</h3>
-				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
+				<ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class tsd-is-overwrite">
 					<li class="tsd-signature tsd-kind-icon">handle<wbr>Request<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span></li>
 				</ul>
 				<ul class="tsd-descriptions">
 					<li class="tsd-description">
 						<aside class="tsd-sources">
+							<p>Overrides <a href="genericcontroller.html">GenericController</a>.<a href="genericcontroller.html#handlerequest">handleRequest</a></p>
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L112">src/resourceController.ts:112</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/9352540/src/resourceController.ts#L72">src/resourceController.ts:72</a></li>
 							</ul>
 						</aside>
-						<div class="tsd-comment tsd-typography">
-							<div class="lead">
-								<p>The main function, that handle an API request redirected to a Lambda function.</p>
-							</div>
-						</div>
 						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 					</li>
 				</ul>
@@ -3336,7 +3083,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L375">src/resourceController.ts:375</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/9352540/src/resourceController.ts#L268">src/resourceController.ts:268</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3365,7 +3112,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L362">src/resourceController.ts:362</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/9352540/src/resourceController.ts#L255">src/resourceController.ts:255</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3399,7 +3146,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L430">src/resourceController.ts:430</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/9352540/src/resourceController.ts#L323">src/resourceController.ts:323</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3430,7 +3177,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L355">src/resourceController.ts:355</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/9352540/src/resourceController.ts#L248">src/resourceController.ts:248</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3458,7 +3205,7 @@ img {
 					<li class="tsd-description">
 						<aside class="tsd-sources">
 							<ul>
-								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/2a35044/src/resourceController.ts#L451">src/resourceController.ts:451</a></li>
+								<li>Defined in <a href="https://github.com/uatisdeproblem/IDEA-AWS/blob/9352540/src/resourceController.ts#L344">src/resourceController.ts:344</a></li>
 							</ul>
 						</aside>
 						<div class="tsd-comment tsd-typography">
@@ -3490,6 +3237,11 @@ img {
 						<li class="tsd-kind-property tsd-parent-kind-class"><span class="tsd-kind-icon">Property</span></li>
 						<li class="tsd-kind-method tsd-parent-kind-class"><span class="tsd-kind-icon">Method</span></li>
 						<li class="tsd-kind-accessor tsd-parent-kind-class"><span class="tsd-kind-icon">Accessor</span></li>
+					</ul>
+					<ul class="tsd-legend">
+						<li class="tsd-kind-property tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited property</span></li>
+						<li class="tsd-kind-method tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited method</span></li>
+						<li class="tsd-kind-accessor tsd-parent-kind-class tsd-is-inherited"><span class="tsd-kind-icon">Inherited accessor</span></li>
 					</ul>
 					<ul class="tsd-legend">
 						<li class="tsd-kind-property tsd-parent-kind-interface"><span class="tsd-kind-icon">Property</span></li>
