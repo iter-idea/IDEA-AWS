@@ -179,7 +179,7 @@ export abstract class ResourceController {
    * @param err if not null, it contains the error raised
    * @param res if err, the error string, otherwise the result (a JSON to parse)
    */
-  protected done(err: Error, res?: any): any {
+  protected done(err: Error | null, res?: any): any {
     logger(err ? 'DONE WITH ERRORS' : 'DONE', err, res, true);
     // if configured, store the log of the request
     if (this.logRequestsWithKey) this.storeLog(!err);
