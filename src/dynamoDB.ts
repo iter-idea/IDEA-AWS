@@ -1,5 +1,6 @@
 import UUIDV4 = require('uuid/v4');
-import { nanoid as NanoID } from 'nanoid';
+import { customAlphabet as AlphabetNanoID } from 'nanoid';
+const NanoID = AlphabetNanoID('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 25);
 import { DynamoDB as DDB } from 'aws-sdk';
 import { characters as ShortIdCharacters, generate as ShortIdGenerate } from 'shortid';
 import { logger } from 'idea-toolbox';
@@ -82,7 +83,7 @@ export class DynamoDB {
         ExpressionAttributeNames: { '#p': 'project', '#id': 'id' },
         ExpressionAttributeValues: { ':project': project, ':id': id }
       })
-        .then(() => resolve(`${project}#${id}`))
+        .then(() => resolve(`${project}_${id}`))
         .catch(() =>
           // ID exists, try again
           this.iunidHelper(project, attempt + 1, maxAttempts, resolve, reject)
