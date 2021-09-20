@@ -1,4 +1,4 @@
-import UUIDV4 = require('uuid/v4');
+import { v4 as UUIDV4 } from 'uuid';
 import { customAlphabet as AlphabetNanoID } from 'nanoid';
 const NanoID = AlphabetNanoID('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 25);
 import { DynamoDB as DDB } from 'aws-sdk';
@@ -21,7 +21,7 @@ export class DynamoDB {
   /**
    * Convert a JSON object from dynamoDB format to simple JSON.
    */
-  public unmarshall(data: DDB.AttributeMap, options?: DDB.DocumentClient.ConverterOptions): { [key: string]: any } {
+  unmarshall(data: DDB.AttributeMap, options?: DDB.DocumentClient.ConverterOptions): { [key: string]: any } {
     return DDB.Converter.unmarshall(data, options);
   }
 
@@ -33,7 +33,7 @@ export class DynamoDB {
    * @param project project code
    * @return the IUID
    */
-  public IUID(project: string): Promise<string> {
+  IUID(project: string): Promise<string> {
     const MAX_ATTEMPTS = 3;
     return new Promise((resolve, reject) => {
       if (!project) reject();
@@ -65,7 +65,7 @@ export class DynamoDB {
    * @param project project code
    * @return the IUNID
    */
-  public IUNID(project: string): Promise<string> {
+  IUNID(project: string): Promise<string> {
     const MAX_ATTEMPTS = 3;
     return new Promise((resolve, reject) => {
       if (!project) reject();
@@ -98,7 +98,7 @@ export class DynamoDB {
    * @param project project code
    * @return the ISID
    */
-  public ISID(project: string): Promise<string> {
+  ISID(project: string): Promise<string> {
     const MAX_ATTEMPTS = 3;
     // avoid _ characters (to avoid concatenation problems with ids) -- it must be anyway 64 chars-long
     ShortIdCharacters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-@');
@@ -131,7 +131,7 @@ export class DynamoDB {
    * They key of an atomic counter should be composed as the following: `DynamoDBTableName_uniqueKey`.
    * @param key the key of the counter
    */
-  public getAtomicCounterByKey(key: string): Promise<number> {
+  getAtomicCounterByKey(key: string): Promise<number> {
     return new Promise((resolve, reject) => {
       logger('GET ATOMIC COUNTER');
       this.update({
@@ -149,7 +149,7 @@ export class DynamoDB {
   /**
    * Get an item of a DynamoDB table.
    */
-  public get(params: DDB.DocumentClient.GetItemInput): Promise<DDB.DocumentClient.AttributeMap | any> {
+  get(params: DDB.DocumentClient.GetItemInput): Promise<DDB.DocumentClient.AttributeMap | any> {
     return new Promise((resolve, reject) => {
       this.dynamo.get(params, (err: Error, data: DDB.DocumentClient.GetItemOutput) => {
         logger(`GET ${params.TableName}`, err);
@@ -162,7 +162,7 @@ export class DynamoDB {
   /**
    * Put an item in a DynamoDB table.
    */
-  public put(params: DDB.DocumentClient.PutItemInput): Promise<DDB.DocumentClient.PutItemOutput> {
+  put(params: DDB.DocumentClient.PutItemInput): Promise<DDB.DocumentClient.PutItemOutput> {
     return new Promise((resolve, reject) => {
       this.dynamo.put(params, (err: Error, data: DDB.DocumentClient.PutItemOutput) => {
         logger(`PUT ${params.TableName}`, err);
@@ -175,7 +175,7 @@ export class DynamoDB {
   /**
    * Update an item of a DynamoDB table.
    */
-  public update(params: DDB.DocumentClient.UpdateItemInput): Promise<DDB.DocumentClient.UpdateItemOutput> {
+  update(params: DDB.DocumentClient.UpdateItemInput): Promise<DDB.DocumentClient.UpdateItemOutput> {
     return new Promise((resolve, reject) => {
       this.dynamo.update(params, (err: Error, data: DDB.DocumentClient.UpdateItemOutput) => {
         logger(`UPDATE ${params.TableName}`, err);
@@ -188,7 +188,7 @@ export class DynamoDB {
   /**
    * Delete an item of a DynamoDB table.
    */
-  public delete(params: DDB.DocumentClient.DeleteItemInput): Promise<DDB.DocumentClient.DeleteItemOutput> {
+  delete(params: DDB.DocumentClient.DeleteItemInput): Promise<DDB.DocumentClient.DeleteItemOutput> {
     return new Promise((resolve, reject) => {
       this.dynamo.delete(params, (err: Error, data: DDB.DocumentClient.DeleteItemOutput) => {
         logger(`DELETE ${params.TableName}`, err);
@@ -202,7 +202,7 @@ export class DynamoDB {
    * Get group of items based on their keys from DynamoDb table, avoiding the limits of DynamoDB's BatchGetItem.
    * @param ignoreErr if set, ignore the errors and continue the bulk op.
    */
-  public batchGet(
+  batchGet(
     table: string,
     keys: DDB.DocumentClient.Key[],
     ignoreErr?: boolean
@@ -245,7 +245,7 @@ export class DynamoDB {
    * Put an array of items in a DynamoDb table, avoiding the limits of DynamoDB's BatchWriteItem.
    * @param ignoreErr if true, ignore the errors and continue the bulk op
    */
-  public batchPut(table: string, items: DDB.DocumentClient.AttributeMap[], ignoreErr?: boolean): Promise<void> {
+  batchPut(table: string, items: DDB.DocumentClient.AttributeMap[], ignoreErr?: boolean): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!items.length) {
         logger(`BATCH WRITE (PUT) ${table}`, null, 'No elements to write');
@@ -257,7 +257,7 @@ export class DynamoDB {
    * Delete an array of items from a DynamoDb table, avoiding the limits of DynamoDB's BatchWriteItem.
    * @param ignoreErr if true, ignore the errors and continue the bulk op.
    */
-  public batchDelete(table: string, keys: DDB.DocumentClient.Key[], ignoreErr?: boolean): Promise<void> {
+  batchDelete(table: string, keys: DDB.DocumentClient.Key[], ignoreErr?: boolean): Promise<void> {
     return new Promise((resolve, reject) => {
       if (keys.length === 0) {
         logger(`BATCH WRITE (DELETE) ${table}`, null, 'No elements to write');
@@ -299,7 +299,7 @@ export class DynamoDB {
    * Query a DynamoDb table, avoiding the limits of DynamoDB's Query.
    * @param params the params to apply to DynamoDB's function
    */
-  public query(params: DDB.DocumentClient.QueryInput): Promise<(DDB.DocumentClient.AttributeMap | any)[]> {
+  query(params: DDB.DocumentClient.QueryInput): Promise<(DDB.DocumentClient.AttributeMap | any)[]> {
     return new Promise((resolve, reject) => {
       this.queryScanHelper(params, [], true, resolve, reject);
     });
@@ -308,7 +308,7 @@ export class DynamoDB {
    * Scan a DynamoDb table, avoiding the limits of DynamoDB's Query.
    * @param params the params to apply to DynamoDB's function
    */
-  public scan(params: DDB.DocumentClient.ScanInput): Promise<(DDB.DocumentClient.AttributeMap | any)[]> {
+  scan(params: DDB.DocumentClient.ScanInput): Promise<(DDB.DocumentClient.AttributeMap | any)[]> {
     return new Promise((resolve, reject) => {
       this.queryScanHelper(params, [], false, resolve, reject);
     });
@@ -344,7 +344,7 @@ export class DynamoDB {
    * Query a DynamoDb table in the traditional way (no pagination or data mapping).
    * @param params the params to apply to DynamoDB's function
    */
-  public queryClassic(params: DDB.DocumentClient.QueryInput): Promise<DDB.DocumentClient.QueryOutput[]> {
+  queryClassic(params: DDB.DocumentClient.QueryInput): Promise<DDB.DocumentClient.QueryOutput[]> {
     return new Promise((resolve, reject) => {
       this.queryScanClassicHelper(params, true, resolve, reject);
     });
@@ -353,7 +353,7 @@ export class DynamoDB {
    * Scan a DynamoDb table in the traditional way (no pagination or data mapping).
    * @param params the params to apply to DynamoDB's function
    */
-  public scanClassic(params: DDB.DocumentClient.ScanInput): Promise<DDB.DocumentClient.ScanOutput[]> {
+  scanClassic(params: DDB.DocumentClient.ScanInput): Promise<DDB.DocumentClient.ScanOutput[]> {
     return new Promise((resolve, reject) => {
       this.queryScanClassicHelper(params, false, resolve, reject);
     });
@@ -379,7 +379,7 @@ export class DynamoDB {
    * Execute a series of max 10 write operations in a single transaction.
    * @param ops the operations to execute in the transaction
    */
-  public transactWrites(ops: DDB.DocumentClient.TransactWriteItem[]): Promise<void> {
+  transactWrites(ops: DDB.DocumentClient.TransactWriteItem[]): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!ops.length) {
         logger('TRANSACTION WRITES', null, 'No elements to write');
@@ -396,10 +396,7 @@ export class DynamoDB {
   /**
    * Creates a set of elements (DynamoDB format) inferring the type of set from the type of the first element.
    */
-  public createSet(
-    array: number[] | string[],
-    options?: DDB.DocumentClient.CreateSetOptions
-  ): DDB.DocumentClient.DynamoDbSet {
+  createSet(array: number[] | string[], options?: DDB.DocumentClient.CreateSetOptions): DDB.DocumentClient.DynamoDbSet {
     return this.dynamo.createSet(array, options);
   }
 }

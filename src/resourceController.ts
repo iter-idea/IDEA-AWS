@@ -15,8 +15,8 @@ export abstract class ResourceController extends GenericController {
 
   protected stage: string;
   protected httpMethod: string;
-  public body: any;
-  public queryParams: any;
+  body: any;
+  queryParams: any;
   protected resource: string;
   protected path: string;
   protected resourceId: string;
@@ -69,7 +69,7 @@ export abstract class ResourceController extends GenericController {
   /// REQUEST HANDLERS
   ///
 
-  public handleRequest = () => {
+  handleRequest = () => {
     // check the authorizations and prepare the API request
     this.checkAuthBeforeRequest()
       .then(() => {
@@ -240,21 +240,21 @@ export abstract class ResourceController extends GenericController {
     // optionally add a track of the action
     if (this.httpMethod === 'PATCH' && this.body && this.body.action) log.action = this.body.action;
     // insert the log and don't wait for response or errors
-    this.dynamoDB.put({ TableName: 'idea_logs', Item: log }).catch(() => {});
+    this.dynamoDB.put({ TableName: 'idea_logs', Item: log }).catch(() => {
+      /* ignore */
+    });
   }
   /**
    * Check whether shared resource exists in the back-end (translation, template, etc.).
    */
-  public sharedResourceExists(path: string): boolean {
+  sharedResourceExists(path: string): boolean {
     return existsSync(`assets/${path}`);
   }
   /**
    * Load a shared resource in the back-end (translation, template, etc.).
-   * @param encoding default: `utf-8`
    */
-  public loadSharedResource(path: string, encoding?: string) {
-    encoding = encoding || 'utf-8';
-    return readFileSync(`assets/${path}`, { encoding });
+  loadSharedResource(path: string) {
+    return readFileSync(`assets/${path}`, { encoding: 'utf-8' });
   }
 
   ///
@@ -265,7 +265,7 @@ export abstract class ResourceController extends GenericController {
    * Simulate an internal API request, invoking directly the lambda and therefore saving resources.
    * @return the body of the response
    */
-  public invokeInternalAPIRequest(params: InternalAPIRequestParams): Promise<any> {
+  invokeInternalAPIRequest(params: InternalAPIRequestParams): Promise<any> {
     return new Promise((resolve, reject) => {
       // create a copy of the event
       const event = JSON.parse(JSON.stringify(this.event));
@@ -309,7 +309,7 @@ export abstract class ResourceController extends GenericController {
   /**
    * Whether the current request comes from an internal API request, i.e. it was invoked by another controller.
    */
-  public comesFromInternalRequest(): boolean {
+  comesFromInternalRequest(): boolean {
     return Boolean(this.event.internalAPIRequest);
   }
 
@@ -320,7 +320,7 @@ export abstract class ResourceController extends GenericController {
   /**
    * Load the translations from the shared resources and set them with a fallback language.
    */
-  public loadTranslations(lang: string, defLang?: string) {
+  loadTranslations(lang: string, defLang?: string) {
     // check for the existance of the mandatory source file
     if (!this.sharedResourceExists(`i18n/${lang}.json`)) return;
     // set the languages
@@ -341,7 +341,7 @@ export abstract class ResourceController extends GenericController {
    * Get a translated term by key, optionally interpolating variables (e.g. `{{user}}`).
    * If the term doesn't exist in the current language, it is searched in the default language.
    */
-  public t(key: string, interpolateParams?: any): string {
+  t(key: string, interpolateParams?: any): string {
     if (!this.translations || !this.currentLang) return;
     if (!this.isDefined(key) || !key.length) return;
     let res = this.interpolate(this.getValue(this.translations[this.currentLang], key), interpolateParams);

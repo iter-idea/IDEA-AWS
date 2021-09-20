@@ -23,7 +23,7 @@ export class S3 {
    * Create a download link of a piece of data (through S3).
    * *Pratically*, it uploads the file on an S3 bucket, generating and returning a url to it.
    */
-  public createDownloadURLFromData(data: Buffer | any, options?: CreateDownloadURLFromDataOptions): Promise<SignedURL> {
+  createDownloadURLFromData(data: Buffer | any, options?: CreateDownloadURLFromDataOptions): Promise<SignedURL> {
     return new Promise((resolve, reject) => {
       // if needed, randomly generates the key
       if (!options.key) options.key = new Date().getTime().toString().concat(Math.random().toString(36).slice(2));
@@ -53,7 +53,7 @@ export class S3 {
    * Get a signed URL to put a file on a S3 bucket.
    * @param expires seconds after which the signed URL expires
    */
-  public signedURLPut(bucket: string, key: string, expires?: number): SignedURL {
+  signedURLPut(bucket: string, key: string, expires?: number): SignedURL {
     return new SignedURL({
       url: this.s3.getSignedUrl('putObject', {
         Bucket: bucket,
@@ -67,7 +67,7 @@ export class S3 {
    * Get a signed URL to get a file on a S3 bucket.
    * @param expires seconds after which the signed URL expires
    */
-  public signedURLGet(bucket: string, key: string, expires?: number): SignedURL {
+  signedURLGet(bucket: string, key: string, expires?: number): SignedURL {
     return new SignedURL({
       url: this.s3.getSignedUrl('getObject', {
         Bucket: bucket,
@@ -80,7 +80,7 @@ export class S3 {
   /**
    * Make a copy of an object of the bucket.
    */
-  public copyObject(options: CopyObjectOptions): Promise<void> {
+  copyObject(options: CopyObjectOptions): Promise<void> {
     return new Promise((resolve, reject) => {
       this.s3.copyObject({ CopySource: options.copySource, Bucket: options.bucket, Key: options.key }, (err: Error) => {
         logger('S3 COPY OBJECT', err, options.key);
@@ -93,7 +93,7 @@ export class S3 {
   /**
    * Get an object from a S3 bucket.
    */
-  public getObject(options: GetObjectOptions): Promise<any> {
+  getObject(options: GetObjectOptions): Promise<any> {
     return new Promise((resolve, reject) => {
       this.s3.getObject({ Bucket: options.bucket, Key: options.key }, (err: Error, d: AWSS3.GetObjectOutput) => {
         logger('S3 GET OBJECT', err, options.type);
@@ -116,7 +116,7 @@ export class S3 {
   /**
    * Put an object in a S3 bucket.
    */
-  public putObject(options: PutObjectOptions): Promise<AWSS3.PutObjectOutput> {
+  putObject(options: PutObjectOptions): Promise<AWSS3.PutObjectOutput> {
     return new Promise((resolve, reject) => {
       const params: any = { Bucket: options.bucket, Key: options.key, Body: options.body };
       if (options.contentType) params.ContentType = options.contentType;
@@ -133,7 +133,7 @@ export class S3 {
   /**
    * Delete an object from an S3 bucket.
    */
-  public deleteObject(options: DeleteObjectOptions): Promise<AWSS3.PutObjectOutput> {
+  deleteObject(options: DeleteObjectOptions): Promise<AWSS3.PutObjectOutput> {
     return new Promise((resolve, reject) => {
       this.s3.deleteObject({ Bucket: options.bucket, Key: options.key }, (err: Error, o: AWSS3.DeleteObjectOutput) => {
         logger('S3 DELETE OBJECT', err, options.key);
@@ -146,7 +146,7 @@ export class S3 {
   /**
    * List the objects of an S3 bucket.
    */
-  public listObjects(options: ListObjectsOptions): Promise<AWSS3.ListObjectsOutput> {
+  listObjects(options: ListObjectsOptions): Promise<AWSS3.ListObjectsOutput> {
     return new Promise((resolve, reject) => {
       this.s3.listObjects(
         { Bucket: options.bucket, Prefix: options.prefix },
@@ -162,7 +162,7 @@ export class S3 {
   /**
    * List the objects keys of an S3 bucket.
    */
-  public listObjectsKeys(options: ListObjectsOptions): Promise<string[]> {
+  listObjectsKeys(options: ListObjectsOptions): Promise<string[]> {
     return new Promise((resolve, reject) => {
       this.listObjects(options)
         .then(list => resolve(list.Contents.map(obj => obj.Key)))
@@ -173,7 +173,7 @@ export class S3 {
   /**
    * Check whether an object on an S3 bucket exists.
    */
-  public doesObjectExist(options: GetObjectOptions): Promise<boolean> {
+  doesObjectExist(options: GetObjectOptions): Promise<boolean> {
     return new Promise(resolve => {
       this.s3.headObject({ Bucket: options.bucket, Key: options.key }, (err: Error) => {
         logger('S3 HEAD OBJECT', err, options.key);

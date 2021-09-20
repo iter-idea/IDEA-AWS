@@ -27,7 +27,7 @@ export abstract class GenericController {
 
   protected _attachments: Attachments;
 
-  public tables: any;
+  tables: any;
 
   protected logRequestsWithKey: string;
 
@@ -45,13 +45,14 @@ export abstract class GenericController {
     this.tables = options.tables || {};
 
     // set the logs to print objects deeper
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     require('util').inspect.defaultOptions.depth = null;
   }
 
   /**
    * The main function, that handle the request and should terminate with an invokation of the method `done`.
    */
-  public abstract handleRequest(): void;
+  abstract handleRequest(): void;
 
   /**
    * Default callback for the Lambda.

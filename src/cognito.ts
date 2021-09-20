@@ -15,7 +15,7 @@ export class Cognito {
    * Change the region in which to find the user pool.
    * Default: the runner's (e.g. Lambda function) region.
    */
-  public setRegion(region: string) {
+  setRegion(region: string) {
     // there is no quick way to change the region without re-creating the object
     this.cognito = new CognitoIdentityServiceProvider({ apiVersion: this.cognito.config.apiVersion, region });
   }
@@ -25,7 +25,7 @@ export class Cognito {
    * @param claims authorizer claims
    * @return user's data
    */
-  public getUserByClaims(claims: any): CognitoUserData {
+  getUserByClaims(claims: any): CognitoUserData {
     if (!claims) return null;
     const user: CognitoUserData | any = {};
     // add any additional cognito attribute available in cognito
@@ -39,7 +39,7 @@ export class Cognito {
   /**
    * Identify a user by its email address, returning its attributes.
    */
-  public getUserByEmail(email: string, cognitoUserPoolId: string): Promise<CognitoUserData> {
+  getUserByEmail(email: string, cognitoUserPoolId: string): Promise<CognitoUserData> {
     return new Promise((resolve, reject) => {
       // find the user by the email
       this.cognito.adminGetUser(
@@ -60,7 +60,7 @@ export class Cognito {
   /**
    * Identify a user by its userId (sub), returning its attributes.
    */
-  public getUserBySub(sub: string, cognitoUserPoolId: string): Promise<CognitoUserData> {
+  getUserBySub(sub: string, cognitoUserPoolId: string): Promise<CognitoUserData> {
     return new Promise((resolve, reject) => {
       // find the user by the sub
       this.cognito.listUsers(
@@ -82,7 +82,7 @@ export class Cognito {
    * Create a new user (by its email) in the pool specified.
    * @return userId of the new user
    */
-  public createUser(email: string, cognitoUserPoolId: string, options?: CreateUserOptions): Promise<string> {
+  createUser(email: string, cognitoUserPoolId: string, options?: CreateUserOptions): Promise<string> {
     return new Promise((resolve, reject) => {
       options = options || {};
       if (isEmpty(email, 'email')) return reject(new Error('INVALID_EMAIL'));
@@ -121,7 +121,7 @@ export class Cognito {
   /**
    * Resend the password to a user who never logged in.
    */
-  public resendPassword(email: string, cognitoUserPoolId: string, options?: CreateUserOptions): Promise<void> {
+  resendPassword(email: string, cognitoUserPoolId: string, options?: CreateUserOptions): Promise<void> {
     return new Promise((resolve, reject) => {
       options = options || {};
       if (isEmpty(email, 'email')) return reject(new Error('INVALID_EMAIL'));
@@ -148,7 +148,7 @@ export class Cognito {
   /**
    * Delete a user by its email (username), in the pool specified.
    */
-  public deleteUser(email: string, cognitoUserPoolId: string): Promise<void> {
+  deleteUser(email: string, cognitoUserPoolId: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (isEmpty(email, 'email')) return reject(new Error('INVALID_EMAIL'));
       this.cognito.adminDeleteUser({ UserPoolId: cognitoUserPoolId, Username: email }, (err: Error) => {
@@ -162,7 +162,7 @@ export class Cognito {
   /**
    * Sign in a user of a specific pool through username and password.
    */
-  public signIn(
+  signIn(
     email: string,
     password: string,
     cognitoUserPoolId: string,
@@ -188,7 +188,7 @@ export class Cognito {
   /**
    * Given a username and a refresh token (and pool data), refresh the session and return the new tokens.
    */
-  public refreshSession(
+  refreshSession(
     email: string,
     refreshToken: string,
     cognitoUserPoolId: string,
@@ -214,7 +214,7 @@ export class Cognito {
   /**
    * Change the email address (== username) associated to a user.
    */
-  public updateEmail(email: string, newEmail: string, cognitoUserPoolId: string): Promise<void> {
+  updateEmail(email: string, newEmail: string, cognitoUserPoolId: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (isEmpty(newEmail, 'email')) return reject(new Error('INVALID_NEW_EMAIL'));
       this.cognito.adminUpdateUserAttributes(
@@ -242,7 +242,7 @@ export class Cognito {
   /**
    * Change the password to sign in for a user.
    */
-  public updatePassword(
+  updatePassword(
     email: string,
     oldPassword: string,
     newPassword: string,
@@ -275,7 +275,7 @@ export class Cognito {
   /**
    * Sign out the user from all devices.
    */
-  public globalSignOut(email: string, cognitoUserPoolId: string): Promise<void> {
+  globalSignOut(email: string, cognitoUserPoolId: string): Promise<void> {
     return new Promise((resolve, reject) => {
       this.cognito.adminUserGlobalSignOut({ Username: email, UserPoolId: cognitoUserPoolId }, (err: Error) => {
         logger('COGNITO GLOBAL SIGN OUT', err);
@@ -288,7 +288,7 @@ export class Cognito {
   /**
    * Confirm and conclude a registration, usign a confirmation code.
    */
-  public confirmSignUp(email: string, confirmationCode: string, cognitoUserPoolClientId: string): Promise<void> {
+  confirmSignUp(email: string, confirmationCode: string, cognitoUserPoolClientId: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!email) return reject(new Error('INVALID_EMAIL'));
       if (!confirmationCode) return reject(new Error('INVALID_CONFIRMATION_CODE'));
@@ -308,7 +308,7 @@ export class Cognito {
   /**
    * List the groups of the user pool.
    */
-  public listGroups(cognitoUserPoolId: string): Promise<CognitoGroupData[]> {
+  listGroups(cognitoUserPoolId: string): Promise<CognitoGroupData[]> {
     return new Promise((resolve, reject) => {
       this.cognito.listGroups({ UserPoolId: cognitoUserPoolId }, (err, data) => {
         logger('COGNITO LIST GROUPS', err);
@@ -322,7 +322,7 @@ export class Cognito {
   /**
    * List the users part of a group in the user pool.
    */
-  public listUsersInGroup(group: string, cognitoUserPoolId: string): Promise<User[]> {
+  listUsersInGroup(group: string, cognitoUserPoolId: string): Promise<User[]> {
     return new Promise((resolve, reject) => {
       this.cognito.listUsersInGroup({ UserPoolId: cognitoUserPoolId, GroupName: group }, (err, data) => {
         logger('COGNITO LIST USERS IN GROUP', err);
@@ -342,7 +342,7 @@ export class Cognito {
   /**
    * Add a user (by email) to a group in the user pool.
    */
-  public addUserToGroup(email: string, group: string, cognitoUserPoolId: string): Promise<User> {
+  addUserToGroup(email: string, group: string, cognitoUserPoolId: string): Promise<User> {
     return new Promise((resolve, reject) => {
       this.getUserByEmail(email, cognitoUserPoolId).then(userData => {
         const user = new User({ userId: userData.sub, email: userData.email });
@@ -360,7 +360,7 @@ export class Cognito {
   /**
    * Remove a user (by email) from a group in the user pool.
    */
-  public removeUserFromGroup(email: string, group: string, cognitoUserPoolId: string): Promise<User> {
+  removeUserFromGroup(email: string, group: string, cognitoUserPoolId: string): Promise<User> {
     return new Promise((resolve, reject) => {
       this.getUserByEmail(email, cognitoUserPoolId).then(userData => {
         const user = new User({ userId: userData.sub, email: userData.email });

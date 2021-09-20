@@ -16,15 +16,15 @@ export class Translate {
   /**
    * Default input language code.
    */
-  public sourceLanguageCode: string;
+  sourceLanguageCode: string;
   /**
    * Default output language code.
    */
-  public targetLanguageCode: string;
+  targetLanguageCode: string;
   /**
    * Default terminology list.
    */
-  public terminologyNames: string[];
+  terminologyNames: string[];
 
   /**
    * Initialize a new Translate helper object.
@@ -40,7 +40,7 @@ export class Translate {
    * Translates input text from the source language to the target language.
    * @param params the parameters for translateText
    */
-  public text(params: TranslateParameters): Promise<string> {
+  text(params: TranslateParameters): Promise<string> {
     return new Promise((resolve, reject) => {
       // load source and target languages codes
       if (params.sourceLanguageCode) this.sourceLanguageCode = params.sourceLanguageCode;
@@ -69,7 +69,7 @@ export class Translate {
    * if the latter isn't between the ones already available.
    * @return an object that maps original texts with their translations (or nothing).
    */
-  public pdfTemplate(
+  pdfTemplate(
     entity: PDFEntity,
     template: PDFTemplateSection[],
     language: string,

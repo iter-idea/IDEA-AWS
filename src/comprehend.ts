@@ -17,7 +17,7 @@ export class Comprehend {
   /**
    * Inspects text and returns an inference of the prevailing sentiment (POSITIVE, NEUTRAL, MIXED, or NEGATIVE).
    */
-  public detectSentiment(params: ComprehendParameters): Promise<Sentiment> {
+  detectSentiment(params: ComprehendParameters): Promise<Sentiment> {
     return new Promise((resolve, reject) => {
       // check for obligatory params
       if (!params.language || !params.text) return reject(new Error('MISSING_PARAMETERS'));

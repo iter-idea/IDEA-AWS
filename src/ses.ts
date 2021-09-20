@@ -1,5 +1,6 @@
 import { SES as AWSSES } from 'aws-sdk';
 import { createTransport as NodemailerCreateTransport } from 'nodemailer';
+import { Headers } from 'nodemailer/lib/mailer';
 import { logger } from 'idea-toolbox';
 import { DynamoDB } from './dynamoDB';
 
@@ -10,7 +11,7 @@ export class SES {
   /**
    * Send an email through AWS Simple Email Service.
    */
-  public sendEmail(emailData: EmailData, sesParams: SESParams): Promise<void> {
+  sendEmail(emailData: EmailData, sesParams: SESParams): Promise<void> {
     return new Promise((resolve, reject) => {
       // if requested, check whether there is a custom SES configuration to apply for the team
       this.searchForCustomSESConfigByTeamId(sesParams.teamId).then(customSESConfig => {

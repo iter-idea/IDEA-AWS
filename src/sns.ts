@@ -9,7 +9,7 @@ export class SNS {
    * Create a new endpoint in the SNS platform specified.
    * @return platform endpoint ARN
    */
-  public createPushPlatormEndpoint(
+  createPushPlatormEndpoint(
     platform: PushNotificationsPlatforms,
     token: string,
     snsParams: SNSParams
@@ -45,7 +45,7 @@ export class SNS {
   /**
    * Publish a message to a SNS endpoint.
    */
-  public publish(params: SNSPublishParams): Promise<AWS.SNS.PublishResponse> {
+  publish(params: SNSPublishParams): Promise<AWS.SNS.PublishResponse> {
     return new Promise((resolve, reject) => {
       let structuredMessage;
       if (params.json) structuredMessage = { default: JSON.stringify(params.json) };

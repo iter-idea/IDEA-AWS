@@ -6,7 +6,7 @@ import { GenericController, GenericControllerOptions } from './genericController
  * An abstract class to inherit to manage AWS DDB streams in an AWS Lambda function.
  */
 export abstract class StreamController extends GenericController {
-  public records: any[];
+  records: any[];
 
   constructor(event: any, callback: any, options?: GenericControllerOptions) {
     super(event, callback, options);
