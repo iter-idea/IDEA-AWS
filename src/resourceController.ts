@@ -69,72 +69,81 @@ export abstract class ResourceController extends GenericController {
   /// REQUEST HANDLERS
   ///
 
-  handleRequest = () => {
-    // check the authorizations and prepare the API request
-    this.checkAuthBeforeRequest()
-      .then(() => {
-        let request;
-        if (this.resourceId)
-          switch (this.httpMethod) {
-            // resource/{resourceId}
-            case 'GET':
-              request = this.getResource();
-              break;
-            case 'POST':
-              request = this.postResource();
-              break;
-            case 'PUT':
-              request = this.putResource();
-              break;
-            case 'DELETE':
-              request = this.deleteResource();
-              break;
-            case 'PATCH':
-              request = this.patchResource();
-              break;
-            case 'HEAD':
-              request = this.headResource();
-              break;
-            default: /* nope */
-          }
-        else
-          switch (this.httpMethod) {
-            // resource
-            case 'GET':
-              request = this.getResources();
-              break;
-            case 'POST':
-              request = this.postResources();
-              break;
-            case 'PUT':
-              request = this.putResources();
-              break;
-            case 'DELETE':
-              request = this.deleteResources();
-              break;
-            case 'PATCH':
-              request = this.patchResources();
-              break;
-            case 'HEAD':
-              request = this.headResources();
-              break;
-            default: /* nope */
-          }
-        // execute the API request
-        if (!request) this.done(new Error('UNSUPPORTED_METHOD'));
-        else {
-          request.then((res: any) => this.done(null, res)).catch((err: Error) => this.done(err));
+  handleRequest = async () => {
+    try {
+      this.checkAuthBeforeRequest();
+      let request;
+      if (this.resourceId) {
+        switch (this.httpMethod) {
+          // resource/{resourceId}
+          case 'GET':
+            request = this.getResource;
+            break;
+          case 'POST':
+            request = this.postResource;
+            break;
+          case 'PUT':
+            request = this.putResource;
+            break;
+          case 'DELETE':
+            request = this.deleteResource;
+            break;
+          case 'PATCH':
+            request = this.patchResource;
+            break;
+          case 'HEAD':
+            request = this.headResource;
+            break;
+          default: /* nope */
         }
-      })
-      .catch(err => this.done(new Error(err && err.message ? err.message : 'FORBIDDEN')));
+      } else {
+        switch (this.httpMethod) {
+          // resource
+          case 'GET':
+            request = this.getResources;
+            break;
+          case 'POST':
+            request = this.postResources;
+            break;
+          case 'PUT':
+            request = this.putResources;
+            break;
+          case 'DELETE':
+            request = this.deleteResources;
+            break;
+          case 'PATCH':
+            request = this.patchResources;
+            break;
+          case 'HEAD':
+            request = this.headResources;
+            break;
+          default: /* nope */
+        }
+      }
+
+      if (!request) this.done(new Error('Unsupported method'));
+      else {
+        try {
+          const result = await request();
+          this.done(null, result);
+        } catch (err) {
+          const errorMessage = (err as Error)?.message || (err as any)?.errorMessage || 'Operation failed';
+          this.done(new Error(errorMessage));
+        }
+      }
+    } catch (err) {
+      const errorMessage = (err as Error)?.message || (err as any)?.errorMessage || 'Forbidden';
+      this.done(new Error(errorMessage));
+    }
   };
-  protected done(err: Error | null, res?: any) {
+  protected done(err: Error | null, res?: any, statusCode?: number) {
     logger(err ? 'DONE WITH ERRORS' : 'DONE', err, res, true);
+
     // if configured, store the log of the request
     if (this.logRequestsWithKey) this.storeLog(!err);
-    // send the response
+
     this.callback(null, {
-      statusCode: err ? '400' : '200',
+      statusCode: statusCode ?? (err ? '400' : '200'),
       body: err ? JSON.stringify({ message: err.message }) : JSON.stringify(res || {}),
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
@@ -143,80 +152,80 @@ export abstract class ResourceController extends GenericController {
   /**
    * To @override
    */
-  protected checkAuthBeforeRequest(): Promise<void> {
-    return new Promise(resolve => resolve());
+  protected async checkAuthBeforeRequest(): Promise<void> {
+    return;
   }
   /**
    * To @override
    */
-  protected getResource(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
+  protected async getResource(): Promise<any> {
+    throw new Error('Unsupported method');
   }
   /**
    * To @override
    */
-  protected postResource(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
+  protected async postResource(): Promise<any> {
+    throw new Error('Unsupported method');
   }
   /**
    * To @override
    */
-  protected putResource(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
+  protected async putResource(): Promise<any> {
+    throw new Error('Unsupported method');
   }
   /**
    * To @override
    */
-  protected deleteResource(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
+  protected async deleteResource(): Promise<any> {
+    throw new Error('Unsupported method');
   }
   /**
    * To @override
    */
-  protected headResource(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
+  protected async headResource(): Promise<any> {
+    throw new Error('Unsupported method');
   }
   /**
    * To @override
    */
-  protected getResources(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
+  protected async getResources(): Promise<any> {
+    throw new Error('Unsupported method');
   }
   /**
    * To @override
    */
-  protected postResources(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
+  protected async postResources(): Promise<any> {
+    throw new Error('Unsupported method');
   }
   /**
    * To @override
    */
-  protected putResources(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
+  protected async putResources(): Promise<any> {
+    throw new Error('Unsupported method');
   }
   /**
    * To @override
    */
-  protected patchResource(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
+  protected async patchResource(): Promise<any> {
+    throw new Error('Unsupported method');
   }
   /**
    * To @override
    */
-  protected patchResources(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
+  protected async patchResources(): Promise<any> {
+    throw new Error('Unsupported method');
   }
   /**
    * To @override
    */
-  protected deleteResources(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
+  protected async deleteResources(): Promise<any> {
+    throw new Error('Unsupported method');
   }
   /**
    * To @override
    */
-  protected headResources(): Promise<any> {
-    return new Promise((_, reject) => reject(new Error('UNSUPPORTED_METHOD')));
+  protected async headResources(): Promise<any> {
+    throw new Error('Unsupported method');
   }
 
   ///
@@ -227,7 +236,6 @@ export abstract class ResourceController extends GenericController {
    * Store the log associated to the request (no response/error handling).
    */
   protected storeLog(succeeded: boolean) {
-    // create the log
     const log = new APIRequestLog({
       logId: this.logRequestsWithKey,
       userId: this.principalId,
@@ -237,9 +245,10 @@ export abstract class ResourceController extends GenericController {
       method: this.httpMethod,
       succeeded
     });
+
     // optionally add a track of the action
     if (this.httpMethod === 'PATCH' && this.body && this.body.action) log.action = this.body.action;
-    // insert the log and don't wait for response or errors
+
     this.dynamoDB.put({ TableName: 'idea_logs', Item: log }).catch(() => {
       /* ignore */
     });
@@ -264,6 +273,7 @@ export abstract class ResourceController extends GenericController {
   /**
    * Simulate an internal API request, invoking directly the lambda and therefore saving resources.
    * @return the body of the response
+   * @deprecated don't run a Lambda from another Lambda (bad practice)
    */
   invokeInternalAPIRequest(params: InternalAPIRequestParams): Promise<any> {
     return new Promise((resolve, reject) => {
@@ -308,6 +318,7 @@ export abstract class ResourceController extends GenericController {
   }
   /**
    * Whether the current request comes from an internal API request, i.e. it was invoked by another controller.
+   * @deprecated don't run a Lambda from another Lambda (bad practice)
    */
   comesFromInternalRequest(): boolean {
     return Boolean(this.event.internalAPIRequest);
@@ -401,6 +412,7 @@ export interface ResourceControllerOptions extends GenericControllerOptions {
 
 /**
  * The parameters needed to invoke an internal API request.
+ * @deprecated don't run a Lambda from another Lambda (bad practice)
  */
 export interface InternalAPIRequestParams {
   /**
