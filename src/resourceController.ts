@@ -1,7 +1,7 @@
 /* eslint-disable no-invalid-this */
 import { existsSync, readFileSync } from 'fs';
 import { Lambda } from 'aws-sdk';
-import { APIRequestLog, logger } from 'idea-toolbox';
+import { APIRequestLog, CognitoUser, logger } from 'idea-toolbox';
 
 import { GenericController, GenericControllerOptions } from './genericController';
 
@@ -12,6 +12,7 @@ export abstract class ResourceController extends GenericController {
   protected authorization: string;
   protected claims: any;
   protected principalId: string;
+  protected user: CognitoUser;
 
   protected stage: string;
   protected httpMethod: string;
@@ -34,6 +35,7 @@ export abstract class ResourceController extends GenericController {
     this.authorization = event.headers?.Authorization;
     this.claims = event.requestContext?.authorizer?.claims;
     this.principalId = this.claims?.sub;
+    this.user = this.principalId ? new CognitoUser(this.claims) : null;
 
     this.stage = event.requestContext?.stage;
     this.httpMethod = event.httpMethod;
