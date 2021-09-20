@@ -73,65 +73,64 @@ export abstract class ResourceController extends GenericController {
 
   handleRequest = async () => {
     try {
-      this.checkAuthBeforeRequest();
-      let request;
-      if (this.resourceId) {
-        switch (this.httpMethod) {
-          // resource/{resourceId}
-          case 'GET':
-            request = this.getResource;
-            break;
-          case 'POST':
-            request = this.postResource;
-            break;
-          case 'PUT':
-            request = this.putResource;
-            break;
-          case 'DELETE':
-            request = this.deleteResource;
-            break;
-          case 'PATCH':
-            request = this.patchResource;
-            break;
-          case 'HEAD':
-            request = this.headResource;
-            break;
-          default: /* nope */
-        }
-      } else {
-        switch (this.httpMethod) {
-          // resource
-          case 'GET':
-            request = this.getResources;
-            break;
-          case 'POST':
-            request = this.postResources;
-            break;
-          case 'PUT':
-            request = this.putResources;
-            break;
-          case 'DELETE':
-            request = this.deleteResources;
-            break;
-          case 'PATCH':
-            request = this.patchResources;
-            break;
-          case 'HEAD':
-            request = this.headResources;
-            break;
-          default: /* nope */
-        }
-      }
+      await this.checkAuthBeforeRequest();
 
-      if (!request) this.done(new Error('Unsupported method'));
-      else {
-        try {
-          const result = await request();
-          this.done(null, result);
-        } catch (err) {
-          const errorMessage = (err as Error)?.message || (err as any)?.errorMessage || 'Operation failed';
-          this.done(new Error(errorMessage));
+      try {
+        let response;
+        if (this.resourceId) {
+          switch (this.httpMethod) {
+            // resource/{resourceId}
+            case 'GET':
+              response = await this.getResource();
+              break;
+            case 'POST':
+              response = await this.postResource();
+              break;
+            case 'PUT':
+              response = await this.putResource();
+              break;
+            case 'DELETE':
+              response = await this.deleteResource();
+              break;
+            case 'PATCH':
+              response = await this.patchResource();
+              break;
+            case 'HEAD':
+              response = await this.headResource();
+              break;
+            default:
+              this.done(new Error('Unsupported method'));
+          }
+        } else {
+          switch (this.httpMethod) {
+            // resource
+            case 'GET':
+              response = await this.getResources();
+              break;
+            case 'POST':
+              response = await this.postResources();
+              break;
+            case 'PUT':
+              response = await this.putResources();
+              break;
+            case 'DELETE':
+              response = await this.deleteResources();
+              break;
+            case 'PATCH':
+              response = await this.patchResources();
+              break;
+            case 'HEAD':
+              response = await this.headResources();
+              break;
+            default:
+              this.done(new Error('Unsupported method'));
+          }
         }
+
+        this.done(null, response);
+      } catch (err) {
+        const errorMessage = (err as Error)?.message || (err as any)?.errorMessage || 'Operation failed';
+        this.done(new Error(errorMessage));
       }
     } catch (err) {
       const errorMessage = (err as Error)?.message || (err as any)?.errorMessage || 'Forbidden';
