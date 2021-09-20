@@ -1,6 +1,9 @@
 import { SNS as AWSSNS } from 'aws-sdk';
 import { PushNotificationsPlatforms, logger } from 'idea-toolbox';
 
+// declare libs as global vars to be reused in warm starts by the Lambda function
+let ideaWarmStart_sns: AWSSNS = null;
+
 /**
  * A wrapper for AWS Simple Notification Service.
  */
@@ -9,75 +12,63 @@ export class SNS {
    * Create a new endpoint in the SNS platform specified.
    * @return platform endpoint ARN
    */
-  createPushPlatormEndpoint(
+  async createPushPlatormEndpoint(
     platform: PushNotificationsPlatforms,
     token: string,
     snsParams: SNSParams
   ): Promise<string> {
-    return new Promise((resolve, reject) => {
-      let platformARN: string;
-      // identify the platform ARN
-      switch (platform) {
-        case PushNotificationsPlatforms.APNS:
-          platformARN = snsParams.appleArn;
-          break;
-        case PushNotificationsPlatforms.APNS_SANDBOX:
-          platformARN = snsParams.appleDevArn;
-          break;
-        case PushNotificationsPlatforms.FCM:
-          platformARN = snsParams.androidArn;
-          break;
-        default:
-          return reject(new Error('UNSUPPORTED_PLATFORM'));
-      }
-      // create a new endpoint in the platform
-      new AWSSNS({ apiVersion: '2010-03-31', region: snsParams.region }).createPlatformEndpoint(
-        { PlatformApplicationArn: platformARN, Token: token },
-        (err: Error, data: AWS.SNS.CreateEndpointResponse) => {
-          logger('SNS ADD PLATFORM ENDPOINT', err);
-          if (err || !data.EndpointArn) reject(err);
-          else resolve(data.EndpointArn);
-        }
-      );
-    });
+    let platformARN: string;
+    switch (platform) {
+      case PushNotificationsPlatforms.APNS:
+        platformARN = snsParams.appleArn;
+        break;
+      case PushNotificationsPlatforms.APNS_SANDBOX:
+        platformARN = snsParams.appleDevArn;
+        break;
+      case PushNotificationsPlatforms.FCM:
+        platformARN = snsParams.androidArn;
+        break;
+      default:
+        throw new Error('Unsupported platform');
+    }
+
+    logger('SNS ADD PLATFORM ENDPOINT');
+    if (!ideaWarmStart_sns) ideaWarmStart_sns = new AWSSNS({ apiVersion: '2010-03-31', region: snsParams.region });
+    const result = await ideaWarmStart_sns
+      .createPlatformEndpoint({ PlatformApplicationArn: platformARN, Token: token })
+      .promise();
+
+    return result.EndpointArn;
   }
 
   /**
    * Publish a message to a SNS endpoint.
    */
-  publish(params: SNSPublishParams): Promise<AWS.SNS.PublishResponse> {
-    return new Promise((resolve, reject) => {
-      let structuredMessage;
-      if (params.json) structuredMessage = { default: JSON.stringify(params.json) };
-      else
-        switch (params.platform) {
-          case PushNotificationsPlatforms.APNS:
-            structuredMessage = { APNS: JSON.stringify({ aps: { alert: params.message } }) };
-            break;
-          case PushNotificationsPlatforms.APNS_SANDBOX:
-            structuredMessage = { APNS_SANDBOX: JSON.stringify({ aps: { alert: params.message } }) };
-            break;
-          case PushNotificationsPlatforms.FCM:
-            structuredMessage = {
-              GCM: JSON.stringify({ notification: { body: params.message, title: params.message } })
-            };
-            break;
-          default:
-            return reject(new Error('UNSUPPORTED_PLATFORM'));
-        }
-      new AWSSNS({ apiVersion: '2010-03-31', region: params.region }).publish(
-        {
-          MessageStructure: 'json',
-          Message: JSON.stringify(structuredMessage),
-          TargetArn: params.endpoint
-        },
-        (err: Error, data: AWS.SNS.PublishResponse) => {
-          logger('SNS PUBLISH IN TOPIC', err);
-          if (err) reject(err);
-          else resolve(data);
-        }
-      );
-    });
+  async publish(snsParams: SNSPublishParams): Promise<AWS.SNS.PublishResponse> {
+    let structuredMessage;
+    if (snsParams.json) structuredMessage = { default: JSON.stringify(snsParams.json) };
+    else
+      switch (snsParams.platform) {
+        case PushNotificationsPlatforms.APNS:
+          structuredMessage = { APNS: JSON.stringify({ aps: { alert: snsParams.message } }) };
+          break;
+        case PushNotificationsPlatforms.APNS_SANDBOX:
+          structuredMessage = { APNS_SANDBOX: JSON.stringify({ aps: { alert: snsParams.message } }) };
+          break;
+        case PushNotificationsPlatforms.FCM:
+          structuredMessage = {
+            GCM: JSON.stringify({ notification: { body: snsParams.message, title: snsParams.message } })
+          };
+          break;
+        default:
+          throw new Error('Unsupported platform');
+      }
+
+    logger('SNS PUBLISH IN TOPIC');
+    if (!ideaWarmStart_sns) ideaWarmStart_sns = new AWSSNS({ apiVersion: '2010-03-31', region: snsParams.region });
+    return await ideaWarmStart_sns
+      .publish({ MessageStructure: 'json', Message: JSON.stringify(structuredMessage), TargetArn: snsParams.endpoint })
+      .promise();
   }
 }
 

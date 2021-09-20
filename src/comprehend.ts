@@ -1,5 +1,8 @@
-import { AWSError, Comprehend as AmazonComprehend } from 'aws-sdk';
+import { Comprehend as AmazonComprehend } from 'aws-sdk';
 import { Sentiment } from 'idea-toolbox';
+
+// declare libs as global vars to be reused in warm starts by the Lambda function
+let ideaWarmStart_comprehend: AmazonComprehend = null;
 
 /**
  * A wrapper for Amazon Comprehend.
@@ -11,25 +14,21 @@ export class Comprehend {
   protected comprehend: AmazonComprehend;
 
   constructor() {
-    this.comprehend = new AmazonComprehend({ apiVersion: '2017-11-27' });
+    if (!ideaWarmStart_comprehend) ideaWarmStart_comprehend = new AmazonComprehend({ apiVersion: '2017-11-27' });
+    this.comprehend = ideaWarmStart_comprehend;
   }
 
   /**
    * Inspects text and returns an inference of the prevailing sentiment (POSITIVE, NEUTRAL, MIXED, or NEGATIVE).
    */
-  detectSentiment(params: ComprehendParameters): Promise<Sentiment> {
-    return new Promise((resolve, reject) => {
-      // check for obligatory params
-      if (!params.language || !params.text) return reject(new Error('MISSING_PARAMETERS'));
-      // execute the sentiment detection
-      this.comprehend.detectSentiment(
-        { LanguageCode: params.language, Text: params.text },
-        (err: AWSError, data: AmazonComprehend.DetectSentimentResponse) => {
-          if (err) reject(err);
-          else resolve(data.Sentiment as Sentiment);
-        }
-      );
-    });
+  async detectSentiment(params: ComprehendParameters): Promise<Sentiment> {
+    if (!params.language || !params.text) throw new Error('Missing some parameters');
+
+    const result = await this.comprehend
+      .detectSentiment({ LanguageCode: params.language, Text: params.text })
+      .promise();
+
+    return result.Sentiment as Sentiment;
   }
 }
 

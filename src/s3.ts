@@ -1,6 +1,9 @@
 import { S3 as AWSS3 } from 'aws-sdk';
 import { logger, SignedURL } from 'idea-toolbox';
 
+// declare libs as global vars to be reused in warm starts by the Lambda function
+let ideaWarmStart_s3: AWSS3 = null;
+
 /**
  * A wrapper for AWS Simple Storage Service.
  */
@@ -16,37 +19,27 @@ export class S3 {
    * Initialize a new S3 helper object.
    */
   constructor() {
-    this.s3 = new AWSS3({ apiVersion: '2006-03-01', signatureVersion: 'v4' });
+    if (!ideaWarmStart_s3) ideaWarmStart_s3 = new AWSS3({ apiVersion: '2006-03-01', signatureVersion: 'v4' });
+    this.s3 = ideaWarmStart_s3;
   }
 
   /**
    * Create a download link of a piece of data (through S3).
-   * *Pratically*, it uploads the file on an S3 bucket, generating and returning a url to it.
+   * *Practically*, it uploads the file on an S3 bucket, generating and returning a url to it.
    */
-  createDownloadURLFromData(data: Buffer | any, options?: CreateDownloadURLFromDataOptions): Promise<SignedURL> {
-    return new Promise((resolve, reject) => {
-      // if needed, randomly generates the key
-      if (!options.key) options.key = new Date().getTime().toString().concat(Math.random().toString(36).slice(2));
-      // add the prefix to the key
-      options.key = `${options.prefix || this.DEFAULT_DOWNLOAD_BUCKET_PREFIX}/${options.key}`;
-      // set the other parameters
-      options.bucket = options.bucket || this.DEFAULT_DOWNLOAD_BUCKET;
-      options.secToExp = options.secToExp || this.DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP;
-      // upload the file to the downloads bucket
-      this.s3.upload(
-        {
-          Bucket: options.bucket,
-          Key: options.key,
-          Body: data,
-          ContentType: options.contentType
-        },
-        (err: Error) => {
-          logger('S3 UPLOAD', err);
-          if (err) reject(err);
-          else resolve(this.signedURLGet(options.bucket, options.key, options.secToExp));
-        }
-      );
-    });
+  async createDownloadURLFromData(data: Buffer | any, options?: CreateDownloadURLFromDataOptions): Promise<SignedURL> {
+    // if needed, randomly generates the key
+    if (!options.key) options.key = new Date().getTime().toString().concat(Math.random().toString(36).slice(2));
+
+    options.key = `${options.prefix || this.DEFAULT_DOWNLOAD_BUCKET_PREFIX}/${options.key}`;
+    options.bucket = options.bucket || this.DEFAULT_DOWNLOAD_BUCKET;
+    options.secToExp = options.secToExp || this.DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP;
+
+    await this.s3
+      .upload({ Bucket: options.bucket, Key: options.key, Body: data, ContentType: options.contentType })
+      .promise();
+
+    return this.signedURLGet(options.bucket, options.key, options.secToExp);
   }
 
   /**
@@ -80,107 +73,75 @@ export class S3 {
   /**
    * Make a copy of an object of the bucket.
    */
-  copyObject(options: CopyObjectOptions): Promise<void> {
-    return new Promise((resolve, reject) => {
-      this.s3.copyObject({ CopySource: options.copySource, Bucket: options.bucket, Key: options.key }, (err: Error) => {
-        logger('S3 COPY OBJECT', err, options.key);
-        if (err) reject(err);
-        else resolve();
-      });
-    });
+  async copyObject(options: CopyObjectOptions): Promise<void> {
+    logger('S3 COPY OBJECT', null, options.key);
+    await this.s3.copyObject({ CopySource: options.copySource, Bucket: options.bucket, Key: options.key }).promise();
   }
 
   /**
    * Get an object from a S3 bucket.
    */
-  getObject(options: GetObjectOptions): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.s3.getObject({ Bucket: options.bucket, Key: options.key }, (err: Error, d: AWSS3.GetObjectOutput) => {
-        logger('S3 GET OBJECT', err, options.type);
-        if (err) reject(err);
-        else
-          switch (options.type) {
-            case GetObjectTypes.JSON:
-              resolve(JSON.parse((d.Body as any).toString('utf-8')));
-              break;
-            case GetObjectTypes.TEXT:
-              resolve((d.Body as any).toString('utf-8'));
-              break;
-            default:
-              resolve(d);
-          }
-      });
-    });
+  async getObject(options: GetObjectOptions): Promise<any> {
+    logger('S3 GET OBJECT', null, options.type);
+    const result = await this.s3.getObject({ Bucket: options.bucket, Key: options.key }).promise();
+
+    switch (options.type) {
+      case GetObjectTypes.JSON:
+        return JSON.parse(result.Body.toString('utf-8'));
+      case GetObjectTypes.TEXT:
+        return result.Body.toString('utf-8');
+      default:
+        return result;
+    }
   }
 
   /**
    * Put an object in a S3 bucket.
    */
-  putObject(options: PutObjectOptions): Promise<AWSS3.PutObjectOutput> {
-    return new Promise((resolve, reject) => {
-      const params: any = { Bucket: options.bucket, Key: options.key, Body: options.body };
-      if (options.contentType) params.ContentType = options.contentType;
-      if (options.acl) params.ACL = options.acl;
-      if (options.metadata) params.Metadata = options.metadata;
-      this.s3.putObject(params, (err: Error, d: AWSS3.PutObjectOutput) => {
-        logger('S3 PUT OBJECT', err, options.key);
-        if (err) reject(err);
-        else resolve(d);
-      });
-    });
+  async putObject(options: PutObjectOptions): Promise<AWSS3.PutObjectOutput> {
+    const params: any = { Bucket: options.bucket, Key: options.key, Body: options.body };
+    if (options.contentType) params.ContentType = options.contentType;
+    if (options.acl) params.ACL = options.acl;
+    if (options.metadata) params.Metadata = options.metadata;
+
+    logger('S3 PUT OBJECT', null, options.key);
+    return await this.s3.putObject(params).promise();
   }
 
   /**
    * Delete an object from an S3 bucket.
    */
-  deleteObject(options: DeleteObjectOptions): Promise<AWSS3.PutObjectOutput> {
-    return new Promise((resolve, reject) => {
-      this.s3.deleteObject({ Bucket: options.bucket, Key: options.key }, (err: Error, o: AWSS3.DeleteObjectOutput) => {
-        logger('S3 DELETE OBJECT', err, options.key);
-        if (err) reject(err);
-        else resolve(o);
-      });
-    });
+  async deleteObject(options: DeleteObjectOptions): Promise<AWSS3.PutObjectOutput> {
+    logger('S3 DELETE OBJECT', null, options.key);
+    return await this.s3.deleteObject({ Bucket: options.bucket, Key: options.key }).promise();
   }
 
   /**
    * List the objects of an S3 bucket.
    */
-  listObjects(options: ListObjectsOptions): Promise<AWSS3.ListObjectsOutput> {
-    return new Promise((resolve, reject) => {
-      this.s3.listObjects(
-        { Bucket: options.bucket, Prefix: options.prefix },
-        (err: Error, o: AWSS3.ListObjectsOutput) => {
-          logger('S3 LIST OBJECTS', err, options.prefix);
-          if (err) reject(err);
-          else resolve(o);
-        }
-      );
-    });
+  async listObjects(options: ListObjectsOptions): Promise<AWSS3.ListObjectsOutput> {
+    logger('S3 LIST OBJECTS', null, options.prefix);
+    return await this.s3.listObjects({ Bucket: options.bucket, Prefix: options.prefix }).promise();
   }
 
   /**
    * List the objects keys of an S3 bucket.
    */
-  listObjectsKeys(options: ListObjectsOptions): Promise<string[]> {
-    return new Promise((resolve, reject) => {
-      this.listObjects(options)
-        .then(list => resolve(list.Contents.map(obj => obj.Key)))
-        .catch(err => reject(err));
-    });
+  async listObjectsKeys(options: ListObjectsOptions): Promise<string[]> {
+    const result = await this.listObjects(options);
+    return result.Contents.map(obj => obj.Key);
   }
 
   /**
    * Check whether an object on an S3 bucket exists.
    */
-  doesObjectExist(options: GetObjectOptions): Promise<boolean> {
-    return new Promise(resolve => {
-      this.s3.headObject({ Bucket: options.bucket, Key: options.key }, (err: Error) => {
-        logger('S3 HEAD OBJECT', err, options.key);
-        if (err) resolve(false);
-        else resolve(true);
-      });
-    });
+  async doesObjectExist(options: GetObjectOptions): Promise<boolean> {
+    try {
+      await this.s3.headObject({ Bucket: options.bucket, Key: options.key }).promise();
+      return true;
+    } catch (err) {
+      return false;
+    }
   }
 }
 

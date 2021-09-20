@@ -1,21 +1,22 @@
+import { DynamoDB as DDB } from 'aws-sdk';
 import { v4 as UUIDV4 } from 'uuid';
 import { customAlphabet as AlphabetNanoID } from 'nanoid';
 const NanoID = AlphabetNanoID('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 25);
-import { DynamoDB as DDB } from 'aws-sdk';
 import { characters as ShortIdCharacters, generate as ShortIdGenerate } from 'shortid';
 import { logger } from 'idea-toolbox';
+
+// declare libs as global vars to be reused in warm starts by the Lambda function
+let ideaWarmStart_ddb: DDB.DocumentClient = null;
 
 /**
  * A wrapper for AWS DynamoDB.
  */
 export class DynamoDB {
-  protected dynamo: DDB.DocumentClient; // the instance of DynamoDB
+  protected dynamo: DDB.DocumentClient;
 
-  /**
-   * Initialize a new DynamoDB helper object.
-   */
   constructor() {
-    this.dynamo = new DDB.DocumentClient();
+    if (!ideaWarmStart_ddb) ideaWarmStart_ddb = new DDB.DocumentClient();
+    this.dynamo = ideaWarmStart_ddb;
   }
 
   /**
@@ -33,64 +34,22 @@ export class DynamoDB {
    * @param project project code
    * @return the IUID
    */
-  IUID(project: string): Promise<string> {
+  async IUID(project: string): Promise<string> {
     const MAX_ATTEMPTS = 3;
-    return new Promise((resolve, reject) => {
-      if (!project) reject();
-      else this.iuidHelper(project, 0, MAX_ATTEMPTS, resolve, reject);
-    });
+    if (!project) throw new Error('Missing project');
+    return await this.identifiersGeneratorHelper(project, 'IUID', 0, MAX_ATTEMPTS);
   }
-  protected iuidHelper(project: string, attempt: number, maxAttempts: number, resolve: any, reject: any) {
-    if (attempt > maxAttempts) reject();
-    else {
-      const id = UUIDV4();
-      this.put({
-        TableName: 'idea_IUID',
-        Item: { project, id },
-        ConditionExpression: 'NOT (#p = :project AND #id = :id)',
-        ExpressionAttributeNames: { '#p': 'project', '#id': 'id' },
-        ExpressionAttributeValues: { ':project': project, ':id': id }
-      })
-        .then(() => resolve(`${project}_${id}`))
-        .catch(() =>
-          // ID exists, try again
-          this.iuidHelper(project, attempt + 1, maxAttempts, resolve, reject)
-        );
-    }
-  }
-
   /**
    * Returns an IUNID: IDEA's Unique Nano IDentifier, which is an id unique through all IDEA's projects.
    * Note: no need of an auth check for external uses: the permissions depend from the context in which it's executed.
    * @param project project code
    * @return the IUNID
    */
-  IUNID(project: string): Promise<string> {
+  async IUNID(project: string): Promise<string> {
     const MAX_ATTEMPTS = 3;
-    return new Promise((resolve, reject) => {
-      if (!project) reject();
-      else this.iunidHelper(project, 0, MAX_ATTEMPTS, resolve, reject);
-    });
+    if (!project) throw new Error('Missing project');
+    return await this.identifiersGeneratorHelper(project, 'IUNID', 0, MAX_ATTEMPTS);
   }
-  protected iunidHelper(project: string, attempt: number, maxAttempts: number, resolve: any, reject: any) {
-    if (attempt > maxAttempts) reject();
-    else {
-      const id = NanoID();
-      this.put({
-        TableName: 'idea_IUNID',
-        Item: { project, id },
-        ConditionExpression: 'NOT (#p = :project AND #id = :id)',
-        ExpressionAttributeNames: { '#p': 'project', '#id': 'id' },
-        ExpressionAttributeValues: { ':project': project, ':id': id }
-      })
-        .then(() => resolve(`${project}_${id}`))
-        .catch(() =>
-          // ID exists, try again
-          this.iunidHelper(project, attempt + 1, maxAttempts, resolve, reject)
-        );
-    }
-  }
-
   /**
    * Returns an ISID: IDEA's Short IDentifier, which is a short, unique id through a single project.
    * Note: there's no need of an authorization check for extrernal uses: the permissions depend
@@ -98,31 +57,50 @@ export class DynamoDB {
    * @param project project code
    * @return the ISID
    */
-  ISID(project: string): Promise<string> {
+  async ISID(project: string): Promise<string> {
     const MAX_ATTEMPTS = 3;
-    // avoid _ characters (to avoid concatenation problems with ids) -- it must be anyway 64 chars-long
-    ShortIdCharacters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-@');
-    return new Promise((resolve, reject) => {
-      if (!project) reject();
-      else this.isidHelper(project, 0, MAX_ATTEMPTS, resolve, reject);
-    });
+    if (!project) throw new Error('Missing project');
+    return await this.identifiersGeneratorHelper(project, 'ISID', 0, MAX_ATTEMPTS);
   }
-  protected isidHelper(project: string, attempt: number, maxAttempts: number, resolve: any, reject: any) {
-    if (attempt > maxAttempts) reject();
-    else {
-      const id = ShortIdGenerate();
-      this.put({
-        TableName: 'idea_ISID',
+  protected async identifiersGeneratorHelper(
+    project: string,
+    type: 'IUNID' | 'IUID' | 'ISID',
+    attempt: number,
+    maxAttempts: number
+  ): Promise<string> {
+    if (attempt > maxAttempts) throw new Error('Operation failed');
+
+    let id, result;
+    switch (type) {
+      case 'IUNID':
+        id = NanoID();
+        result = `${project}_${id}`;
+        break;
+      case 'IUID':
+        id = UUIDV4();
+        result = `${project}_${id}`;
+        break;
+      case 'ISID':
+        // avoid _ characters (to avoid concatenation problems with ids) -- it must be anyway 64 chars-long
+        ShortIdCharacters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-@');
+        id = ShortIdGenerate();
+        result = id;
+        break;
+    }
+
+    try {
+      await this.put({
+        TableName: 'idea_'.concat(type),
         Item: { project, id },
         ConditionExpression: 'NOT (#p = :project AND #id = :id)',
         ExpressionAttributeNames: { '#p': 'project', '#id': 'id' },
         ExpressionAttributeValues: { ':project': project, ':id': id }
-      })
-        .then(() => resolve(id))
-        .catch(() =>
-          // ID exists, try again
-          this.isidHelper(project, attempt + 1, maxAttempts, resolve, reject)
-        );
+      });
+
+      return result;
+    } catch (err) {
+      // ID exists, try again
+      await this.identifiersGeneratorHelper(project, type, attempt + 1, maxAttempts);
     }
   }
 
@@ -131,266 +109,225 @@ export class DynamoDB {
    * They key of an atomic counter should be composed as the following: `DynamoDBTableName_uniqueKey`.
    * @param key the key of the counter
    */
-  getAtomicCounterByKey(key: string): Promise<number> {
-    return new Promise((resolve, reject) => {
-      logger('GET ATOMIC COUNTER');
-      this.update({
-        TableName: 'idea_atomicCounters',
-        Key: { key },
-        UpdateExpression: 'ADD atomicCounter :increment',
-        ExpressionAttributeValues: { ':increment': 1 },
-        ReturnValues: 'UPDATED_NEW'
-      })
-        .then((data: any) => resolve(data.Attributes.atomicCounter))
-        .catch(err => reject(err));
+  async getAtomicCounterByKey(key: string): Promise<number> {
+    logger(`GET ATOMIC COUNTER FOR ${key}`);
+    const result = await this.update({
+      TableName: 'idea_atomicCounters',
+      Key: { key },
+      UpdateExpression: 'ADD atomicCounter :increment',
+      ExpressionAttributeValues: { ':increment': 1 },
+      ReturnValues: 'UPDATED_NEW'
     });
+
+    if (!result?.Attributes?.atomicCounter) throw new Error('Operation failed');
+    else return result.Attributes.atomicCounter;
   }
 
   /**
    * Get an item of a DynamoDB table.
    */
-  get(params: DDB.DocumentClient.GetItemInput): Promise<DDB.DocumentClient.AttributeMap | any> {
-    return new Promise((resolve, reject) => {
-      this.dynamo.get(params, (err: Error, data: DDB.DocumentClient.GetItemOutput) => {
-        logger(`GET ${params.TableName}`, err);
-        if (err || !data.Item) reject(err);
-        else resolve(data.Item);
-      });
-    });
+  async get(params: DDB.DocumentClient.GetItemInput): Promise<DDB.DocumentClient.AttributeMap | any> {
+    logger(`GET ${params.TableName}`);
+    const result = await this.dynamo.get(params).promise();
+
+    if (!result?.Item) throw new Error('Not found');
+    return result.Item;
   }
 
   /**
    * Put an item in a DynamoDB table.
    */
-  put(params: DDB.DocumentClient.PutItemInput): Promise<DDB.DocumentClient.PutItemOutput> {
-    return new Promise((resolve, reject) => {
-      this.dynamo.put(params, (err: Error, data: DDB.DocumentClient.PutItemOutput) => {
-        logger(`PUT ${params.TableName}`, err);
-        if (err) reject(err);
-        else resolve(data);
-      });
-    });
+  async put(params: DDB.DocumentClient.PutItemInput): Promise<DDB.DocumentClient.PutItemOutput> {
+    logger(`PUT ${params.TableName}`);
+    return await this.dynamo.put(params).promise();
   }
 
   /**
    * Update an item of a DynamoDB table.
    */
-  update(params: DDB.DocumentClient.UpdateItemInput): Promise<DDB.DocumentClient.UpdateItemOutput> {
-    return new Promise((resolve, reject) => {
-      this.dynamo.update(params, (err: Error, data: DDB.DocumentClient.UpdateItemOutput) => {
-        logger(`UPDATE ${params.TableName}`, err);
-        if (err) reject(err);
-        else resolve(data);
-      });
-    });
+  async update(params: DDB.DocumentClient.UpdateItemInput): Promise<DDB.DocumentClient.UpdateItemOutput> {
+    logger(`UPDATE ${params.TableName}`);
+    return await this.dynamo.update(params).promise();
   }
 
   /**
    * Delete an item of a DynamoDB table.
    */
-  delete(params: DDB.DocumentClient.DeleteItemInput): Promise<DDB.DocumentClient.DeleteItemOutput> {
-    return new Promise((resolve, reject) => {
-      this.dynamo.delete(params, (err: Error, data: DDB.DocumentClient.DeleteItemOutput) => {
-        logger(`DELETE ${params.TableName}`, err);
-        if (err) reject(err);
-        else resolve(data);
-      });
-    });
+  async delete(params: DDB.DocumentClient.DeleteItemInput): Promise<DDB.DocumentClient.DeleteItemOutput> {
+    logger(`DELETE ${params.TableName}`);
+    return await this.dynamo.delete(params).promise();
   }
 
   /**
    * Get group of items based on their keys from DynamoDb table, avoiding the limits of DynamoDB's BatchGetItem.
    * @param ignoreErr if set, ignore the errors and continue the bulk op.
    */
-  batchGet(
+  async batchGet(
     table: string,
     keys: DDB.DocumentClient.Key[],
     ignoreErr?: boolean
-  ): Promise<(DDB.DocumentClient.AttributeMap | any)[]> {
-    return new Promise((resolve, reject) => {
-      if (!keys.length) {
-        logger(`BATCH GET ${table}`, null, 'No elements to get');
-        resolve([]);
-      } else this.batchGetHelper(table, keys, [], Boolean(ignoreErr), 0, 100, resolve, reject);
-    });
+  ): Promise<DDB.DocumentClient.AttributeMap[]> {
+    if (!keys.length) {
+      logger(`BATCH GET ${table}`, null, 'No elements to get');
+      return [];
+    }
+
+    await this.batchGetHelper(table, keys, [], Boolean(ignoreErr), 0, 100);
   }
-  protected batchGetHelper(
-    t: string,
+  protected async batchGetHelper(
+    table: string,
     keys: DDB.DocumentClient.Key[],
-    elements: DDB.DocumentClient.AttributeMap[],
-    iErr: boolean,
-    curr: number,
-    size: number,
-    resolve: any,
-    reject: any
-  ) {
-    // prepare the structure for the bulk operation
+    resultElements: DDB.DocumentClient.AttributeMap[],
+    ignoreErr: boolean,
+    currentChunk: number,
+    chunkSize: number
+  ): Promise<DDB.DocumentClient.AttributeMap[]> {
     const batch: any = { RequestItems: {} };
-    batch.RequestItems[t] = { Keys: [] };
-    batch.RequestItems[t].Keys = keys.slice(curr, curr + size);
-    // execute the bulk operation
-    this.dynamo.batchGet(batch, (err: Error, data: DDB.DocumentClient.BatchGetItemOutput) => {
-      logger(`BATCH GET ${t}`, err, `${curr} of ${keys.length}`);
-      if (err && !iErr) return reject(err);
-      // concat the results
-      elements = elements.concat(data.Responses[t]);
-      // if there are still chunks to manage, go on recursively
-      if (curr + size < keys.length) this.batchGetHelper(t, keys, elements, iErr, curr + size, size, resolve, reject);
-      // no more chunks to manage: we're done
-      else resolve(elements);
-    });
+    batch.RequestItems[table] = { Keys: [] };
+    batch.RequestItems[table].Keys = keys.slice(currentChunk, currentChunk + chunkSize);
+
+    logger(`BATCH GET ${table}`, null, `${currentChunk} of ${keys.length}`);
+
+    let result;
+    try {
+      result = await this.dynamo.batchGet(batch).promise();
+    } catch (err) {
+      if (!ignoreErr) throw err;
+    }
+
+    if (result) resultElements = resultElements.concat(result.Responses[table]);
+
+    // if there are still chunks to manage, go on recursively
+    if (currentChunk + chunkSize < keys.length)
+      await this.batchGetHelper(table, keys, resultElements, ignoreErr, currentChunk + chunkSize, chunkSize);
+    // no more chunks to manage: we're done
+    return resultElements;
   }
 
   /**
    * Put an array of items in a DynamoDb table, avoiding the limits of DynamoDB's BatchWriteItem.
    * @param ignoreErr if true, ignore the errors and continue the bulk op
    */
-  batchPut(table: string, items: DDB.DocumentClient.AttributeMap[], ignoreErr?: boolean): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (!items.length) {
-        logger(`BATCH WRITE (PUT) ${table}`, null, 'No elements to write');
-        resolve();
-      } else this.batchWriteHelper(table, items, true, Boolean(ignoreErr), 0, 25, resolve, reject);
-    });
+  async batchPut(table: string, items: DDB.DocumentClient.AttributeMap[], ignoreErr?: boolean): Promise<void> {
+    if (!items.length) return logger(`BATCH WRITE (PUT) ${table}`, null, 'No elements to write');
+
+    await this.batchWriteHelper(table, items, true, Boolean(ignoreErr), 0, 25);
   }
   /**
    * Delete an array of items from a DynamoDb table, avoiding the limits of DynamoDB's BatchWriteItem.
    * @param ignoreErr if true, ignore the errors and continue the bulk op.
    */
-  batchDelete(table: string, keys: DDB.DocumentClient.Key[], ignoreErr?: boolean): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (keys.length === 0) {
-        logger(`BATCH WRITE (DELETE) ${table}`, null, 'No elements to write');
-        resolve();
-      } else this.batchWriteHelper(table, keys, false, Boolean(ignoreErr), 0, 25, resolve, reject);
-    });
+  async batchDelete(table: string, keys: DDB.DocumentClient.Key[], ignoreErr?: boolean): Promise<void> {
+    if (!keys.length) return logger(`BATCH WRITE (DELETE) ${table}`, null, 'No elements to write');
+
+    await this.batchWriteHelper(table, keys, false, Boolean(ignoreErr), 0, 25);
   }
-  protected batchWriteHelper(
-    t: string,
+  protected async batchWriteHelper(
+    table: string,
     items: DDB.DocumentClient.AttributeMap[],
     isPut: boolean,
-    iErr: boolean,
-    curr: number,
-    size: number,
-    resolve: any,
-    reject: any
-  ) {
-    // prepare the structure for the bulk operation
+    ignoreErr: boolean,
+    currentChunk: number,
+    chunkSize: number
+  ): Promise<void> {
     const batch: any = { RequestItems: {} };
     if (isPut) {
-      batch.RequestItems[t] = items.slice(curr, curr + size).map(i => ({ PutRequest: { Item: i } }));
+      batch.RequestItems[table] = items
+        .slice(currentChunk, currentChunk + chunkSize)
+        .map(i => ({ PutRequest: { Item: i } }));
     } else {
       // isDelete
-      batch.RequestItems[t] = items.slice(curr, curr + size).map(k => ({ DeleteRequest: { Key: k } }));
+      batch.RequestItems[table] = items
+        .slice(currentChunk, currentChunk + chunkSize)
+        .map(k => ({ DeleteRequest: { Key: k } }));
     }
-    // execute the bulk operation
-    this.dynamo.batchWrite(batch, (err: Error) => {
-      logger(`BATCH WRITE (${isPut ? 'PUT' : 'DELETE'}) ${t}`, err, `${curr} of ${items.length}`);
-      if (err && !iErr) reject(err);
-      // if there are still chunks to manage, go on recursively
-      else if (curr + size < items.length)
-        this.batchWriteHelper(t, items, isPut, iErr, curr + size, size, resolve, reject);
-      // no more chunks to manage: we're done
-      else resolve();
-    });
+
+    logger(`BATCH WRITE (${isPut ? 'PUT' : 'DELETE'}) ${table}`, null, `${currentChunk} of ${items.length}`);
+
+    try {
+      await this.dynamo.batchWrite(batch).promise();
+    } catch (err) {
+      if (!ignoreErr) throw err;
+    }
+
+    // if there are still chunks to manage, go on recursively
+    if (currentChunk + chunkSize < items.length)
+      await this.batchWriteHelper(table, items, isPut, ignoreErr, currentChunk + chunkSize, chunkSize);
+    // no more chunks to manage: we're done
+    return;
   }
 
   /**
    * Query a DynamoDb table, avoiding the limits of DynamoDB's Query.
    * @param params the params to apply to DynamoDB's function
    */
-  query(params: DDB.DocumentClient.QueryInput): Promise<(DDB.DocumentClient.AttributeMap | any)[]> {
-    return new Promise((resolve, reject) => {
-      this.queryScanHelper(params, [], true, resolve, reject);
-    });
+  async query(params: DDB.DocumentClient.QueryInput): Promise<DDB.DocumentClient.AttributeMap[]> {
+    logger(`Query ${params.TableName}`);
+    const result = await this.queryScanHelper(params, [], true);
+
+    logger(`\tResults query ${params.TableName}`, null, result?.length || 0);
+    return result;
   }
   /**
    * Scan a DynamoDb table, avoiding the limits of DynamoDB's Query.
    * @param params the params to apply to DynamoDB's function
    */
-  scan(params: DDB.DocumentClient.ScanInput): Promise<(DDB.DocumentClient.AttributeMap | any)[]> {
-    return new Promise((resolve, reject) => {
-      this.queryScanHelper(params, [], false, resolve, reject);
-    });
+  async scan(params: DDB.DocumentClient.QueryInput): Promise<DDB.DocumentClient.AttributeMap[]> {
+    logger(`Scan ${params.TableName}`);
+    const result = await this.queryScanHelper(params, [], false);
+
+    logger(`\tResults scan ${params.TableName}`, null, result?.length || 0);
+    return result;
   }
-  protected queryScanHelper(
+  protected async queryScanHelper(
     params: DDB.DocumentClient.QueryInput | DDB.DocumentClient.ScanInput,
     items: DDB.DocumentClient.AttributeMap[],
-    isQuery: boolean,
-    resolve: any,
-    reject: any
-  ) {
-    const f = isQuery ? 'query' : 'scan';
-    (this.dynamo as any)[f](
-      params,
-      (err: Error, data: DDB.DocumentClient.QueryOutput | DDB.DocumentClient.ScanOutput) => {
-        if (err || !data || !data.Items) {
-          logger(`${f.toUpperCase()} ${params.TableName}`, err);
-          return reject(err);
-        }
-        items = items.concat(data.Items);
-        if (data.LastEvaluatedKey) {
-          params.ExclusiveStartKey = data.LastEvaluatedKey;
-          this.queryScanHelper(params, items, isQuery, resolve, reject);
-        } else {
-          logger(`${f.toUpperCase()} ${params.TableName}`, null, items.length);
-          resolve(items);
-        }
-      }
-    );
+    isQuery: boolean
+  ): Promise<DDB.DocumentClient.AttributeMap[]> {
+    let result;
+    if (isQuery) result = await this.dynamo.query(params).promise();
+    else result = await this.dynamo.scan(params).promise();
+
+    items = items.concat(result.Items);
+
+    if (result.LastEvaluatedKey) {
+      params.ExclusiveStartKey = result.LastEvaluatedKey;
+      await this.queryScanHelper(params, items, isQuery);
+    } else return items;
   }
 
   /**
    * Query a DynamoDb table in the traditional way (no pagination or data mapping).
    * @param params the params to apply to DynamoDB's function
    */
-  queryClassic(params: DDB.DocumentClient.QueryInput): Promise<DDB.DocumentClient.QueryOutput[]> {
-    return new Promise((resolve, reject) => {
-      this.queryScanClassicHelper(params, true, resolve, reject);
-    });
+  async queryClassic(params: DDB.DocumentClient.QueryInput): Promise<DDB.DocumentClient.QueryOutput> {
+    logger(`Query classic ${params.TableName}`);
+    const result = await this.dynamo.query(params).promise();
+
+    logger(`\tResults query classic ${params.TableName}`, null, result?.Items?.length || 0);
+    return result;
   }
   /**
    * Scan a DynamoDb table in the traditional way (no pagination or data mapping).
    * @param params the params to apply to DynamoDB's function
    */
-  scanClassic(params: DDB.DocumentClient.ScanInput): Promise<DDB.DocumentClient.ScanOutput[]> {
-    return new Promise((resolve, reject) => {
-      this.queryScanClassicHelper(params, false, resolve, reject);
-    });
-  }
-  protected queryScanClassicHelper(
-    params: DDB.DocumentClient.QueryInput | DDB.DocumentClient.ScanInput,
-    isQuery: boolean,
-    resolve: any,
-    reject: any
-  ) {
-    const f = isQuery ? 'query' : 'scan';
-    (this.dynamo as any)[f](
-      params,
-      (err: Error, data: DDB.DocumentClient.QueryOutput | DDB.DocumentClient.QueryOutput) => {
-        logger(`${f.toUpperCase()} classic ${params.TableName}`, err, data && data.Items ? data.Items.length : 0);
-        if (err || !data) reject(err);
-        else resolve(data);
-      }
-    );
+  async scanClassic(params: DDB.DocumentClient.ScanInput): Promise<DDB.DocumentClient.ScanOutput> {
+    logger(`Scan classic ${params.TableName}`);
+    const result = await this.dynamo.scan(params).promise();
+
+    logger(`\tResults scan classic ${params.TableName}`, null, result?.Items?.length || 0);
+    return result;
   }
 
   /**
    * Execute a series of max 10 write operations in a single transaction.
    * @param ops the operations to execute in the transaction
    */
-  transactWrites(ops: DDB.DocumentClient.TransactWriteItem[]): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (!ops.length) {
-        logger('TRANSACTION WRITES', null, 'No elements to write');
-        resolve();
-      } else
-        this.dynamo.transactWrite({ TransactItems: ops.slice(0, 10) }, (err: Error) => {
-          logger('TRANSACTION WRITES', err);
-          if (err) reject(err);
-          else resolve();
-        });
-    });
+  async transactWrites(ops: DDB.DocumentClient.TransactWriteItem[]): Promise<void> {
+    if (!ops.length) return logger('TRANSACTION WRITES', null, 'No elements to write');
+
+    logger('TRANSACTION WRITES');
+    await this.dynamo.transactWrite({ TransactItems: ops.slice(0, 10) }).promise();
   }
 
   /**
