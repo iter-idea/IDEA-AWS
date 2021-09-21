@@ -172,15 +172,15 @@ export class DynamoDB {
       return [];
     }
 
-    await this.batchGetHelper(table, keys, [], Boolean(ignoreErr), 0, 100);
+    await this.batchGetHelper(table, keys, [], Boolean(ignoreErr));
   }
   protected async batchGetHelper(
     table: string,
     keys: DDB.DocumentClient.Key[],
     resultElements: DDB.DocumentClient.AttributeMap[],
     ignoreErr: boolean,
-    currentChunk: number,
-    chunkSize: number
+    currentChunk = 0,
+    chunkSize = 100
   ): Promise<DDB.DocumentClient.AttributeMap[]> {
     const batch: any = { RequestItems: {} };
     batch.RequestItems[table] = { Keys: [] };
@@ -206,55 +206,72 @@ export class DynamoDB {
 
   /**
    * Put an array of items in a DynamoDb table, avoiding the limits of DynamoDB's BatchWriteItem.
-   * @param ignoreErr if true, ignore the errors and continue the bulk op
+   * In case of errors, it will retry with a random back-off mechanism until the timeout.
+   * Therefore, in case of timeout, there may be some elements written and some not.
    */
-  async batchPut(table: string, items: DDB.DocumentClient.AttributeMap[], ignoreErr?: boolean): Promise<void> {
+  async batchPut(table: string, items: DDB.DocumentClient.AttributeMap[]): Promise<void> {
     if (!items.length) return logger(`BATCH WRITE (PUT) ${table}`, null, 'No elements to write');
 
-    await this.batchWriteHelper(table, items, true, Boolean(ignoreErr), 0, 25);
+    await this.batchWriteHelper(table, items, true);
   }
   /**
    * Delete an array of items from a DynamoDb table, avoiding the limits of DynamoDB's BatchWriteItem.
-   * @param ignoreErr if true, ignore the errors and continue the bulk op.
+   * In case of errors, it will retry with a random back-off mechanism until the timeout.
+   * Therefore, in case of timeout, there may be some elements deleted and some not.
    */
-  async batchDelete(table: string, keys: DDB.DocumentClient.Key[], ignoreErr?: boolean): Promise<void> {
+  async batchDelete(table: string, keys: DDB.DocumentClient.Key[]): Promise<void> {
     if (!keys.length) return logger(`BATCH WRITE (DELETE) ${table}`, null, 'No elements to write');
 
-    await this.batchWriteHelper(table, keys, false, Boolean(ignoreErr), 0, 25);
+    await this.batchWriteHelper(table, keys, false);
   }
   protected async batchWriteHelper(
     table: string,
-    items: DDB.DocumentClient.AttributeMap[],
+    itemsOrKeys: DDB.DocumentClient.AttributeMap[] | DDB.DocumentClient.Key[],
     isPut: boolean,
-    ignoreErr: boolean,
-    currentChunk: number,
-    chunkSize: number
+    currentChunk = 0,
+    chunkSize = 25
   ): Promise<void> {
-    const batch: any = { RequestItems: {} };
-    if (isPut) {
-      batch.RequestItems[table] = items
-        .slice(currentChunk, currentChunk + chunkSize)
-        .map(i => ({ PutRequest: { Item: i } }));
-    } else {
-      // isDelete
-      batch.RequestItems[table] = items
-        .slice(currentChunk, currentChunk + chunkSize)
-        .map(k => ({ DeleteRequest: { Key: k } }));
-    }
+    logger(`BATCH WRITE (${isPut ? 'PUT' : 'DELETE'}) ${table}`, null, `${currentChunk} of ${itemsOrKeys.length}`);
 
-    logger(`BATCH WRITE (${isPut ? 'PUT' : 'DELETE'}) ${table}`, null, `${currentChunk} of ${items.length}`);
+    let requests: DDB.DocumentClient.WriteRequests;
+    if (isPut)
+      requests = itemsOrKeys.slice(currentChunk, currentChunk + chunkSize).map(i => ({ PutRequest: { Item: i } }));
+    // isDelete
+    else requests = itemsOrKeys.slice(currentChunk, currentChunk + chunkSize).map(k => ({ DeleteRequest: { Key: k } }));
 
-    try {
-      await this.dynamo.batchWrite(batch).promise();
-    } catch (err) {
-      if (!ignoreErr) throw err;
-    }
+    const batch: DDB.DocumentClient.BatchWriteItemInput = { RequestItems: { [table]: requests } };
+    await this.batchWriteChunkWithRetries(table, batch);
 
     // if there are still chunks to manage, go on recursively
-    if (currentChunk + chunkSize < items.length)
-      await this.batchWriteHelper(table, items, isPut, ignoreErr, currentChunk + chunkSize, chunkSize);
-    // no more chunks to manage: we're done
-    return;
+    if (currentChunk + chunkSize < itemsOrKeys.length)
+      await this.batchWriteHelper(table, itemsOrKeys, isPut, currentChunk + chunkSize, chunkSize);
+  }
+  protected async batchWriteChunkWithRetries(
+    table: string,
+    params: DDB.DocumentClient.BatchWriteItemInput
+  ): Promise<void> {
+    const getRandomInt = (max: number): number => Math.floor(Math.random() * max);
+    const wait = (seconds: number): Promise<void> => new Promise(x => setTimeout((): void => x(), seconds * 1000));
+
+    let attempts = 0;
+    do {
+      const response = await this.dynamo.batchWrite(params).promise();
+
+      if (
+        response.UnprocessedItems &&
+        response.UnprocessedItems[table] &&
+        response.UnprocessedItems[table].length > 0
+      ) {
+        params.RequestItems = response.UnprocessedItems;
+        attempts++;
+
+        const waitSeconds = getRandomInt(attempts * 5);
+        logger('BATCH WRITE THROTTLED', null, `Waiting ${waitSeconds} seconds to retry`);
+        await wait(waitSeconds);
+      } else {
+        params.RequestItems = null;
+      }
+    } while (params.RequestItems);
   }
 
   /**
