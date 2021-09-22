@@ -310,7 +310,8 @@ export class DynamoDB {
     if (result.LastEvaluatedKey) {
       params.ExclusiveStartKey = result.LastEvaluatedKey;
       await this.queryScanHelper(params, items, isQuery);
-    } else return items;
+    }
+    return items;
   }
 
   /**
