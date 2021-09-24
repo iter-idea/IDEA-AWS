@@ -172,7 +172,7 @@ export class DynamoDB {
       return [];
     }
 
-    await this.batchGetHelper(table, keys, [], Boolean(ignoreErr));
+    return await this.batchGetHelper(table, keys, [], Boolean(ignoreErr));
   }
   protected async batchGetHelper(
     table: string,
@@ -182,9 +182,11 @@ export class DynamoDB {
     currentChunk = 0,
     chunkSize = 100
   ): Promise<DDB.DocumentClient.AttributeMap[]> {
-    const batch: any = { RequestItems: {} };
-    batch.RequestItems[table] = { Keys: [] };
-    batch.RequestItems[table].Keys = keys.slice(currentChunk, currentChunk + chunkSize);
+    const batch: DDB.DocumentClient.BatchGetItemInput = {
+      RequestItems: {
+        [table]: { Keys: keys.slice(currentChunk, currentChunk + chunkSize) }
+      }
+    };
 
     logger(`BATCH GET ${table}`, null, `${currentChunk} of ${keys.length}`);
 
@@ -199,9 +201,9 @@ export class DynamoDB {
 
     // if there are still chunks to manage, go on recursively
     if (currentChunk + chunkSize < keys.length)
-      await this.batchGetHelper(table, keys, resultElements, ignoreErr, currentChunk + chunkSize, chunkSize);
+      return await this.batchGetHelper(table, keys, resultElements, ignoreErr, currentChunk + chunkSize, chunkSize);
     // no more chunks to manage: we're done
-    return resultElements;
+    else return resultElements;
   }
 
   /**
