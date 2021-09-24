@@ -29,7 +29,7 @@ export abstract class ResourceController extends GenericController {
   protected translations: any;
   protected templateMatcher = /{{\s?([^{}\s]*)\s?}}/g;
 
-  constructor(event: any, callback: any, options?: ResourceControllerOptions) {
+  constructor(event: any, callback: any, options: ResourceControllerOptions = {}) {
     super(event, callback, options);
 
     this.authorization = event.headers?.Authorization;

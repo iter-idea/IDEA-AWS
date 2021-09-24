@@ -8,7 +8,7 @@ import { GenericController, GenericControllerOptions } from './genericController
 export abstract class StreamController extends GenericController {
   records: any[];
 
-  constructor(event: any, callback: any, options?: GenericControllerOptions) {
+  constructor(event: any, callback: any, options: GenericControllerOptions = {}) {
     super(event, callback, options);
 
     this.records = event.Records || [];

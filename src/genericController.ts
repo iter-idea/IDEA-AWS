@@ -36,9 +36,7 @@ export abstract class GenericController {
    * @param event the event that invoked the AWS lambda function
    * @param callback the callback to resolve or reject the execution
    */
-  constructor(event: any, callback: any, options?: GenericControllerOptions) {
-    options = options || ({} as GenericControllerOptions);
-
+  constructor(event: any, callback: any, options: GenericControllerOptions = {}) {
     this.event = event;
     this.callback = callback;
 
