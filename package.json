@@ -25,7 +25,8 @@
     "lambda",
     "translate",
     "cognito",
-    "comprehend"
+    "comprehend",
+    "secretsManager"
   ],
   "author": "ITER IDEA <info@iter-idea.com> (https://iter-idea.com)",
   "license": "ISC",

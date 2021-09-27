@@ -7,6 +7,7 @@ import { SES } from './ses';
 import { SNS } from './sns';
 import { Translate } from './translate';
 import { Comprehend } from './comprehend';
+import { SecretsManager } from './secretsManager';
 
 import { Attachments } from './attachments';
 
@@ -24,6 +25,7 @@ export abstract class GenericController {
   protected _sns: SNS;
   protected _translate: Translate;
   protected _comprehend: Comprehend;
+  protected _secrets: SecretsManager;
 
   protected _attachments: Attachments;
 
@@ -112,6 +114,13 @@ export abstract class GenericController {
   }
   protected set comprehend(comprehend: Comprehend) {
     this._comprehend = comprehend;
+  }
+  protected get secrets(): SecretsManager {
+    if (!this._secrets) this._secrets = new SecretsManager();
+    return this._secrets;
+  }
+  protected set secrets(secrets: SecretsManager) {
+    this._secrets = secrets;
   }
 
   ///
