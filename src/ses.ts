@@ -27,7 +27,7 @@ export class SES {
       Template: emailData.template,
       TemplateData: JSON.stringify(emailData.templateData || {}),
       ReplyToAddresses: emailData.replyToAddresses,
-      Source: `${sesParams.sourceName} <${sesParams.source}>`,
+      Source: sesParams.sourceName ? `${sesParams.sourceName} <${sesParams.source}>` : sesParams.source,
       SourceArn: sesParams.sourceArn
     };
 
@@ -66,7 +66,7 @@ export class SES {
       Destination: this.prepareEmailDestination(emailData),
       Message: this.prepareEmailMessage(emailData),
       ReplyToAddresses: emailData.replyToAddresses,
-      Source: `${sesParams.sourceName} <${sesParams.source}>`,
+      Source: sesParams.sourceName ? `${sesParams.sourceName} <${sesParams.source}>` : sesParams.source,
       SourceArn: sesParams.sourceArn
     };
 
@@ -84,7 +84,7 @@ export class SES {
     if (emailData.ccAddresses) mailOptions.cc = emailData.ccAddresses.join(',');
     if (emailData.bccAddresses) mailOptions.bcc = emailData.bccAddresses.join(',');
 
-    mailOptions.from = `${sesParams.sourceName} <${sesParams.source}>`;
+    mailOptions.from = sesParams.sourceName ? `${sesParams.sourceName} <${sesParams.source}>` : sesParams.source;
     if (emailData.replyToAddresses) mailOptions.replyTo = emailData.replyToAddresses.join(',');
 
     mailOptions.subject = emailData.subject;
@@ -220,21 +220,21 @@ export interface TemplatedEmailData extends BasicEmailData {
  */
 export interface SESParams {
   /**
-   * The name of the source (e.g. Matteo Carbone).
-   */
-  sourceName: string;
-  /**
-   * The email address.
+   * The source (from) email address.
    */
   source: string;
   /**
-   * The SES source ARN to use.
+   * The optional name of the source (e.g. Matteo Carbone).
    */
-  sourceArn: string;
+  sourceName?: string;
   /**
-   * The SES region to use.
+   * The SES source ARN to use, in case the source doesn't directly match a SES validated email address.
    */
-  region: string;
+  sourceArn?: string;
+  /**
+   * The SES region to use, in case it differs from the one of the Lambda function running the command.
+   */
+  region?: string;
   /**
    * If set, a custom SES configuration to use for the team will be searched in the table `idea_teamsSES`.
    */
