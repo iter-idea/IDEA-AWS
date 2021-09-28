@@ -26,6 +26,7 @@ export class SES {
       Destination: this.prepareEmailDestination(emailData),
       Template: emailData.template,
       TemplateData: JSON.stringify(emailData.templateData || {}),
+      ConfigurationSetName: emailData.configurationSet,
       ReplyToAddresses: emailData.replyToAddresses,
       Source: sesParams.sourceName ? `${sesParams.sourceName} <${sesParams.source}>` : sesParams.source,
       SourceArn: sesParams.sourceArn
@@ -213,6 +214,10 @@ export interface TemplatedEmailData extends BasicEmailData {
    * An object containing key-value pairs of variable-content to substitute.
    */
   templateData: { [variable: string]: string };
+  /**
+   * The name of the configuration set to use for the sending.
+   */
+  configurationSet: string;
 }
 
 /**
