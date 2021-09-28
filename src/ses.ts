@@ -1,5 +1,9 @@
 import { SES as AWSSES } from 'aws-sdk';
-import { createTransport as NodemailerCreateTransport } from 'nodemailer';
+import {
+  createTransport as NodemailerCreateTransport,
+  SentMessageInfo as NodemailerSentMessageInfo,
+  SendMailOptions as NodemailerSendMailOptions
+} from 'nodemailer';
 import { Headers } from 'nodemailer/lib/mailer';
 import { logger } from 'idea-toolbox';
 import { DynamoDB } from './dynamoDB';
@@ -12,20 +16,42 @@ let ideaWarmStart_ses: AWSSES = null;
  */
 export class SES {
   /**
-   * Send an email through AWS Simple Email Service.
+   * Send a templated email through AWS Simple Email Service.
    */
-  async sendEmail(emailData: EmailData, sesParams: SESParams): Promise<any> {
+  async sendTemplatedEmail(
+    emailData: TemplatedEmailData,
+    sesParams: SESParams
+  ): Promise<AWSSES.SendTemplatedEmailResponse> {
+    const request: AWSSES.SendTemplatedEmailRequest = {
+      Destination: this.prepareEmailDestination(emailData),
+      Template: emailData.template,
+      TemplateData: JSON.stringify(emailData.templateData || {}),
+      ReplyToAddresses: emailData.replyToAddresses,
+      Source: `${sesParams.sourceName} <${sesParams.source}>`,
+      SourceArn: sesParams.sourceArn
+    };
+
+    logger('SES SEND TEMPLATED EMAIL');
+    if (!ideaWarmStart_ses) ideaWarmStart_ses = new AWSSES({ region: sesParams.region });
+    return await ideaWarmStart_ses.sendTemplatedEmail(request).promise();
+  }
+
+  /**
+   * Send an email through AWS Simple Email Service.
+   * It supports IDEA's teams custom configuration.
+   */
+  async sendEmail(
+    emailData: EmailData,
+    sesParams: SESParams
+  ): Promise<AWSSES.SendEmailResponse | NodemailerSentMessageInfo> {
     // if requested, check whether there is a custom SES configuration to apply for the team
     const customSESConfig = await this.searchForCustomSESConfigByTeamId(sesParams.teamId);
 
-    let result;
     // if the email includes attachments, send with Nodemailer (to avoid size limitations)
     if (emailData.attachments?.length)
-      result = await this.sendEmailWithNodemailer(emailData, customSESConfig || sesParams);
+      return await this.sendEmailWithNodemailer(emailData, customSESConfig || sesParams);
     // otherwise, send with SES (more secure)
-    else result = await this.sendEmailWithSES(emailData, customSESConfig || sesParams);
-
-    return result;
+    else return await this.sendEmailWithSES(emailData, customSESConfig || sesParams);
   }
   private async searchForCustomSESConfigByTeamId(teamId: string): Promise<SESParams | null> {
     if (!teamId) return null;
@@ -35,48 +61,66 @@ export class SES {
       return null;
     }
   }
-  private async sendEmailWithSES(emailData: EmailData, sesParams: SESParams): Promise<void> {
-    const sesData: AWSSES.SendEmailRequest | any = {};
-    sesData.Destination = {};
-    if (emailData.toAddresses) sesData.Destination.ToAddresses = emailData.toAddresses;
-    if (emailData.ccAddresses) sesData.Destination.CcAddresses = emailData.ccAddresses;
-    if (emailData.bccAddresses) sesData.Destination.BccAddresses = emailData.bccAddresses;
-    if (emailData.replyToAddresses) sesData.ReplyToAddresses = emailData.replyToAddresses;
-    sesData.Message = {};
-    if (emailData.subject) sesData.Message.Subject = { Charset: 'UTF-8', Data: emailData.subject };
-    sesData.Message.Body = {};
-    if (emailData.html) sesData.Message.Body.Html = { Charset: 'UTF-8', Data: emailData.html };
-    if (emailData.text) sesData.Message.Body.Text = { Charset: 'UTF-8', Data: emailData.text };
-    if (!emailData.html && !emailData.text) sesData.Message.Body.Text = { Charset: 'UTF-8', Data: '' };
-    sesData.Source = `${sesParams.sourceName} <${sesParams.source}>`;
-    sesData.SourceArn = sesParams.sourceArn;
+  private async sendEmailWithSES(emailData: EmailData, sesParams: SESParams): Promise<AWSSES.SendEmailResponse> {
+    const request: AWSSES.SendEmailRequest = {
+      Destination: this.prepareEmailDestination(emailData),
+      Message: this.prepareEmailMessage(emailData),
+      ReplyToAddresses: emailData.replyToAddresses,
+      Source: `${sesParams.sourceName} <${sesParams.source}>`,
+      SourceArn: sesParams.sourceArn
+    };
 
     logger('SES SEND EMAIL');
     if (!ideaWarmStart_ses) ideaWarmStart_ses = new AWSSES({ region: sesParams.region });
-    await ideaWarmStart_ses.sendEmail(sesData).promise();
+    return await ideaWarmStart_ses.sendEmail(request).promise();
   }
-  private async sendEmailWithNodemailer(emailData: EmailData, sesParams: SESParams): Promise<void> {
-    const mailOptions: any = {};
-    mailOptions.from = `${sesParams.sourceName} <${sesParams.source}>`;
+  private async sendEmailWithNodemailer(
+    emailData: EmailData,
+    sesParams: SESParams
+  ): Promise<NodemailerSendMailOptions> {
+    const mailOptions: NodemailerSendMailOptions = {};
+
     mailOptions.to = emailData.toAddresses.join(',');
     if (emailData.ccAddresses) mailOptions.cc = emailData.ccAddresses.join(',');
     if (emailData.bccAddresses) mailOptions.bcc = emailData.bccAddresses.join(',');
+
+    mailOptions.from = `${sesParams.sourceName} <${sesParams.source}>`;
     if (emailData.replyToAddresses) mailOptions.replyTo = emailData.replyToAddresses.join(',');
+
     mailOptions.subject = emailData.subject;
     if (emailData.html) mailOptions.html = emailData.html;
     if (emailData.text) mailOptions.text = emailData.text;
+
     mailOptions.attachments = emailData.attachments;
 
     logger('SES SEND EMAIL (NODEMAILER)');
     if (!ideaWarmStart_ses) ideaWarmStart_ses = new AWSSES({ region: sesParams.region });
-    await NodemailerCreateTransport({ SES: ideaWarmStart_ses }).sendMail(mailOptions);
+    return await NodemailerCreateTransport({ SES: ideaWarmStart_ses }).sendMail(mailOptions);
+  }
+
+  private prepareEmailDestination(emailData: BasicEmailData): AWSSES.Destination {
+    return {
+      ToAddresses: emailData.toAddresses,
+      CcAddresses: emailData.ccAddresses,
+      BccAddresses: emailData.bccAddresses
+    };
+  }
+  private prepareEmailMessage(emailData: EmailData): AWSSES.Message {
+    const message: AWSSES.Message = {
+      Subject: { Charset: 'UTF-8', Data: emailData.subject },
+      Body: {}
+    };
+    if (emailData.html) message.Body.Html = { Charset: 'UTF-8', Data: emailData.html };
+    if (emailData.text) message.Body.Text = { Charset: 'UTF-8', Data: emailData.text };
+    if (!emailData.html && !emailData.text) message.Body.Text = { Charset: 'UTF-8', Data: '' };
+    return message;
   }
 }
 
 /**
- * The data to send an email.
+ * The basic data to send an email.
  */
-export interface EmailData {
+export interface BasicEmailData {
   /**
    * Array of TO email addresses.
    */
@@ -93,6 +137,12 @@ export interface EmailData {
    * Array of Reply-To email addresses.
    */
   replyToAddresses?: string[];
+}
+
+/**
+ * The data to send an email.
+ */
+export interface EmailData extends BasicEmailData {
   /**
    * Subject of the email.
    */
@@ -147,6 +197,22 @@ export interface EmailAttachment {
    * If used then all other options set for this node are ignored.
    */
   raw?: string | Buffer;
+}
+
+/**
+ * The data to send a templated email.
+ * Note: templated email don't support attachments by now.
+ */
+export interface TemplatedEmailData extends BasicEmailData {
+  /**
+   * The template to use for sending the email.
+   * To reference variables, use placeholders such as `{{myVar}}`.
+   */
+  template: string;
+  /**
+   * An object containing key-value pairs of variable-content to substitute.
+   */
+  templateData: { [variable: string]: string };
 }
 
 /**
