@@ -239,7 +239,7 @@ export class Cognito {
   /**
    * Update a (Cognito)User's attributes, excluding the attributes that require specific methods.
    */
-  async updateCognitoUser(user: CognitoUser, cognitoUserPoolId: string): Promise<void> {
+  async updateUser(user: CognitoUser, cognitoUserPoolId: string): Promise<void> {
     const UserAttributes = [{ Name: 'name', Value: user.name }];
 
     Object.keys(user.attributes).forEach(customAttribute =>
