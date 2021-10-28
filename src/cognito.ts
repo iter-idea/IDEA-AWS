@@ -46,9 +46,9 @@ export class Cognito {
   /**
    * Map the complex structure returned by Cognito for a user's attributes in a simple key-value object.
    */
-  private mapCognitoUserAsPlainObject(user: any): CognitoUserGeneric {
+  private mapCognitoUserAttributesAsPlainObject(user: any): CognitoUserGeneric {
     const userAttributes: any = {};
-    user.UserAttributes.forEach((a: any) => (userAttributes[a.Name] = a.Value));
+    (user.Attributes || user.UserAttributes || []).forEach((a: any) => (userAttributes[a.Name] = a.Value));
     return userAttributes as CognitoUserGeneric;
   }
 
@@ -59,7 +59,7 @@ export class Cognito {
     const user = await this.cognito.adminGetUser({ UserPoolId: cognitoUserPoolId, Username: email }).promise();
     if (!user) throw new Error('User not found');
 
-    return this.mapCognitoUserAsPlainObject(user);
+    return this.mapCognitoUserAttributesAsPlainObject(user);
   }
 
   /**
@@ -73,32 +73,52 @@ export class Cognito {
     const user = usersList?.Users[0];
     if (!user) throw new Error('User not found');
 
-    return this.mapCognitoUserAsPlainObject(user);
+    return this.mapCognitoUserAttributesAsPlainObject(user);
   }
 
   /**
    * Create a new user (by its email) in the pool specified.
    * @return userId of the new user
    */
-  async createUser(email: string, cognitoUserPoolId: string, options: CreateUserOptions = {}): Promise<string> {
+  async createUser(
+    cognitoUserOrEmail: CognitoUser | string,
+    cognitoUserPoolId: string,
+    options: CreateUserOptions = {}
+  ): Promise<string> {
+    const email =
+      typeof cognitoUserOrEmail === 'string'
+        ? (cognitoUserOrEmail as string)
+        : (cognitoUserOrEmail as CognitoUser).email;
+
     if (isEmpty(email, 'email')) throw new Error('INVALID_EMAIL');
 
-    const attributes = [
+    const UserAttributes = [
       { Name: 'email', Value: email },
       { Name: 'email_verified', Value: 'true' }
     ];
 
+    if (typeof cognitoUserOrEmail === 'object') {
+      const user = cognitoUserOrEmail as CognitoUser;
+
+      UserAttributes.push({ Name: 'name', Value: user.name });
+
+      Object.keys(user.attributes).forEach(a =>
+        UserAttributes.push({ Name: 'custom:'.concat(a), Value: String(user.attributes[a]) })
+      );
+    }
+
     const params: CognitoIdentityServiceProvider.AdminCreateUserRequest = {
       UserPoolId: cognitoUserPoolId,
       Username: email,
-      UserAttributes: attributes
+      UserAttributes
     };
     if (options.skipNotification) params.MessageAction = 'SUPPRESS';
     if (options.temporaryPassword) params.TemporaryPassword = options.temporaryPassword;
 
     const result = await this.cognito.adminCreateUser(params).promise();
-    const user = this.mapCognitoUserAsPlainObject(result.User);
-    const userId = user?.sub;
+
+    const userId = this.mapCognitoUserAttributesAsPlainObject(result.User).sub;
+
     if (userId) return userId;
     else throw new Error('Creation failed');
   }
@@ -217,6 +237,24 @@ export class Cognito {
   }
 
   /**
+   * Update a (Cognito)User's attributes, excluding the attributes that require specific methods.
+   */
+  async updateCognitoUser(user: CognitoUser, cognitoUserPoolId: string): Promise<void> {
+    const UserAttributes = [{ Name: 'name', Value: user.name }];
+
+    Object.keys(user.attributes).forEach(customAttribute =>
+      UserAttributes.push({
+        Name: 'custom:'.concat(customAttribute),
+        Value: String(user.attributes[customAttribute])
+      })
+    );
+
+    await this.cognito
+      .adminUpdateUserAttributes({ UserPoolId: cognitoUserPoolId, Username: user.email, UserAttributes })
+      .promise();
+  }
+
+  /**
    * Sign out the user from all devices.
    */
   async globalSignOut(email: string, cognitoUserPoolId: string): Promise<void> {
@@ -254,7 +292,7 @@ export class Cognito {
       .listUsersInGroup({ UserPoolId: cognitoUserPoolId, GroupName: group })
       .promise();
 
-    const users = usersInGroupList.Users.map(u => new CognitoUser(this.mapCognitoUserAsPlainObject(u)));
+    const users = usersInGroupList.Users.map(u => new CognitoUser(this.mapCognitoUserAttributesAsPlainObject(u)));
     return users;
   }
 
