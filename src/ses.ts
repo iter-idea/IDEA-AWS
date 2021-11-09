@@ -212,8 +212,9 @@ export interface TemplatedEmailData extends BasicEmailData {
   template: string;
   /**
    * An object containing key-value pairs of variable-content to substitute.
+   * It supports handlebars.js templating.
    */
-  templateData: { [variable: string]: string };
+  templateData: { [variable: string]: any };
   /**
    * The name of the configuration set to use for the sending.
    */
