@@ -259,7 +259,7 @@ export abstract class ResourceController extends GenericController {
    * Search for the specified file path in both the Lambda function's main folder and the layers folder.
    */
   sharedResourceExists(filePath: string): boolean {
-    return existsSync(`assets/${filePath}`) || existsSync(`/opts/nodejs/assets/${filePath}`);
+    return existsSync(`assets/${filePath}`) || existsSync(`/opt/nodejs/assets/${filePath}`);
   }
   /**
    * Load a shared resource in the back-end (translation, template, etc.).
@@ -269,7 +269,7 @@ export abstract class ResourceController extends GenericController {
     let path: string = null;
 
     if (existsSync(`assets/${filePath}`)) path = `assets/${filePath}`;
-    else if (existsSync(`/opts/nodejs/assets/${filePath}`)) path = `/opts/nodejs/assets/${filePath}`;
+    else if (existsSync(`/opt/nodejs/assets/${filePath}`)) path = `/opt/nodejs/assets/${filePath}`;
 
     return path ? readFileSync(path, { encoding: 'utf-8' }) : null;
   }
