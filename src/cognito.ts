@@ -77,6 +77,27 @@ export class Cognito {
   }
 
   /**
+   * Get all the users of the pool.
+   */
+  async getAllUsers(
+    cognitoUserPoolId: string,
+    options: { pagination?: string; users: CognitoUser[] } = { users: [] }
+  ): Promise<CognitoUser[]> {
+    const params: CognitoIdentityServiceProvider.ListUsersRequest = { UserPoolId: cognitoUserPoolId };
+    if (options.pagination) params.PaginationToken = options.pagination;
+
+    const res = await this.cognito.listUsers(params).promise();
+
+    const pagination = res.PaginationToken;
+    const users = options.users.concat(
+      res.Users.map(u => new CognitoUser(this.mapCognitoUserAttributesAsPlainObject(u)))
+    );
+
+    if (pagination) return await this.getAllUsers(cognitoUserPoolId, { pagination, users });
+    else return users;
+  }
+
+  /**
    * Create a new user (by its email) in the pool specified.
    * @return userId of the new user
    */
