@@ -66,6 +66,9 @@ export abstract class GenericController {
   /// AWS SERVICES
   ///
 
+  /**
+   * @deprecated use external object to improve cold starts. See most recent projects for reference.
+   */
   protected get dynamoDB(): DynamoDB {
     if (!this._dynamoDB) this._dynamoDB = new DynamoDB();
     return this._dynamoDB;
@@ -73,6 +76,9 @@ export abstract class GenericController {
   protected set dynamoDB(dynamoDB: DynamoDB) {
     this._dynamoDB = dynamoDB;
   }
+  /**
+   * @deprecated use external object to improve cold starts. See most recent projects for reference.
+   */
   protected get cognito(): Cognito {
     if (!this._cognito) this._cognito = new Cognito();
     return this._cognito;
@@ -80,6 +86,9 @@ export abstract class GenericController {
   protected set cognito(cognito: Cognito) {
     this._cognito = cognito;
   }
+  /**
+   * @deprecated use external object to improve cold starts. See most recent projects for reference.
+   */
   protected get s3(): S3 {
     if (!this._s3) this._s3 = new S3();
     return this._s3;
@@ -87,6 +96,9 @@ export abstract class GenericController {
   protected set s3(s3: S3) {
     this._s3 = s3;
   }
+  /**
+   * @deprecated use external object to improve cold starts. See most recent projects for reference.
+   */
   protected get ses(): SES {
     if (!this._ses) this._ses = new SES();
     return this._ses;
@@ -94,6 +106,9 @@ export abstract class GenericController {
   protected set ses(ses: SES) {
     this._ses = ses;
   }
+  /**
+   * @deprecated use external object to improve cold starts. See most recent projects for reference.
+   */
   protected get sns(): SNS {
     if (!this._sns) this._sns = new SNS();
     return this._sns;
@@ -101,6 +116,9 @@ export abstract class GenericController {
   protected set sns(sns: SNS) {
     this._sns = sns;
   }
+  /**
+   * @deprecated use external object to improve cold starts. See most recent projects for reference.
+   */
   protected get translate(): Translate {
     if (!this._translate) this._translate = new Translate();
     return this._translate;
@@ -108,6 +126,9 @@ export abstract class GenericController {
   protected set translate(translate: Translate) {
     this._translate = translate;
   }
+  /**
+   * @deprecated use external object to improve cold starts. See most recent projects for reference.
+   */
   protected get comprehend(): Comprehend {
     if (!this._comprehend) this._comprehend = new Comprehend();
     return this._comprehend;
@@ -115,6 +136,9 @@ export abstract class GenericController {
   protected set comprehend(comprehend: Comprehend) {
     this._comprehend = comprehend;
   }
+  /**
+   * @deprecated use external object to improve cold starts. See most recent projects for reference.
+   */
   protected get secrets(): SecretsManager {
     if (!this._secrets) this._secrets = new SecretsManager();
     return this._secrets;
@@ -129,6 +153,7 @@ export abstract class GenericController {
 
   /**
    * Manage attachments (through SignedURLs).
+   * @deprecated use external object to improve cold starts. See most recent projects for reference.
    */
   get attachments(): Attachments {
     if (!this._attachments) this._attachments = new Attachments();
@@ -141,6 +166,7 @@ export abstract class GenericController {
 
 /**
  * The initial options for a constructor of class GenericController.
+ * @deprecated following new IAC standards.
  */
 export interface GenericControllerOptions {
   /**

@@ -11,3 +11,5 @@ export * from './src/ses';
 export * from './src/sns';
 export * from './src/translate';
 export * from './src/attachments';
+
+export * from './src/logger';
