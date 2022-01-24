@@ -36,10 +36,10 @@ export class Logger {
     );
   }
 
-  debug(msg: string, params: any) {
+  debug(msg: string, params: any = {}) {
     this.log('DEBUG', msg, params);
   }
-  info(msg: string, params: any) {
+  info(msg: string, params: any = {}) {
     this.log('INFO', msg, params);
   }
   warn(msg: string, err: Error | any, params: any = {}) {

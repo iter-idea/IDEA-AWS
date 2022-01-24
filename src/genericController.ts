@@ -1,5 +1,3 @@
-import { logger } from 'idea-toolbox';
-
 import { DynamoDB } from './dynamoDB';
 import { Cognito } from './cognito';
 import { S3 } from './s3';
@@ -10,6 +8,8 @@ import { Comprehend } from './comprehend';
 import { SecretsManager } from './secretsManager';
 
 import { Attachments } from './attachments';
+
+import { Logger } from './logger';
 
 /**
  * An abstract class to inherit to manage some resources with an AWS Lambda function.
@@ -31,6 +31,8 @@ export abstract class GenericController {
 
   tables: any;
 
+  protected logger = new Logger();
+
   protected logRequestsWithKey: string;
 
   /**
@@ -43,10 +45,6 @@ export abstract class GenericController {
     this.callback = callback;
 
     this.tables = options.tables || {};
-
-    // set the logs to print objects deeper
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    require('util').inspect.defaultOptions.depth = null;
   }
 
   /**
@@ -57,8 +55,10 @@ export abstract class GenericController {
   /**
    * Default callback for the Lambda.
    */
-  protected done(err: Error | null, res?: any) {
-    logger(err ? 'DONE WITH ERRORS' : 'DONE', err, res, true);
+  protected done(err: any, res?: any) {
+    if (err) this.logger.info('END-FAILED', { error: err.message || err.errorMessage });
+    else this.logger.info('END-SUCCESS');
+
     this.callback(err, res);
   }
 

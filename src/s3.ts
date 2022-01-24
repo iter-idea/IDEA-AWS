@@ -1,5 +1,8 @@
 import { S3 as AWSS3 } from 'aws-sdk';
-import { logger, SignedURL } from 'idea-toolbox';
+import { SignedURL } from 'idea-toolbox';
+
+import { Logger } from './logger';
+const logger = new Logger();
 
 // declare libs as global vars to be reused in warm starts by the Lambda function
 let ideaWarmStart_s3: AWSS3 = null;
@@ -74,7 +77,7 @@ export class S3 {
    * Make a copy of an object of the bucket.
    */
   async copyObject(options: CopyObjectOptions): Promise<void> {
-    logger('S3 COPY OBJECT', null, options.key);
+    logger.debug(`S3 copy object: ${options.key}`);
     await this.s3.copyObject({ CopySource: options.copySource, Bucket: options.bucket, Key: options.key }).promise();
   }
 
@@ -82,7 +85,7 @@ export class S3 {
    * Get an object from a S3 bucket.
    */
   async getObject(options: GetObjectOptions): Promise<any> {
-    logger('S3 GET OBJECT', null, options.type);
+    logger.debug(`S3 get object: ${options.type}`);
     const result = await this.s3.getObject({ Bucket: options.bucket, Key: options.key }).promise();
 
     switch (options.type) {
@@ -104,7 +107,7 @@ export class S3 {
     if (options.acl) params.ACL = options.acl;
     if (options.metadata) params.Metadata = options.metadata;
 
-    logger('S3 PUT OBJECT', null, options.key);
+    logger.debug(`S3 put object: ${options.key}`);
     return await this.s3.putObject(params).promise();
   }
 
@@ -112,7 +115,7 @@ export class S3 {
    * Delete an object from an S3 bucket.
    */
   async deleteObject(options: DeleteObjectOptions): Promise<AWSS3.PutObjectOutput> {
-    logger('S3 DELETE OBJECT', null, options.key);
+    logger.debug(`S3 delete object: ${options.key}`);
     return await this.s3.deleteObject({ Bucket: options.bucket, Key: options.key }).promise();
   }
 
@@ -120,7 +123,7 @@ export class S3 {
    * List the objects of an S3 bucket.
    */
   async listObjects(options: ListObjectsOptions): Promise<AWSS3.ListObjectsOutput> {
-    logger('S3 LIST OBJECTS', null, options.prefix);
+    logger.debug(`S3 list object: ${options.prefix}`);
     return await this.s3.listObjects({ Bucket: options.bucket, Prefix: options.prefix }).promise();
   }
 

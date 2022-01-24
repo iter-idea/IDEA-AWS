@@ -5,8 +5,10 @@ import {
   SendMailOptions as NodemailerSendMailOptions
 } from 'nodemailer';
 import { Headers } from 'nodemailer/lib/mailer';
-import { logger } from 'idea-toolbox';
 import { DynamoDB } from './dynamoDB';
+
+import { Logger } from './logger';
+const logger = new Logger();
 
 // declare libs as global vars to be reused in warm starts by the Lambda function
 let ideaWarmStart_ses: AWSSES = null;
@@ -32,7 +34,7 @@ export class SES {
       SourceArn: sesParams.sourceArn
     };
 
-    logger('SES SEND TEMPLATED EMAIL');
+    logger.debug('SES send templated email');
     if (!ideaWarmStart_ses) ideaWarmStart_ses = new AWSSES({ region: sesParams.region });
     return await ideaWarmStart_ses.sendTemplatedEmail(request).promise();
   }
@@ -71,7 +73,7 @@ export class SES {
       SourceArn: sesParams.sourceArn
     };
 
-    logger('SES SEND EMAIL');
+    logger.debug('SES send email');
     if (!ideaWarmStart_ses) ideaWarmStart_ses = new AWSSES({ region: sesParams.region });
     return await ideaWarmStart_ses.sendEmail(request).promise();
   }
@@ -94,7 +96,7 @@ export class SES {
 
     mailOptions.attachments = emailData.attachments;
 
-    logger('SES SEND EMAIL (NODEMAILER)');
+    logger.debug('SES send email (Nodemailer)');
     if (!ideaWarmStart_ses) ideaWarmStart_ses = new AWSSES({ region: sesParams.region });
     return await NodemailerCreateTransport({ SES: ideaWarmStart_ses }).sendMail(mailOptions);
   }
