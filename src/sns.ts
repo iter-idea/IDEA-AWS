@@ -1,9 +1,6 @@
 import { SNS as AWSSNS } from 'aws-sdk';
 import { PushNotificationsPlatforms, logger } from 'idea-toolbox';
 
-// declare libs as global vars to be reused in warm starts by the Lambda function
-let ideaWarmStart_sns: AWSSNS = null;
-
 /**
  * A wrapper for AWS Simple Notification Service.
  */
@@ -33,8 +30,7 @@ export class SNS {
     }
 
     logger('SNS ADD PLATFORM ENDPOINT');
-    if (!ideaWarmStart_sns) ideaWarmStart_sns = new AWSSNS({ apiVersion: '2010-03-31', region: snsParams.region });
-    const result = await ideaWarmStart_sns
+    const result = await new AWSSNS({ apiVersion: '2010-03-31', region: snsParams.region })
       .createPlatformEndpoint({ PlatformApplicationArn: platformARN, Token: token })
       .promise();
 
@@ -65,8 +61,7 @@ export class SNS {
       }
 
     logger('SNS PUBLISH IN TOPIC');
-    if (!ideaWarmStart_sns) ideaWarmStart_sns = new AWSSNS({ apiVersion: '2010-03-31', region: snsParams.region });
-    return await ideaWarmStart_sns
+    return await new AWSSNS({ apiVersion: '2010-03-31', region: snsParams.region })
       .publish({ MessageStructure: 'json', Message: JSON.stringify(structuredMessage), TargetArn: snsParams.endpoint })
       .promise();
   }

@@ -7,9 +7,6 @@ import { characters as ShortIdCharacters, generate as ShortIdGenerate } from 'sh
 import { Logger } from './logger';
 const logger = new Logger();
 
-// declare libs as global vars to be reused in warm starts by the Lambda function
-let ideaWarmStart_ddb: DDB.DocumentClient = null;
-
 /**
  * A wrapper for AWS DynamoDB.
  */
@@ -17,8 +14,7 @@ export class DynamoDB {
   protected dynamo: DDB.DocumentClient;
 
   constructor() {
-    if (!ideaWarmStart_ddb) ideaWarmStart_ddb = new DDB.DocumentClient();
-    this.dynamo = ideaWarmStart_ddb;
+    this.dynamo = new DDB.DocumentClient();
   }
 
   /**

@@ -10,9 +10,6 @@ import { DynamoDB } from './dynamoDB';
 import { Logger } from './logger';
 const logger = new Logger();
 
-// declare libs as global vars to be reused in warm starts by the Lambda function
-let ideaWarmStart_ses: AWSSES = null;
-
 /**
  * A wrapper for AWS Simple Email Service.
  */
@@ -35,8 +32,7 @@ export class SES {
     };
 
     logger.debug('SES send templated email');
-    if (!ideaWarmStart_ses) ideaWarmStart_ses = new AWSSES({ region: sesParams.region });
-    return await ideaWarmStart_ses.sendTemplatedEmail(request).promise();
+    return await new AWSSES({ region: sesParams.region }).sendTemplatedEmail(request).promise();
   }
 
   /**
@@ -74,8 +70,7 @@ export class SES {
     };
 
     logger.debug('SES send email');
-    if (!ideaWarmStart_ses) ideaWarmStart_ses = new AWSSES({ region: sesParams.region });
-    return await ideaWarmStart_ses.sendEmail(request).promise();
+    return await new AWSSES({ region: sesParams.region }).sendEmail(request).promise();
   }
   private async sendEmailWithNodemailer(
     emailData: EmailData,
@@ -97,8 +92,7 @@ export class SES {
     mailOptions.attachments = emailData.attachments;
 
     logger.debug('SES send email (Nodemailer)');
-    if (!ideaWarmStart_ses) ideaWarmStart_ses = new AWSSES({ region: sesParams.region });
-    return await NodemailerCreateTransport({ SES: ideaWarmStart_ses }).sendMail(mailOptions);
+    return await NodemailerCreateTransport({ SES: new AWSSES({ region: sesParams.region }) }).sendMail(mailOptions);
   }
 
   private prepareEmailDestination(emailData: BasicEmailData): AWSSES.Destination {

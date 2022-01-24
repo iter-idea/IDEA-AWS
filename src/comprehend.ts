@@ -1,9 +1,6 @@
 import { Comprehend as AmazonComprehend } from 'aws-sdk';
 import { Sentiment } from 'idea-toolbox';
 
-// declare libs as global vars to be reused in warm starts by the Lambda function
-let ideaWarmStart_comprehend: AmazonComprehend = null;
-
 /**
  * A wrapper for Amazon Comprehend.
  */
@@ -14,8 +11,7 @@ export class Comprehend {
   protected comprehend: AmazonComprehend;
 
   constructor() {
-    if (!ideaWarmStart_comprehend) ideaWarmStart_comprehend = new AmazonComprehend({ apiVersion: '2017-11-27' });
-    this.comprehend = ideaWarmStart_comprehend;
+    this.comprehend = new AmazonComprehend({ apiVersion: '2017-11-27' });
   }
 
   /**

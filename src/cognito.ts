@@ -1,9 +1,6 @@
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { CognitoUser, isEmpty } from 'idea-toolbox';
 
-// declare libs as global vars to be reused in warm starts by the Lambda function
-let ideaWarmStart_cognito: CognitoIdentityServiceProvider = null;
-
 /**
  * A wrapper for AWS Cognito.
  */
@@ -11,9 +8,7 @@ export class Cognito {
   protected cognito: CognitoIdentityServiceProvider;
 
   constructor() {
-    if (!ideaWarmStart_cognito)
-      ideaWarmStart_cognito = new CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' });
-    this.cognito = ideaWarmStart_cognito;
+    this.cognito = new CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' });
   }
 
   /**
@@ -22,8 +17,7 @@ export class Cognito {
    */
   setRegion(region: string) {
     // there is no quick way to change the region without re-creating the object
-    ideaWarmStart_cognito = new CognitoIdentityServiceProvider({ apiVersion: this.cognito.config.apiVersion, region });
-    this.cognito = ideaWarmStart_cognito;
+    this.cognito = new CognitoIdentityServiceProvider({ apiVersion: this.cognito.config.apiVersion, region });
   }
 
   /**

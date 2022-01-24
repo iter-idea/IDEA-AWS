@@ -8,9 +8,6 @@ import {
   PDFTemplateSimpleField
 } from 'idea-toolbox';
 
-// declare libs as global vars to be reused in warm starts by the Lambda function
-let ideaWarmStart_translate: AWSTranslate = null;
-
 /**
  * A wrapper for Amazon Translate.
  */
@@ -36,8 +33,7 @@ export class Translate {
    * Initialize a new Translate helper object.
    */
   constructor() {
-    if (!ideaWarmStart_translate) ideaWarmStart_translate = new AWSTranslate({ apiVersion: '2017-07-01' });
-    this.translate = ideaWarmStart_translate;
+    this.translate = new AWSTranslate({ apiVersion: '2017-07-01' });
     this.sourceLanguageCode = 'en';
     this.targetLanguageCode = 'en';
     this.terminologyNames = new Array<string>();

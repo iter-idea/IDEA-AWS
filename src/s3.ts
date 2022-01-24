@@ -4,9 +4,6 @@ import { SignedURL } from 'idea-toolbox';
 import { Logger } from './logger';
 const logger = new Logger();
 
-// declare libs as global vars to be reused in warm starts by the Lambda function
-let ideaWarmStart_s3: AWSS3 = null;
-
 /**
  * A wrapper for AWS Simple Storage Service.
  */
@@ -22,8 +19,7 @@ export class S3 {
    * Initialize a new S3 helper object.
    */
   constructor() {
-    if (!ideaWarmStart_s3) ideaWarmStart_s3 = new AWSS3({ apiVersion: '2006-03-01', signatureVersion: 'v4' });
-    this.s3 = ideaWarmStart_s3;
+    this.s3 = new AWSS3({ apiVersion: '2006-03-01', signatureVersion: 'v4' });
   }
 
   /**
