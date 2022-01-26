@@ -1,6 +1,6 @@
 import 'source-map-support/register';
 import { existsSync, readFileSync } from 'fs';
-import { Lambda } from 'aws-sdk';
+import { Lambda, EventBridge } from 'aws-sdk';
 import { APIGatewayProxyEventV2, APIGatewayProxyEvent, Callback } from 'aws-lambda';
 import { APIRequestLog, CognitoUser } from 'idea-toolbox';
 
@@ -326,47 +326,53 @@ export abstract class ResourceController extends GenericController {
    * @return the body of the response
    * @deprecated don't run a Lambda from another Lambda (bad practice)
    */
-  invokeInternalAPIRequest(params: InternalAPIRequestParams): Promise<any> {
-    return new Promise((resolve, reject) => {
-      // create a copy of the event
-      const event = JSON.parse(JSON.stringify(this.event));
-      // change only the event attributes we need; e.g. the authorization is unchanged
-      if (!event.requestContext) event.requestContext = {};
-      event.requestContext.stage = params.stage || this.stage;
-      event.requestContext.httpMethod = event.httpMethod = params.httpMethod;
-      event.routeKey = event.resource = params.resource;
-      event.pathParameters = params.pathParams || {};
-      event.queryStringParameters = params.queryParams || {};
-      event.body = JSON.stringify(params.body || {});
-      // parse the path
-      event.rawPath = event.path = params.resource;
-      for (const p in event.pathParameters)
-        if (event.pathParameters[p]) event.rawPath = event.path = event.path.replace(`{${p}}`, event.pathParameters[p]);
-      // set a flag to make the invoked to recognise that is an internal request
-      event.internalAPIRequest = true;
-      // invoke the lambda with the event prepaired, simulating an API request
-      new Lambda().invoke(
-        {
-          FunctionName: params.lambda,
-          Qualifier: event.requestContext.stage,
-          InvocationType: 'RequestResponse',
-          Payload: JSON.stringify(event)
-        },
-        (err: Error, res: any) => {
-          // reject in case of internal error
-          if (err) reject(err);
-          else {
-            // parse the payload and the body
-            const payload = JSON.parse(res.Payload);
-            const body = JSON.parse(payload.body);
-            // if the response is successfull, return the body
-            if (Number(payload.statusCode) === 200) resolve(body);
-            // otherwise, reject the controlled error
-            else reject(new Error(body.message));
-          }
-        }
-      );
-    });
+  async invokeInternalAPIRequest(params: InternalAPIRequestParams): Promise<any> {
+    if (params.lambda) return await this.invokeInternalAPIRequestWithLambda(params);
+    if (params.eventBridge) return await this.invokeInternalAPIRequestWithEventBridge(params);
+    throw new Error('Either "lambda" or "eventBus" parameters must be set.');
+  }
+  private async invokeInternalAPIRequestWithLambda(params: InternalAPIRequestParams): Promise<any> {
+    const lambdaInvokeParams = {
+      FunctionName: params.lambda,
+      InvocationType: 'RequestResponse',
+      Payload: this.mapEventForInternalApiRequest(params),
+      Qualifier: params.stage || this.stage
+    };
+    const res = await new Lambda().invoke(lambdaInvokeParams).promise();
+    const payload = JSON.parse(res.Payload as string);
+    const body = JSON.parse(payload.body);
+    if (Number(payload.statusCode) !== 200) throw new Error(body.message);
+    return body;
+  }
+  private async invokeInternalAPIRequestWithEventBridge(
+    params: InternalAPIRequestParams
+  ): Promise<EventBridge.PutEventsResponse> {
+    const request = {
+      EventBusName: params.eventBridge.bus,
+      Source: this.constructor.name,
+      DetailType: params.eventBridge.target,
+      Detail: this.mapEventForInternalApiRequest(params)
+    };
+    return await new EventBridge().putEvents({ Entries: [request] }).promise();
+  }
+  private mapEventForInternalApiRequest(params: InternalAPIRequestParams): string {
+    const event = JSON.parse(JSON.stringify(this.event));
+
+    // change only the event attributes we need; e.g. the authorization is unchanged
+    if (!event.requestContext) event.requestContext = {};
+    event.requestContext.stage = params.stage || this.stage;
+    event.requestContext.httpMethod = event.httpMethod = params.httpMethod;
+    event.routeKey = event.resource = params.resource;
+    event.pathParameters = params.pathParams || {};
+    event.queryStringParameters = params.queryParams || {};
+    event.body = JSON.stringify(params.body || {});
+    event.rawPath = event.path = params.resource;
+    for (const p in event.pathParameters)
+      if (event.pathParameters[p]) event.rawPath = event.path = event.path.replace(`{${p}}`, event.pathParameters[p]);
+    // set a flag to make the invoked to recognise that is an internal request
+    event.internalAPIRequest = true;
+
+    return JSON.stringify(event);
   }
   /**
    * Whether the current request comes from an internal API request, i.e. it was invoked by another controller.
@@ -464,13 +470,23 @@ export interface ResourceControllerOptions extends GenericControllerOptions {
 
 /**
  * The parameters needed to invoke an internal API request.
- * @deprecated don't run a Lambda from another Lambda (bad practice)
+ * @deprecated don't run a Lambda from another Lambda (bad practice).
  */
 export interface InternalAPIRequestParams {
   /**
-   * The name of the lambda function receiving the request; e.g. `project_memberships`.
+   * The name of the Lambda function receiving the request; e.g. `project_memberships`.
+   * Note: the invocation is always syncronous.
+   * Either this attribute or `eventBus` must be set.
    */
-  lambda: string;
+  lambda?: string;
+  /**
+   * The EventBridge destination of the request.
+   * If the bus name or ARN isn't specified, the default one is used.
+   * The `target` maps into the `DetailType` of the event.
+   * Note: the invocation is always asyncronous.
+   * Either this attribute or `lambda` must be set.
+   */
+  eventBridge?: { bus?: string; target?: string };
   /**
    * The alias of the lambda function to invoke. Default: the value of the current API stage.
    */
