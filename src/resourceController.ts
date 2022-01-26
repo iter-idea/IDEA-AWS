@@ -361,7 +361,8 @@ export abstract class ResourceController extends GenericController {
     // change only the event attributes we need; e.g. the authorization is unchanged
     if (!event.requestContext) event.requestContext = {};
     event.requestContext.stage = params.stage || this.stage;
-    event.requestContext.httpMethod = event.httpMethod = params.httpMethod;
+    if (!event.requestContext.http) event.requestContext.http;
+    event.requestContext.http.method = event.httpMethod = params.httpMethod;
     event.routeKey = event.resource = params.resource;
     event.pathParameters = params.pathParams || {};
     event.queryStringParameters = params.queryParams || {};
