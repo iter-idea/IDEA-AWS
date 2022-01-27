@@ -7,8 +7,8 @@ import { CognitoUser, isEmpty } from 'idea-toolbox';
 export class Cognito {
   protected cognito: CognitoIdentityServiceProvider;
 
-  constructor() {
-    this.cognito = new CognitoIdentityServiceProvider({ apiVersion: '2016-04-18' });
+  constructor(params: { region?: string } = {}) {
+    this.cognito = new CognitoIdentityServiceProvider({ apiVersion: '2016-04-18', region: params.region });
   }
 
   /**
