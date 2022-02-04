@@ -73,8 +73,10 @@ export abstract class ResourceController extends GenericController {
   }
   private initFromEventV2(event: APIGatewayProxyEventV2, options: ResourceControllerOptions) {
     this.authorization = event.headers.authorization;
-    const contextFromAuthorizer = (event.requestContext as any)?.authorizer?.lambda || {};
-    this.principalId = contextFromAuthorizer.principalId;
+    const authorizer = (event.requestContext as any)?.authorizer ?? {};
+    const contextFromAuthorizer = authorizer.lambda ?? authorizer.jwt?.claims ?? {};
+    this.principalId = contextFromAuthorizer.principalId ?? contextFromAuthorizer.sub ?? null;
+    this.cognitoUser = authorizer.jwt?.claims ? new CognitoUser(authorizer.jwt?.claims) : null;
 
     this.stage = event.requestContext.stage;
     this.httpMethod = event.requestContext.http.method;
