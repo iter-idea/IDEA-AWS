@@ -298,6 +298,18 @@ export class Cognito {
     const groups: CognitoGroup[] = groupsList.Groups.map(g => ({ name: g.GroupName, description: g.Description }));
     return groups;
   }
+  /**
+   * Create a new group in the user pool.
+   */
+  async createGroup(groupName: string, cognitoUserPoolId: string): Promise<void> {
+    await this.cognito.createGroup({ GroupName: groupName, UserPoolId: cognitoUserPoolId }).promise();
+  }
+  /**
+   * Delete a group from the user pool.
+   */
+  async deleteGroup(groupName: string, cognitoUserPoolId: string): Promise<void> {
+    await this.cognito.deleteGroup({ GroupName: groupName, UserPoolId: cognitoUserPoolId }).promise();
+  }
 
   /**
    * List the users part of a group in the user pool.
@@ -310,7 +322,6 @@ export class Cognito {
     const users = usersInGroupList.Users.map(u => new CognitoUser(this.mapCognitoUserAttributesAsPlainObject(u)));
     return users;
   }
-
   /**
    * Add a user (by email) to a group in the user pool.
    */
