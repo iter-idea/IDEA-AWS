@@ -116,7 +116,7 @@ export class Cognito {
       const user = cognitoUserOrEmail as CognitoUser;
 
       UserAttributes.push({ Name: 'name', Value: user.name });
-      UserAttributes.push({ Name: 'picture', Value: user.picture });
+      UserAttributes.push({ Name: 'picture', Value: user.picture || '' });
 
       Object.keys(user.attributes).forEach(a =>
         UserAttributes.push({ Name: 'custom:'.concat(a), Value: String(user.attributes[a]) })
@@ -258,7 +258,7 @@ export class Cognito {
   async updateUser(user: CognitoUser, cognitoUserPoolId: string): Promise<void> {
     const UserAttributes = [
       { Name: 'name', Value: user.name },
-      { Name: 'picture', Value: user.picture }
+      { Name: 'picture', Value: user.picture || '' }
     ];
 
     Object.keys(user.attributes).forEach(customAttribute =>
