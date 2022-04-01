@@ -20,6 +20,33 @@ export class SES {
     this.ses = new AWSSES({ region: params.region });
   }
 
+  //
+  // CONFIG
+  //
+
+  async setTemplate(templateName: string, subject: string, content: string, isHTML?: boolean): Promise<void> {
+    const template: AWSSES.Template = { TemplateName: templateName, SubjectPart: subject };
+    if (isHTML) template.HtmlPart = content;
+    else template.TextPart = content;
+
+    let isNew = false;
+    try {
+      await this.ses.getTemplate({ TemplateName: templateName }).promise();
+    } catch (notFound) {
+      isNew = true;
+    }
+
+    if (isNew) await this.ses.createTemplate({ Template: template }).promise();
+    else await this.ses.updateTemplate({ Template: template }).promise();
+  }
+  async deleteTemplate(templateName: string): Promise<void> {
+    await this.ses.deleteTemplate({ TemplateName: templateName }).promise();
+  }
+
+  //
+  // SENDING
+  //
+
   /**
    * Send a templated email through AWS Simple Email Service.
    */
