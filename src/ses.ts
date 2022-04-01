@@ -14,6 +14,12 @@ const logger = new Logger();
  * A wrapper for AWS Simple Email Service.
  */
 export class SES {
+  protected ses: AWSSES;
+
+  constructor(params: { region?: string } = {}) {
+    this.ses = new AWSSES({ region: params.region });
+  }
+
   /**
    * Send a templated email through AWS Simple Email Service.
    */
@@ -31,8 +37,12 @@ export class SES {
       SourceArn: sesParams.sourceArn
     };
 
+    let ses: AWSSES;
+    if (this.ses.config.region === sesParams.region) ses = this.ses;
+    else ses = new AWSSES({ region: sesParams.region });
+
     logger.debug('SES send templated email');
-    return await new AWSSES({ region: sesParams.region }).sendTemplatedEmail(request).promise();
+    return await ses.sendTemplatedEmail(request).promise();
   }
 
   /**
@@ -69,8 +79,12 @@ export class SES {
       SourceArn: sesParams.sourceArn
     };
 
+    let ses: AWSSES;
+    if (this.ses.config.region === sesParams.region) ses = this.ses;
+    else ses = new AWSSES({ region: sesParams.region });
+
     logger.debug('SES send email');
-    return await new AWSSES({ region: sesParams.region }).sendEmail(request).promise();
+    return await ses.sendEmail(request).promise();
   }
   private async sendEmailWithNodemailer(
     emailData: EmailData,
@@ -91,8 +105,12 @@ export class SES {
 
     mailOptions.attachments = emailData.attachments;
 
+    let ses: AWSSES;
+    if (this.ses.config.region === sesParams.region) ses = this.ses;
+    else ses = new AWSSES({ region: sesParams.region });
+
     logger.debug('SES send email (Nodemailer)');
-    return await NodemailerCreateTransport({ SES: new AWSSES({ region: sesParams.region }) }).sendMail(mailOptions);
+    return await NodemailerCreateTransport({ SES: ses }).sendMail(mailOptions);
   }
 
   private prepareEmailDestination(emailData: BasicEmailData): AWSSES.Destination {
@@ -135,7 +153,6 @@ export interface BasicEmailData {
    */
   replyToAddresses?: string[];
 }
-
 /**
  * The data to send an email.
  */
@@ -157,7 +174,6 @@ export interface EmailData extends BasicEmailData {
    */
   attachments?: EmailAttachment[];
 }
-
 /**
  * Email attachment interface of Nodemailer.
  */
@@ -195,7 +211,6 @@ export interface EmailAttachment {
    */
   raw?: string | Buffer;
 }
-
 /**
  * The data to send a templated email.
  * Note: templated email don't support attachments by now.
