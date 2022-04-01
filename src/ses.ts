@@ -24,8 +24,8 @@ export class SES {
   // CONFIG
   //
 
-  async getTemplate(templateName: string): Promise<AWSSES.GetTemplateResponse> {
-    return await this.ses.getTemplate({ TemplateName: templateName }).promise();
+  async getTemplate(templateName: string): Promise<AWSSES.Template> {
+    return (await this.ses.getTemplate({ TemplateName: templateName }).promise()).Template;
   }
   async setTemplate(templateName: string, subject: string, content: string, isHTML?: boolean): Promise<void> {
     const template: AWSSES.Template = { TemplateName: templateName, SubjectPart: subject };
