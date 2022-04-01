@@ -45,6 +45,10 @@ export class SES {
   async deleteTemplate(templateName: string): Promise<void> {
     await this.ses.deleteTemplate({ TemplateName: templateName }).promise();
   }
+  async testTemplate(templateName: string, data: AWSSES.TemplateData): Promise<AWSSES.RenderedTemplate> {
+    return (await this.ses.testRenderTemplate({ TemplateName: templateName, TemplateData: data }).promise())
+      .RenderedTemplate;
+  }
 
   //
   // SENDING
