@@ -43,6 +43,8 @@ export class Cognito {
   private mapCognitoUserAttributesAsPlainObject(user: any): CognitoUserGeneric {
     const userAttributes: any = {};
     (user.Attributes || user.UserAttributes || []).forEach((a: any) => (userAttributes[a.Name] = a.Value));
+
+    if (!user.userId) user.userId = user.sub;
     return userAttributes as CognitoUserGeneric;
   }
 
