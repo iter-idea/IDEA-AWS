@@ -44,7 +44,7 @@ export class Cognito {
     const userAttributes: any = {};
     (user.Attributes || user.UserAttributes || []).forEach((a: any) => (userAttributes[a.Name] = a.Value));
 
-    if (!user.userId) user.userId = user.sub;
+    if (!userAttributes.userId) userAttributes.userId = userAttributes.sub;
     return userAttributes as CognitoUserGeneric;
   }
 
