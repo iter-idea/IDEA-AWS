@@ -423,7 +423,7 @@ export abstract class ResourceController extends GenericController {
   }
   /**
    * Interpolates a string to replace parameters.
-   * "This is a {{ key }}" ==> "This is a value", with params = { key: "value" }
+   * `"This is a {{ key }}"` ==> `"This is a value", with params = { key: "value" }`.
    */
   private interpolate(expr: string, params?: any): string {
     if (!params || !expr) return expr;
@@ -434,7 +434,7 @@ export abstract class ResourceController extends GenericController {
   }
   /**
    * Gets a value from an object by composed key.
-   * getValue({ key1: { keyA: 'valueI' }}, 'key1.keyA') ==> 'valueI'
+   * `getValue({ key1: { keyA: 'valueI' }}, 'key1.keyA')` ==> `'valueI'`.
    */
   private getValue(target: any, key: string): any {
     const keys = typeof key === 'string' ? key.split('.') : [key];

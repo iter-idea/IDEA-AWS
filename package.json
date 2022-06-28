@@ -7,7 +7,7 @@
   "scripts": {
     "lint": "eslint --ext .ts",
     "compile": "tsc --build",
-    "docs": "typedoc",
+    "docs": "typedoc index.ts",
     "build": "./build.sh",
     "publishPackage": "./build.sh && npm publish"
   },
