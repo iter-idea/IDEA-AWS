@@ -14,7 +14,7 @@ import { ResourceController } from 'idea-aws';
 
 ## Documentation
 
-Documentation generated with TypeDoc: [link](https://uatisdeproblem.github.io/IDEA-AWS).
+Documentation generated with TypeDoc: [link](https://iter-idea.github.io/IDEA-AWS).
 
 ## Notes
 
