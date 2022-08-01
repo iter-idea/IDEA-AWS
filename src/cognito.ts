@@ -73,9 +73,9 @@ export class Cognito {
   }
 
   /**
-   * Get all the users of the pool.
+   * List all the users of the pool.
    */
-  async getAllUsers(
+  async listUsers(
     cognitoUserPoolId: string,
     options: { pagination?: string; users: CognitoUser[] } = { users: [] }
   ): Promise<CognitoUser[]> {
@@ -89,8 +89,30 @@ export class Cognito {
       res.Users.map(u => new CognitoUser(this.mapCognitoUserAttributesAsPlainObject(u)))
     );
 
-    if (pagination) return await this.getAllUsers(cognitoUserPoolId, { pagination, users });
+    if (pagination) return await this.listUsers(cognitoUserPoolId, { pagination, users });
     else return users;
+  }
+  /**
+   * List all the users of the pool, including the information about the groups they're in.
+   * Note: it's slower than the alternative `getAllUsers`: use it only when needed.
+   */
+  async listUsersWithGroupsDetail(cognitoUserPoolId: string): Promise<CognitoUser[]> {
+    const groups = await this.listGroups(cognitoUserPoolId);
+
+    const users: CognitoUser[] = [];
+    for (const group of groups) {
+      const usersOfGroup = await this.listUsersInGroup(group.name, cognitoUserPoolId);
+      usersOfGroup.forEach(userInGroup => {
+        const userAlreadyInOutputList = users.find(u => u.userId === userInGroup.userId);
+        if (userAlreadyInOutputList) userAlreadyInOutputList.groups.push(group.name);
+        else {
+          userInGroup.groups.push(group.name);
+          users.push(userInGroup);
+        }
+      });
+    }
+
+    return users;
   }
 
   /**
@@ -298,11 +320,22 @@ export class Cognito {
   /**
    * List the groups of the user pool.
    */
-  async listGroups(cognitoUserPoolId: string): Promise<CognitoGroup[]> {
-    const groupsList = await this.cognito.listGroups({ UserPoolId: cognitoUserPoolId }).promise();
+  async listGroups(
+    cognitoUserPoolId: string,
+    options: { pagination?: string; groups: CognitoGroup[] } = { groups: [] }
+  ): Promise<CognitoGroup[]> {
+    const params: CognitoIdentityServiceProvider.ListGroupsRequest = { UserPoolId: cognitoUserPoolId };
+    if (options.pagination) params.NextToken = options.pagination;
 
-    const groups: CognitoGroup[] = groupsList.Groups.map(g => ({ name: g.GroupName, description: g.Description }));
-    return groups;
+    const res = await this.cognito.listGroups(params).promise();
+
+    const pagination = res.NextToken;
+    const groups = options.groups.concat(
+      res.Groups.map(g => ({ name: g.GroupName, description: g.Description } as CognitoGroup))
+    );
+
+    if (pagination) return await this.listGroups(cognitoUserPoolId, { pagination, groups });
+    else return groups;
   }
   /**
    * Create a new group in the user pool.
@@ -320,13 +353,26 @@ export class Cognito {
   /**
    * List the users part of a group in the user pool.
    */
-  async listUsersInGroup(group: string, cognitoUserPoolId: string): Promise<CognitoUser[]> {
-    const usersInGroupList = await this.cognito
-      .listUsersInGroup({ UserPoolId: cognitoUserPoolId, GroupName: group })
-      .promise();
+  async listUsersInGroup(
+    group: string,
+    cognitoUserPoolId: string,
+    options: { pagination?: string; users: CognitoUser[] } = { users: [] }
+  ): Promise<CognitoUser[]> {
+    const params: CognitoIdentityServiceProvider.ListUsersInGroupRequest = {
+      UserPoolId: cognitoUserPoolId,
+      GroupName: group
+    };
+    if (options.pagination) params.NextToken = options.pagination;
 
-    const users = usersInGroupList.Users.map(u => new CognitoUser(this.mapCognitoUserAttributesAsPlainObject(u)));
-    return users;
+    const res = await this.cognito.listUsersInGroup(params).promise();
+
+    const pagination = res.NextToken;
+    const users = options.users.concat(
+      res.Users.map(u => new CognitoUser(this.mapCognitoUserAttributesAsPlainObject(u)))
+    );
+
+    if (pagination) return await this.listUsersInGroup(group, cognitoUserPoolId, { pagination, users });
+    else return users;
   }
   /**
    * Add a user (by email) to a group in the user pool.
