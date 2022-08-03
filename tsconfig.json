@@ -2,9 +2,6 @@
   "extends": "./node_modules/@tsconfig/node16/tsconfig.json",
   "compilerOptions": {
     "declaration": true,
-    "declarationMap": false,
-    "removeComments": false,
-    "sourceMap": false,
     "strictPropertyInitialization": false,
     "strictNullChecks": false,
     "outDir": "dist"
