@@ -1,23 +1,23 @@
-import { CognitoIdentityServiceProvider } from 'aws-sdk';
+import { CognitoIdentityServiceProvider as CognitoISP } from 'aws-sdk';
 import { CognitoUser, isEmpty } from 'idea-toolbox';
 
 /**
  * A wrapper for AWS Cognito.
  */
 export class Cognito {
-  protected cognito: CognitoIdentityServiceProvider;
+  protected cognito: CognitoISP;
 
   constructor(params: { region?: string } = {}) {
-    this.cognito = new CognitoIdentityServiceProvider({ apiVersion: '2016-04-18', region: params.region });
+    this.cognito = new CognitoISP({ apiVersion: '2016-04-18', region: params.region });
   }
 
   /**
    * Change the region in which to find the user pool.
    * Default: the runner's (e.g. Lambda function) region.
    */
-  setRegion(region: string) {
+  setRegion(region: string): void {
     // there is no quick way to change the region without re-creating the object
-    this.cognito = new CognitoIdentityServiceProvider({ apiVersion: this.cognito.config.apiVersion, region });
+    this.cognito = new CognitoISP({ apiVersion: this.cognito.config.apiVersion, region });
   }
 
   /**
@@ -79,7 +79,7 @@ export class Cognito {
     cognitoUserPoolId: string,
     options: { pagination?: string; users: CognitoUser[] } = { users: [] }
   ): Promise<CognitoUser[]> {
-    const params: CognitoIdentityServiceProvider.ListUsersRequest = { UserPoolId: cognitoUserPoolId };
+    const params: CognitoISP.ListUsersRequest = { UserPoolId: cognitoUserPoolId };
     if (options.pagination) params.PaginationToken = options.pagination;
 
     const res = await this.cognito.listUsers(params).promise();
@@ -147,7 +147,7 @@ export class Cognito {
       );
     }
 
-    const params: CognitoIdentityServiceProvider.AdminCreateUserRequest = {
+    const params: CognitoISP.AdminCreateUserRequest = {
       UserPoolId: cognitoUserPoolId,
       Username: email,
       UserAttributes
@@ -169,7 +169,7 @@ export class Cognito {
   async resendPassword(email: string, cognitoUserPoolId: string, options: CreateUserOptions = {}): Promise<void> {
     if (isEmpty(email, 'email')) throw new Error('Invalid email');
 
-    const params: CognitoIdentityServiceProvider.AdminCreateUserRequest = {
+    const params: CognitoISP.AdminCreateUserRequest = {
       UserPoolId: cognitoUserPoolId,
       Username: email,
       MessageAction: 'RESEND'
@@ -196,7 +196,7 @@ export class Cognito {
     password: string,
     cognitoUserPoolId: string,
     cognitoUserPoolClientId: string
-  ): Promise<CognitoIdentityServiceProvider.AuthenticationResultType> {
+  ): Promise<CognitoISP.AuthenticationResultType> {
     const result = await this.cognito
       .adminInitiateAuth({
         UserPoolId: cognitoUserPoolId,
@@ -218,7 +218,7 @@ export class Cognito {
     refreshToken: string,
     cognitoUserPoolId: string,
     cognitoUserPoolClientId: string
-  ): Promise<CognitoIdentityServiceProvider.AuthenticationResultType> {
+  ): Promise<CognitoISP.AuthenticationResultType> {
     const result = await this.cognito
       .adminInitiateAuth({
         UserPoolId: cognitoUserPoolId,
@@ -324,7 +324,7 @@ export class Cognito {
     cognitoUserPoolId: string,
     options: { pagination?: string; groups: CognitoGroup[] } = { groups: [] }
   ): Promise<CognitoGroup[]> {
-    const params: CognitoIdentityServiceProvider.ListGroupsRequest = { UserPoolId: cognitoUserPoolId };
+    const params: CognitoISP.ListGroupsRequest = { UserPoolId: cognitoUserPoolId };
     if (options.pagination) params.NextToken = options.pagination;
 
     const res = await this.cognito.listGroups(params).promise();
@@ -358,7 +358,7 @@ export class Cognito {
     cognitoUserPoolId: string,
     options: { pagination?: string; users: CognitoUser[] } = { users: [] }
   ): Promise<CognitoUser[]> {
-    const params: CognitoIdentityServiceProvider.ListUsersInGroupRequest = {
+    const params: CognitoISP.ListUsersInGroupRequest = {
       UserPoolId: cognitoUserPoolId,
       GroupName: group
     };
