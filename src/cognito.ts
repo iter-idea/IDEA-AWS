@@ -277,6 +277,16 @@ export class Cognito {
   }
 
   /**
+   * Send to a user the instructions to change the password.
+   */
+  async forgotPassword(email: string, cognitoUserPoolClientId: string): Promise<CognitoISP.CodeDeliveryDetailsType> {
+    const { CodeDeliveryDetails } = await this.cognito
+      .forgotPassword({ Username: email, ClientId: cognitoUserPoolClientId })
+      .promise();
+    return CodeDeliveryDetails;
+  }
+
+  /**
    * Update a (Cognito)User's attributes, excluding the attributes that require specific methods.
    */
   async updateUser(user: CognitoUser, cognitoUserPoolId: string): Promise<void> {
