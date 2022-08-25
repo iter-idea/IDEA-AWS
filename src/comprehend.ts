@@ -10,8 +10,8 @@ export class Comprehend {
    */
   protected comprehend: AmazonComprehend;
 
-  constructor() {
-    this.comprehend = new AmazonComprehend({ apiVersion: '2017-11-27' });
+  constructor(params: { region?: string } = {}) {
+    this.comprehend = new AmazonComprehend({ apiVersion: '2017-11-27', region: params.region });
   }
 
   /**
