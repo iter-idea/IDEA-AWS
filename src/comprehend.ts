@@ -17,7 +17,7 @@ export class Comprehend {
   /**
    * Inspects text and returns an inference of the prevailing sentiment (POSITIVE, NEUTRAL, MIXED, or NEGATIVE).
    */
-  async detectSentiment(params: ComprehendParameters): Promise<Sentiment> {
+  async detectSentiment(params: DetectSentimentParameters): Promise<Sentiment> {
     if (!params.language || !params.text) throw new Error('Missing some parameters');
 
     const result = await this.comprehend
@@ -26,9 +26,21 @@ export class Comprehend {
 
     return result.Sentiment as Sentiment;
   }
+
+  /**
+   * Determines the dominant language of the input text.
+   */
+  async detectDominantLanguage(params: { text: string }): Promise<string> {
+    if (!params.text) throw new Error('Missing text');
+
+    const result = await this.comprehend.detectDominantLanguage({ Text: params.text }).promise();
+    if (!result.Languages.length) throw new Error('Not found');
+
+    return result.Languages[0].LanguageCode;
+  }
 }
 
-export interface ComprehendParameters {
+export interface DetectSentimentParameters {
   /**
    * The language of the input contents. You can specify any of the primary languages supported by Amazon Comprehend.
    * All contents must be in the same language. Required.
