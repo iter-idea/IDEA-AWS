@@ -81,7 +81,7 @@ export class S3 {
    * Get an object from a S3 bucket.
    */
   async getObject(options: GetObjectOptions): Promise<any> {
-    logger.debug(`S3 get object: ${options.type}`);
+    logger.debug(`S3 get object: ${options.key}`);
     const result = await this.s3.getObject({ Bucket: options.bucket, Key: options.key }).promise();
 
     switch (options.type) {
