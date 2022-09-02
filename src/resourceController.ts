@@ -14,6 +14,8 @@ export abstract class ResourceController extends GenericController {
   protected event: APIGatewayProxyEventV2 | APIGatewayProxyEvent;
   protected callback: Callback;
 
+  protected initError = false;
+
   protected authorization: string;
   protected claims: any;
   protected principalId: string;
@@ -49,29 +51,34 @@ export abstract class ResourceController extends GenericController {
     this.event = event;
     this.callback = callback;
 
-    if ((event as APIGatewayProxyEventV2).version === '2.0')
-      this.initFromEventV2(event as APIGatewayProxyEventV2, options);
-    else this.initFromEventV1(event as APIGatewayProxyEvent, options);
+    try {
+      if ((event as APIGatewayProxyEventV2).version === '2.0')
+        this.initFromEventV2(event as APIGatewayProxyEventV2, options);
+      else this.initFromEventV1(event as APIGatewayProxyEvent, options);
 
-    this.logRequestsWithKey = options.logRequestsWithKey;
+      this.logRequestsWithKey = options.logRequestsWithKey;
 
-    // acquire some info about the client, if available
-    let version = '?',
-      platform = '?';
-    if (this.queryParams['_v']) {
-      version = this.queryParams['_v'];
-      delete this.queryParams['_v'];
+      // acquire some info about the client, if available
+      let version = '?',
+        platform = '?';
+      if (this.queryParams['_v']) {
+        version = this.queryParams['_v'];
+        delete this.queryParams['_v'];
+      }
+      if (this.queryParams['_p']) {
+        platform = this.queryParams['_p'];
+        delete this.queryParams['_p'];
+      }
+
+      // print the initial log
+      const info = { principalId: this.principalId, queryParams: this.queryParams, body: this.body, version, platform };
+      this.logger.info(`START: ${this.httpMethod} ${this.path}`, info);
+    } catch (err) {
+      this.initError = true;
+      this.done(this.controlHandlerError(err, 'INIT-ERROR', 'Malformed request'));
     }
-    if (this.queryParams['_p']) {
-      platform = this.queryParams['_p'];
-      delete this.queryParams['_p'];
-    }
-
-    // print the initial log
-    const info = { principalId: this.principalId, queryParams: this.queryParams, body: this.body, version, platform };
-    this.logger.info(`START: ${this.httpMethod} ${this.path}`, info);
   }
-  private initFromEventV2(event: APIGatewayProxyEventV2, options: ResourceControllerOptions) {
+  private initFromEventV2(event: APIGatewayProxyEventV2, options: ResourceControllerOptions): void {
     this.authorization = event.headers.authorization;
     const authorizer = (event.requestContext as any)?.authorizer ?? {};
     const contextFromAuthorizer = authorizer.lambda ?? authorizer.jwt?.claims ?? {};
@@ -93,7 +100,7 @@ export abstract class ResourceController extends GenericController {
       throw new RCError('Malformed body');
     }
   }
-  private initFromEventV1(event: APIGatewayProxyEvent, options: ResourceControllerOptions) {
+  private initFromEventV1(event: APIGatewayProxyEvent, options: ResourceControllerOptions): void {
     this.authorization = event.headers.Authorization;
     this.claims = event.requestContext.authorizer?.claims || {};
     this.principalId = this.claims.sub;
@@ -119,7 +126,8 @@ export abstract class ResourceController extends GenericController {
   /// REQUEST HANDLERS
   ///
 
-  handleRequest = async () => {
+  handleRequest = async (): Promise<void> => {
+    if (this.initError) return;
     try {
       await this.checkAuthBeforeRequest();
 
