@@ -87,7 +87,11 @@ export abstract class ResourceController extends GenericController {
       this.pathParameters[param] = event.pathParameters[param] ? decodeURIComponent(event.pathParameters[param]) : null;
     this.resourceId = this.pathParameters[options.resourceId || 'proxy'];
     this.queryParams = event.queryStringParameters || {};
-    this.body = (event.body ? JSON.parse(event.body) : {}) || {};
+    try {
+      this.body = (event.body ? JSON.parse(event.body) : {}) || {};
+    } catch (error) {
+      throw new RCError('Malformed body');
+    }
   }
   private initFromEventV1(event: APIGatewayProxyEvent, options: ResourceControllerOptions) {
     this.authorization = event.headers.Authorization;
@@ -104,7 +108,11 @@ export abstract class ResourceController extends GenericController {
       this.pathParameters[param] = event.pathParameters[param] ? decodeURIComponent(event.pathParameters[param]) : null;
     this.resourceId = this.pathParameters[options.resourceId || 'proxy'];
     this.queryParams = event.queryStringParameters || {};
-    this.body = (event.body ? JSON.parse(event.body) : {}) || {};
+    try {
+      this.body = (event.body ? JSON.parse(event.body) : {}) || {};
+    } catch (error) {
+      throw new RCError('Malformed body');
+    }
   }
 
   ///
