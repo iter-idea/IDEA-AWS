@@ -122,6 +122,15 @@ export abstract class ResourceController extends GenericController {
     }
   }
 
+  /**
+   * Force the parsing of a query parameter as an array of strings.
+   */
+  protected getQueryParamAsArray(paramName: string): string[] {
+    if (!this.queryParams[paramName]) return [];
+    else if (Array.isArray(this.queryParams[paramName])) return this.queryParams[paramName];
+    else return String(this.queryParams[paramName]).split(',');
+  }
+
   ///
   /// REQUEST HANDLERS
   ///
