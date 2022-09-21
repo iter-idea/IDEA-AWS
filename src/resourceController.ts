@@ -2,7 +2,7 @@ import 'source-map-support/register';
 import { existsSync, readFileSync } from 'fs';
 import { Lambda, EventBridge } from 'aws-sdk';
 import { APIGatewayProxyEventV2, APIGatewayProxyEvent, Callback } from 'aws-lambda';
-import { APIRequestLog, CognitoUser } from 'idea-toolbox';
+import { APIRequestLog, CognitoUser, Auth0User } from 'idea-toolbox';
 
 import { Logger } from './logger';
 import { GenericController, GenericControllerOptions } from './genericController';
@@ -20,6 +20,7 @@ export abstract class ResourceController extends GenericController {
   protected claims: any;
   protected principalId: string;
   protected cognitoUser: CognitoUser;
+  protected auth0User: Auth0User;
 
   protected stage: string;
   protected httpMethod: string;
@@ -84,6 +85,7 @@ export abstract class ResourceController extends GenericController {
     const contextFromAuthorizer = authorizer.lambda ?? authorizer.jwt?.claims ?? {};
     this.principalId = contextFromAuthorizer.principalId ?? contextFromAuthorizer.sub ?? null;
     this.cognitoUser = authorizer.jwt?.claims ? new CognitoUser(authorizer.jwt?.claims) : null;
+    this.auth0User = contextFromAuthorizer.auth0User ? new Auth0User(contextFromAuthorizer.auth0User) : null;
 
     this.stage = event.requestContext.stage;
     this.httpMethod = event.requestContext.http.method;
@@ -105,6 +107,7 @@ export abstract class ResourceController extends GenericController {
     this.claims = event.requestContext.authorizer?.claims || {};
     this.principalId = this.claims.sub;
     this.cognitoUser = this.principalId ? new CognitoUser(this.claims) : null;
+    this.auth0User = null;
 
     this.stage = event.requestContext.stage;
     this.httpMethod = event.httpMethod;
