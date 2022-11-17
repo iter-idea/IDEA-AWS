@@ -26,7 +26,8 @@
     "translate",
     "cognito",
     "comprehend",
-    "secretsManager"
+    "secretsManager",
+    "cloudWatch"
   ],
   "author": "ITER IDEA <info@iter-idea.com> (https://iter-idea.com)",
   "license": "ISC",
@@ -35,7 +36,8 @@
   },
   "homepage": "https://iter-idea.github.io/IDEA-AWS",
   "dependencies": {
-    "idea-toolbox": "^6.6.2",
+    "@aws-lambda-powertools/metrics": "^1.4.1",
+    "idea-toolbox": "^6.6.3",
     "nanoid": "^3.3.4",
     "nodemailer": "^6.7.7",
     "shortid": "^2.2.16",

@@ -5,6 +5,7 @@ import { APIGatewayProxyEventV2, APIGatewayProxyEvent, Callback } from 'aws-lamb
 import { APIRequestLog, CognitoUser, Auth0User } from 'idea-toolbox';
 
 import { Logger } from './logger';
+import { CloudWatchMetrics } from './metrics';
 import { GenericController, GenericControllerOptions } from './genericController';
 
 /**
@@ -36,6 +37,8 @@ export abstract class ResourceController extends GenericController {
   protected logger = new Logger();
 
   protected logRequestsWithKey: string;
+
+  protected metrics = new CloudWatchMetrics();
 
   protected currentLang: string;
   protected defaultLang: string;
@@ -70,6 +73,8 @@ export abstract class ResourceController extends GenericController {
         platform = this.queryParams['_p'];
         delete this.queryParams['_p'];
       }
+
+      this.prepareMetrics();
 
       // print the initial log
       const info = { principalId: this.principalId, queryParams: this.queryParams, body: this.body, version, platform };
@@ -209,12 +214,13 @@ export abstract class ResourceController extends GenericController {
     this.logger.error(context, err);
     return new Error(replaceWithErrorMessage);
   }
-  protected done(err: any, res?: any, statusCode = this.returnStatusCode || (err ? 400 : 200)) {
+  protected done(err: any, res?: any, statusCode = this.returnStatusCode || (err ? 400 : 200)): void {
     if (err) this.logger.info('END-FAILED', { statusCode, error: err.message || err.errorMessage });
     else this.logger.info('END-SUCCESS', { statusCode });
 
-    // if configured, store the log of the request
     if (this.logRequestsWithKey) this.storeLog(!err);
+
+    this.publishMetrics(statusCode, err);
 
     this.callback(null, {
       statusCode: String(statusCode),
@@ -309,7 +315,7 @@ export abstract class ResourceController extends GenericController {
   /**
    * Store the log associated to the request (no response/error handling).
    */
-  protected storeLog(succeeded: boolean) {
+  protected storeLog(succeeded: boolean): void {
     const log = new APIRequestLog({
       logId: this.logRequestsWithKey,
       userId: this.principalId,
@@ -323,7 +329,7 @@ export abstract class ResourceController extends GenericController {
     // optionally add a track of the action
     if (this.httpMethod === 'PATCH' && this.body && this.body.action) log.action = this.body.action;
 
-    this.dynamoDB.put({ TableName: 'idea_logs', Item: log }).catch(() => {
+    this.dynamoDB.put({ TableName: 'idea_logs', Item: log }).catch((): void => {
       /* ignore */
     });
   }
@@ -331,20 +337,45 @@ export abstract class ResourceController extends GenericController {
    * Check whether shared resource exists in the back-end (translation, template, etc.).
    * Search for the specified file path in both the Lambda function's main folder and the layers folder.
    */
-  sharedResourceExists(filePath: string): boolean {
+  protected sharedResourceExists(filePath: string): boolean {
     return existsSync(`assets/${filePath}`) || existsSync(`/opt/nodejs/assets/${filePath}`);
   }
   /**
    * Load a shared resource in the back-end (translation, template, etc.).
    * Search for the specified file path in both the Lambda function's main folder and the layers folder.
    */
-  loadSharedResource(filePath: string): string {
+  protected loadSharedResource(filePath: string): string {
     let path: string = null;
 
     if (existsSync(`assets/${filePath}`)) path = `assets/${filePath}`;
     else if (existsSync(`/opt/nodejs/assets/${filePath}`)) path = `/opt/nodejs/assets/${filePath}`;
 
     return path ? readFileSync(path, { encoding: 'utf-8' }) : null;
+  }
+
+  /**
+   * Prepare the CloudWatch metrics at the beginning of a request.
+   */
+  protected prepareMetrics(): void {
+    this.metrics.addDimension('stage', process.env.STAGE);
+    this.metrics.addDimension('resource', process.env.RESOURCE);
+    this.metrics.addDimension('method', this.httpMethod);
+    this.metrics.addDimension('target', this.resourceId ? 'id' : 'list');
+    this.metrics.addDimension('action', this.body?.action);
+    this.metrics.addDimension('userId', this.principalId);
+    this.metrics.addMetadata('resourceId', this.resourceId);
+  }
+  /**
+   * Publish the CloudWatch metrics (default and custom-defined) at the end of a reqeust.
+   */
+  protected publishMetrics(statusCode: number, error?: any): void {
+    this.metrics.addMetric('request');
+    this.metrics.addMetric('statusCode', statusCode);
+    if (error) {
+      this.metrics.addMetric('failed');
+      this.metrics.addMetadata('errorMessage', error.name);
+    } else this.metrics.addMetric('success');
+    this.metrics.publishStoredMetrics();
   }
 
   ///
@@ -420,7 +451,7 @@ export abstract class ResourceController extends GenericController {
   /**
    * Load the translations from the shared resources and set them with a fallback language.
    */
-  loadTranslations(lang: string, defLang?: string) {
+  loadTranslations(lang: string, defLang?: string): void {
     // check for the existance of the mandatory source file
     if (!this.sharedResourceExists(`i18n/${lang}.json`)) return;
     // set the languages
