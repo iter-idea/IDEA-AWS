@@ -23,14 +23,19 @@ export abstract class ResourceController extends GenericController {
   protected cognitoUser: CognitoUser;
   protected auth0User: Auth0User;
 
-  protected stage: string;
+  protected project = process?.env?.PROJECT;
+  protected stage = process?.env?.STAGE;
   protected httpMethod: string;
   protected body: any;
   protected queryParams: any;
-  protected resource: string;
+  protected resourcePath: string;
   protected path: string;
   protected pathParameters: any;
+  protected resource = process?.env?.RESOURCE;
   protected resourceId: string;
+
+  protected clientVersion = '?';
+  protected clientPlatform = '?';
 
   protected returnStatusCode?: number;
 
@@ -38,7 +43,7 @@ export abstract class ResourceController extends GenericController {
 
   protected logRequestsWithKey: string;
 
-  protected metrics = new CloudWatchMetrics();
+  protected metrics = new CloudWatchMetrics({ project: this.project });
 
   protected currentLang: string;
   protected defaultLang: string;
@@ -63,21 +68,25 @@ export abstract class ResourceController extends GenericController {
       this.logRequestsWithKey = options.logRequestsWithKey;
 
       // acquire some info about the client, if available
-      let version = '?',
-        platform = '?';
       if (this.queryParams['_v']) {
-        version = this.queryParams['_v'];
+        this.clientVersion = this.queryParams['_v'];
         delete this.queryParams['_v'];
       }
       if (this.queryParams['_p']) {
-        platform = this.queryParams['_p'];
+        this.clientPlatform = this.queryParams['_p'];
         delete this.queryParams['_p'];
       }
 
       this.prepareMetrics();
 
       // print the initial log
-      const info = { principalId: this.principalId, queryParams: this.queryParams, body: this.body, version, platform };
+      const info = {
+        principalId: this.principalId,
+        queryParams: this.queryParams,
+        body: this.body,
+        version: this.clientVersion,
+        platform: this.clientPlatform
+      };
       this.logger.info(`START: ${this.httpMethod} ${this.path}`, info);
     } catch (err) {
       this.initError = true;
@@ -92,9 +101,9 @@ export abstract class ResourceController extends GenericController {
     this.cognitoUser = authorizer.jwt?.claims ? new CognitoUser(authorizer.jwt?.claims) : null;
     this.auth0User = contextFromAuthorizer.auth0User ? new Auth0User(contextFromAuthorizer.auth0User) : null;
 
-    this.stage = event.requestContext.stage;
+    this.stage = this.stage ?? event.requestContext.stage;
     this.httpMethod = event.requestContext.http.method;
-    this.resource = event.routeKey.replace('+', ''); // {proxy+} -> {proxy}
+    this.resourcePath = event.routeKey.replace('+', ''); // {proxy+} -> {proxy}
     this.path = event.rawPath;
     this.pathParameters = {};
     for (const param in event.pathParameters)
@@ -114,9 +123,9 @@ export abstract class ResourceController extends GenericController {
     this.cognitoUser = this.principalId ? new CognitoUser(this.claims) : null;
     this.auth0User = null;
 
-    this.stage = event.requestContext.stage;
+    this.stage = this.stage ?? event.requestContext.stage;
     this.httpMethod = event.httpMethod;
-    this.resource = event.resource.replace('+', ''); // {proxy+} -> {proxy}
+    this.resourcePath = event.resource.replace('+', ''); // {proxy+} -> {proxy}
     this.path = event.path;
     this.pathParameters = {};
     for (const param in event.pathParameters)
@@ -319,7 +328,7 @@ export abstract class ResourceController extends GenericController {
     const log = new APIRequestLog({
       logId: this.logRequestsWithKey,
       userId: this.principalId,
-      resource: this.resource,
+      resource: this.resourcePath,
       path: this.path,
       resourceId: this.resourceId,
       method: this.httpMethod,
@@ -357,12 +366,14 @@ export abstract class ResourceController extends GenericController {
    * Prepare the CloudWatch metrics at the beginning of a request.
    */
   protected prepareMetrics(): void {
-    this.metrics.addDimension('stage', process.env.STAGE);
-    this.metrics.addDimension('resource', process.env.RESOURCE);
+    this.metrics.addDimension('stage', this.stage);
+    this.metrics.addDimension('resource', this.resource);
     this.metrics.addDimension('method', this.httpMethod);
     this.metrics.addDimension('target', this.resourceId ? 'id' : 'list');
     this.metrics.addDimension('action', this.body?.action);
     this.metrics.addDimension('userId', this.principalId);
+    this.metrics.addDimension('clientVersion', this.clientVersion);
+    this.metrics.addDimension('clientPlatform', this.clientPlatform);
     this.metrics.addMetadata('resourceId', this.resourceId);
   }
   /**

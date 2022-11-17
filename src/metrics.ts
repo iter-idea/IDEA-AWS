@@ -7,7 +7,7 @@ export class CloudWatchMetrics {
   private metrics: Metrics;
 
   constructor(options?: { project?: string }) {
-    const project = options?.project ?? process.env.PROJECT ?? 'unknownProject';
+    const project = options?.project ?? 'unknownProject';
     this.metrics = new Metrics({ namespace: project });
   }
 
