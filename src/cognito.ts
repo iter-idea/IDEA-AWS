@@ -180,6 +180,34 @@ export class Cognito {
   }
 
   /**
+   * Set a new password for a specific user identified by its email (admin-only).
+   * If not specified, the password is generated randomly, and the user must change it at the first login.
+   */
+  async setPassword(
+    email: string,
+    cognitoUserPoolId: string,
+    options: { password?: string; permanent?: boolean } = {}
+  ): Promise<void> {
+    if (isEmpty(email, 'email')) throw new Error('Invalid email');
+
+    const RANDOM_PASSWORD_LENGTH = 8;
+    const password =
+      options.password ??
+      Math.random()
+        .toString(36)
+        .slice(2, 2 + RANDOM_PASSWORD_LENGTH);
+
+    const params: CognitoISP.AdminSetUserPasswordRequest = {
+      UserPoolId: cognitoUserPoolId,
+      Username: email,
+      Password: password,
+      Permanent: options.permanent
+    };
+
+    await this.cognito.adminSetUserPassword(params).promise();
+  }
+
+  /**
    * Delete a user by its email (username), in the pool specified.
    */
   async deleteUser(email: string, cognitoUserPoolId: string): Promise<void> {
