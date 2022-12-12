@@ -6,7 +6,8 @@ import { APIRequestLog, CognitoUser, Auth0User } from 'idea-toolbox';
 
 import { Logger } from './logger';
 import { CloudWatchMetrics } from './metrics';
-import { GenericController, GenericControllerOptions } from './genericController';
+import { GenericController } from './genericController';
+import { DynamoDB } from './dynamoDB';
 
 /**
  * An abstract class to inherit to manage API requests (AWS API Gateway) in an AWS Lambda function.
@@ -42,8 +43,9 @@ export abstract class ResourceController extends GenericController {
   protected logger = new Logger();
 
   protected logRequestsWithKey: string;
+  protected ddbToLogRequests: DynamoDB;
 
-  protected metrics = new CloudWatchMetrics({ project: this.project });
+  protected metrics: CloudWatchMetrics;
 
   protected currentLang: string;
   protected defaultLang: string;
@@ -55,7 +57,7 @@ export abstract class ResourceController extends GenericController {
     callback: Callback,
     options: ResourceControllerOptions = {}
   ) {
-    super(event, callback, options);
+    super(event, callback);
 
     this.event = event;
     this.callback = callback;
@@ -66,6 +68,7 @@ export abstract class ResourceController extends GenericController {
       else this.initFromEventV1(event as APIGatewayProxyEvent, options);
 
       this.logRequestsWithKey = options.logRequestsWithKey;
+      if (this.logRequestsWithKey) this.ddbToLogRequests = new DynamoDB();
 
       // acquire some info about the client, if available
       if (this.queryParams['_v']) {
@@ -77,7 +80,7 @@ export abstract class ResourceController extends GenericController {
         delete this.queryParams['_p'];
       }
 
-      this.prepareMetrics();
+      if (options.useMetrics) this.prepareMetrics();
 
       // print the initial log
       const info = {
@@ -229,7 +232,7 @@ export abstract class ResourceController extends GenericController {
 
     if (this.logRequestsWithKey) this.storeLog(!err);
 
-    this.publishMetrics(statusCode, err);
+    if (this.metrics) this.publishMetrics(statusCode, err);
 
     this.callback(null, {
       statusCode: String(statusCode),
@@ -324,7 +327,7 @@ export abstract class ResourceController extends GenericController {
   /**
    * Store the log associated to the request (no response/error handling).
    */
-  protected storeLog(succeeded: boolean): void {
+  protected async storeLog(succeeded: boolean): Promise<void> {
     const log = new APIRequestLog({
       logId: this.logRequestsWithKey,
       userId: this.principalId,
@@ -338,9 +341,11 @@ export abstract class ResourceController extends GenericController {
     // optionally add a track of the action
     if (this.httpMethod === 'PATCH' && this.body && this.body.action) log.action = this.body.action;
 
-    this.dynamoDB.put({ TableName: 'idea_logs', Item: log }).catch((): void => {
-      /* ignore */
-    });
+    try {
+      await this.ddbToLogRequests.put({ TableName: 'idea_logs', Item: log });
+    } catch (error) {
+      // ignore
+    }
   }
   /**
    * Check whether shared resource exists in the back-end (translation, template, etc.).
@@ -366,6 +371,7 @@ export abstract class ResourceController extends GenericController {
    * Prepare the CloudWatch metrics at the beginning of a request.
    */
   protected prepareMetrics(): void {
+    this.metrics = new CloudWatchMetrics({ project: this.project });
     this.metrics.addDimension('stage', this.stage);
     this.metrics.addDimension('resource', this.resource);
     this.metrics.addDimension('method', this.httpMethod);
@@ -380,6 +386,7 @@ export abstract class ResourceController extends GenericController {
    * Publish the CloudWatch metrics (default and custom-defined) at the end of a reqeust.
    */
   protected publishMetrics(statusCode: number, error?: any): void {
+    if (!this.metrics) return;
     this.metrics.addMetric('request');
     this.metrics.addMetric('statusCode', statusCode);
     if (error) {
@@ -530,7 +537,7 @@ export abstract class ResourceController extends GenericController {
 /**
  * The initial options for a constructor of class ResourceController.
  */
-export interface ResourceControllerOptions extends GenericControllerOptions {
+export interface ResourceControllerOptions {
   /**
    * The resourceId of the API request, to specify if different from "proxy".
    */
@@ -539,6 +546,10 @@ export interface ResourceControllerOptions extends GenericControllerOptions {
    * If set, the logs of the API requests on this resource will be stored (using this key).
    */
   logRequestsWithKey?: string;
+  /**
+   * Whether to automatically store usage metrics on CloudWatch.
+   */
+  useMetrics?: boolean;
 }
 
 /**

@@ -1,6 +1,6 @@
-import { GenericController, GenericControllerOptions } from './genericController';
-
+import { GenericController } from './genericController';
 import { Logger } from './logger';
+
 const logger = new Logger();
 
 /**
@@ -9,11 +9,11 @@ const logger = new Logger();
 export abstract class StreamController extends GenericController {
   records: any[];
 
-  constructor(event: any, callback: any, options: GenericControllerOptions = {}) {
-    super(event, callback, options);
+  constructor(event: any, callback: any) {
+    super(event, callback);
 
-    this.records = event.Records || [];
+    this.records = event.Records ?? [];
 
-    logger.info(`START STREAM: ${this.records.length || 0} records`);
+    logger.info(`START STREAM: ${this.records.length ?? 0} records`);
   }
 }
