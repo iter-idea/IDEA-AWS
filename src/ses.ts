@@ -65,7 +65,7 @@ export class SES {
     const request: AWSSES.SendTemplatedEmailRequest = {
       Destination: this.prepareEmailDestination(emailData),
       Template: emailData.template,
-      TemplateData: JSON.stringify(emailData.templateData || {}),
+      TemplateData: JSON.stringify(emailData.templateData ?? {}),
       ConfigurationSetName: emailData.configurationSet,
       ReplyToAddresses: emailData.replyToAddresses,
       Source: sesParams.sourceName ? `${sesParams.sourceName} <${sesParams.source}>` : sesParams.source,
@@ -264,7 +264,7 @@ export interface TemplatedEmailData extends BasicEmailData {
   /**
    * The name of the configuration set to use for the sending.
    */
-  configurationSet: string;
+  configurationSet?: string;
 }
 
 /**
