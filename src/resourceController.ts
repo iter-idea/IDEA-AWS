@@ -43,7 +43,6 @@ export abstract class ResourceController extends GenericController {
   protected logger = new Logger();
 
   protected logRequestsWithKey: string;
-  protected ddbToLogRequests: DynamoDB;
 
   protected metrics: CloudWatchMetrics;
 
@@ -68,7 +67,6 @@ export abstract class ResourceController extends GenericController {
       else this.initFromEventV1(event as APIGatewayProxyEvent, options);
 
       this.logRequestsWithKey = options.logRequestsWithKey;
-      if (this.logRequestsWithKey) this.ddbToLogRequests = new DynamoDB();
 
       // acquire some info about the client, if available
       if (this.queryParams['_v']) {
@@ -342,7 +340,7 @@ export abstract class ResourceController extends GenericController {
     if (this.httpMethod === 'PATCH' && this.body && this.body.action) log.action = this.body.action;
 
     try {
-      await this.ddbToLogRequests.put({ TableName: 'idea_logs', Item: log });
+      await new DynamoDB().put({ TableName: 'idea_logs', Item: log });
     } catch (error) {
       // ignore
     }
