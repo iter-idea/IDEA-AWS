@@ -1,6 +1,6 @@
 {
   "name": "idea-aws",
-  "version": "3.16.2",
+  "version": "3.16.3",
   "description": "AWS wrappers to use in IDEA's back-ends",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -37,7 +37,7 @@
   "homepage": "https://iter-idea.github.io/IDEA-AWS",
   "dependencies": {
     "@aws-lambda-powertools/metrics": "^1.4.1",
-    "idea-toolbox": "^6.6.3",
+    "idea-toolbox": "^6.6.8",
     "nanoid": "^3.3.4",
     "nodemailer": "^6.7.7",
     "shortid": "^2.2.16",
