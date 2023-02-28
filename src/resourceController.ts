@@ -1,10 +1,8 @@
-import 'source-map-support/register';
 import { existsSync, readFileSync } from 'fs';
 import { Lambda, EventBridge } from 'aws-sdk';
 import { APIGatewayProxyEventV2, APIGatewayProxyEvent, Callback } from 'aws-lambda';
 import { APIRequestLog, CognitoUser, Auth0User } from 'idea-toolbox';
 
-import { Logger } from './logger';
 import { CloudWatchMetrics } from './metrics';
 import { GenericController } from './genericController';
 import { DynamoDB } from './dynamoDB';
@@ -39,8 +37,6 @@ export abstract class ResourceController extends GenericController {
   protected clientPlatform = '?';
 
   protected returnStatusCode?: number;
-
-  protected logger = new Logger();
 
   protected logRequestsWithKey: string;
 

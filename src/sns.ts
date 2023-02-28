@@ -2,12 +2,17 @@ import { SNS as AWSSNS } from 'aws-sdk';
 import { PushNotificationsPlatforms } from 'idea-toolbox';
 
 import { Logger } from './logger';
-const logger = new Logger();
 
 /**
  * A wrapper for AWS Simple Notification Service.
  */
 export class SNS {
+  logger = new Logger();
+
+  constructor(options: { debug: boolean } = { debug: true }) {
+    this.logger.level = options.debug ? 'DEBUG' : 'INFO';
+  }
+
   /**
    * Create a new endpoint in the SNS platform specified.
    * @return platform endpoint ARN
@@ -32,7 +37,7 @@ export class SNS {
         throw new Error('Unsupported platform');
     }
 
-    logger.debug('SNS ADD PLATFORM ENDPOINT');
+    this.logger.debug('SNS ADD PLATFORM ENDPOINT');
     const result = await new AWSSNS({ apiVersion: '2010-03-31', region: snsParams.region })
       .createPlatformEndpoint({ PlatformApplicationArn: platformARN, Token: token })
       .promise();
@@ -63,7 +68,7 @@ export class SNS {
           throw new Error('Unsupported platform');
       }
 
-    logger.debug('SNS PUBLISH IN TOPIC');
+    this.logger.debug('SNS PUBLISH IN TOPIC');
     return await new AWSSNS({ apiVersion: '2010-03-31', region: snsParams.region })
       .publish({ MessageStructure: 'json', Message: JSON.stringify(structuredMessage), TargetArn: snsParams.endpoint })
       .promise();

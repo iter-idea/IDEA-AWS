@@ -1,7 +1,4 @@
 import { GenericController } from './genericController';
-import { Logger } from './logger';
-
-const logger = new Logger();
 
 /**
  * An abstract class to inherit to manage AWS DDB streams in an AWS Lambda function.
@@ -14,6 +11,6 @@ export abstract class StreamController extends GenericController {
 
     this.records = event.Records ?? [];
 
-    logger.info(`START STREAM: ${this.records.length ?? 0} records`);
+    this.logger.info(`START STREAM: ${this.records.length ?? 0} records`);
   }
 }

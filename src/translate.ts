@@ -32,8 +32,8 @@ export class Translate {
   /**
    * Initialize a new Translate helper object.
    */
-  constructor(params: { region?: string } = {}) {
-    this.translate = new AWSTranslate({ apiVersion: '2017-07-01', region: params.region });
+  constructor(options: { region?: string } = {}) {
+    this.translate = new AWSTranslate({ apiVersion: '2017-07-01', region: options.region });
     this.sourceLanguageCode = 'en';
     this.targetLanguageCode = 'en';
     this.terminologyNames = new Array<string>();

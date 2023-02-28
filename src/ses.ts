@@ -5,10 +5,9 @@ import {
   SendMailOptions as NodemailerSendMailOptions
 } from 'nodemailer';
 import { Headers } from 'nodemailer/lib/mailer';
-import { DynamoDB } from './dynamoDB';
 
+import { DynamoDB } from './dynamoDB';
 import { Logger } from './logger';
-const logger = new Logger();
 
 /**
  * A wrapper for AWS Simple Email Service.
@@ -16,8 +15,11 @@ const logger = new Logger();
 export class SES {
   protected ses: AWSSES;
 
-  constructor(params: { region?: string } = {}) {
-    this.ses = new AWSSES({ region: params.region });
+  logger = new Logger();
+
+  constructor(options: { region?: string; debug: boolean } = { debug: true }) {
+    this.ses = new AWSSES({ region: options.region });
+    this.logger.level = options.debug ? 'DEBUG' : 'INFO';
   }
 
   //
@@ -76,7 +78,7 @@ export class SES {
     if (this.ses.config.region === sesParams.region) ses = this.ses;
     else ses = new AWSSES({ region: sesParams.region });
 
-    logger.debug('SES send templated email');
+    this.logger.debug('SES send templated email');
     return await ses.sendTemplatedEmail(request).promise();
   }
 
@@ -118,7 +120,7 @@ export class SES {
     if (this.ses.config.region === sesParams.region) ses = this.ses;
     else ses = new AWSSES({ region: sesParams.region });
 
-    logger.debug('SES send email');
+    this.logger.debug('SES send email');
     return await ses.sendEmail(request).promise();
   }
   private async sendEmailWithNodemailer(
@@ -144,7 +146,7 @@ export class SES {
     if (this.ses.config.region === sesParams.region) ses = this.ses;
     else ses = new AWSSES({ region: sesParams.region });
 
-    logger.debug('SES send email (Nodemailer)');
+    this.logger.debug('SES send email (Nodemailer)');
     return await NodemailerCreateTransport({ SES: ses }).sendMail(mailOptions);
   }
 

@@ -2,7 +2,6 @@ import { S3 as AWSS3 } from 'aws-sdk';
 import { SignedURL } from 'idea-toolbox';
 
 import { Logger } from './logger';
-const logger = new Logger();
 
 /**
  * A wrapper for AWS Simple Storage Service.
@@ -15,11 +14,11 @@ export class S3 {
   protected DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP = 180;
   protected DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP = 300;
 
-  /**
-   * Initialize a new S3 helper object.
-   */
-  constructor() {
+  logger = new Logger();
+
+  constructor(options: { debug: boolean } = { debug: true }) {
     this.s3 = new AWSS3({ apiVersion: '2006-03-01', signatureVersion: 'v4' });
+    this.logger.level = options.debug ? 'DEBUG' : 'INFO';
   }
 
   /**
@@ -73,7 +72,7 @@ export class S3 {
    * Make a copy of an object of the bucket.
    */
   async copyObject(options: CopyObjectOptions): Promise<void> {
-    logger.debug(`S3 copy object: ${options.key}`);
+    this.logger.debug(`S3 copy object: ${options.key}`);
     await this.s3.copyObject({ CopySource: options.copySource, Bucket: options.bucket, Key: options.key }).promise();
   }
 
@@ -81,7 +80,7 @@ export class S3 {
    * Get an object from a S3 bucket.
    */
   async getObject(options: GetObjectOptions): Promise<any> {
-    logger.debug(`S3 get object: ${options.key}`);
+    this.logger.debug(`S3 get object: ${options.key}`);
     const result = await this.s3.getObject({ Bucket: options.bucket, Key: options.key }).promise();
 
     switch (options.type) {
@@ -103,7 +102,7 @@ export class S3 {
     if (options.acl) params.ACL = options.acl;
     if (options.metadata) params.Metadata = options.metadata;
 
-    logger.debug(`S3 put object: ${options.key}`);
+    this.logger.debug(`S3 put object: ${options.key}`);
     return await this.s3.putObject(params).promise();
   }
 
@@ -111,7 +110,7 @@ export class S3 {
    * Delete an object from an S3 bucket.
    */
   async deleteObject(options: DeleteObjectOptions): Promise<AWSS3.PutObjectOutput> {
-    logger.debug(`S3 delete object: ${options.key}`);
+    this.logger.debug(`S3 delete object: ${options.key}`);
     return await this.s3.deleteObject({ Bucket: options.bucket, Key: options.key }).promise();
   }
 
@@ -119,7 +118,7 @@ export class S3 {
    * List the objects of an S3 bucket.
    */
   async listObjects(options: ListObjectsOptions): Promise<AWSS3.ListObjectsOutput> {
-    logger.debug(`S3 list object: ${options.prefix}`);
+    this.logger.debug(`S3 list object: ${options.prefix}`);
     return await this.s3.listObjects({ Bucket: options.bucket, Prefix: options.prefix }).promise();
   }
 

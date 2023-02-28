@@ -5,16 +5,17 @@ const NanoID = AlphabetNanoID('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklm
 import { characters as ShortIdCharacters, generate as ShortIdGenerate } from 'shortid';
 
 import { Logger } from './logger';
-const logger = new Logger();
 
 /**
  * A wrapper for AWS DynamoDB.
  */
 export class DynamoDB {
   protected dynamo: DDB.DocumentClient;
+  logger = new Logger();
 
-  constructor() {
+  constructor(options: { debug: boolean } = { debug: true }) {
     this.dynamo = new DDB.DocumentClient();
+    this.logger.level = options.debug ? 'DEBUG' : 'INFO';
   }
 
   /**
@@ -108,7 +109,7 @@ export class DynamoDB {
    * @param key the key of the counter
    */
   async getAtomicCounterByKey(key: string): Promise<number> {
-    logger.debug(`Get atomic counter for ${key}`);
+    this.logger.debug(`Get atomic counter for ${key}`);
     const result = await this.update({
       TableName: 'idea_atomicCounters',
       Key: { key },
@@ -125,7 +126,7 @@ export class DynamoDB {
    * Get an item of a DynamoDB table.
    */
   async get(params: DDB.DocumentClient.GetItemInput): Promise<any> {
-    logger.debug(`Get ${params.TableName}`);
+    this.logger.debug(`Get ${params.TableName}`);
     const result = await this.dynamo.get(params).promise();
 
     if (!result?.Item) throw new Error('Not found');
@@ -136,7 +137,7 @@ export class DynamoDB {
    * Put an item in a DynamoDB table.
    */
   async put(params: DDB.DocumentClient.PutItemInput): Promise<DDB.DocumentClient.PutItemOutput> {
-    logger.debug(`Put ${params.TableName}`);
+    this.logger.debug(`Put ${params.TableName}`);
     return await this.dynamo.put(params).promise();
   }
 
@@ -144,7 +145,7 @@ export class DynamoDB {
    * Update an item of a DynamoDB table.
    */
   async update(params: DDB.DocumentClient.UpdateItemInput): Promise<DDB.DocumentClient.UpdateItemOutput> {
-    logger.debug(`Update ${params.TableName}`);
+    this.logger.debug(`Update ${params.TableName}`);
     return await this.dynamo.update(params).promise();
   }
 
@@ -152,7 +153,7 @@ export class DynamoDB {
    * Delete an item of a DynamoDB table.
    */
   async delete(params: DDB.DocumentClient.DeleteItemInput): Promise<DDB.DocumentClient.DeleteItemOutput> {
-    logger.debug(`Delete ${params.TableName}`);
+    this.logger.debug(`Delete ${params.TableName}`);
     return await this.dynamo.delete(params).promise();
   }
 
@@ -162,7 +163,7 @@ export class DynamoDB {
    */
   async batchGet(table: string, keys: DDB.DocumentClient.Key[], ignoreErr?: boolean): Promise<any[]> {
     if (!keys.length) {
-      logger.debug(`Batch get ${table}: no elements to get`);
+      this.logger.debug(`Batch get ${table}: no elements to get`);
       return [];
     }
 
@@ -182,7 +183,7 @@ export class DynamoDB {
       }
     };
 
-    logger.debug(`Batch get ${table}: ${currentChunk} of ${keys.length}`);
+    this.logger.debug(`Batch get ${table}: ${currentChunk} of ${keys.length}`);
 
     let result;
     try {
@@ -206,7 +207,7 @@ export class DynamoDB {
    * Therefore, in case of timeout, there may be some elements written and some not.
    */
   async batchPut(table: string, items: DDB.DocumentClient.AttributeMap[]): Promise<void> {
-    if (!items.length) return logger.debug(`Batch write (put) ${table}: no elements to write`);
+    if (!items.length) return this.logger.debug(`Batch write (put) ${table}: no elements to write`);
 
     await this.batchWriteHelper(table, items, true);
   }
@@ -216,7 +217,7 @@ export class DynamoDB {
    * Therefore, in case of timeout, there may be some elements deleted and some not.
    */
   async batchDelete(table: string, keys: DDB.DocumentClient.Key[]): Promise<void> {
-    if (!keys.length) return logger.debug(`Batch write (delete) ${table}: no elements to write`);
+    if (!keys.length) return this.logger.debug(`Batch write (delete) ${table}: no elements to write`);
 
     await this.batchWriteHelper(table, keys, false);
   }
@@ -227,7 +228,7 @@ export class DynamoDB {
     currentChunk = 0,
     chunkSize = 25
   ): Promise<void> {
-    logger.debug(`Batch write (${isPut ? 'put' : 'delete'}) ${table}: ${currentChunk} of ${itemsOrKeys.length}`);
+    this.logger.debug(`Batch write (${isPut ? 'put' : 'delete'}) ${table}: ${currentChunk} of ${itemsOrKeys.length}`);
 
     let requests: DDB.DocumentClient.WriteRequests;
     if (isPut)
@@ -262,7 +263,7 @@ export class DynamoDB {
         attempts++;
 
         const waitSeconds = getRandomInt(attempts * 5);
-        logger.debug(`Batch write throttled: waiting ${waitSeconds} seconds to retry`);
+        this.logger.debug(`Batch write throttled: waiting ${waitSeconds} seconds to retry`);
         await wait(waitSeconds);
       } else {
         params.RequestItems = null;
@@ -275,10 +276,10 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   async query(params: DDB.DocumentClient.QueryInput): Promise<any[]> {
-    logger.debug(`Query ${params.TableName}`);
+    this.logger.debug(`Query ${params.TableName}`);
     const result = await this.queryScanHelper(params, [], true);
 
-    logger.debug(`Results query ${params.TableName}: ${result?.length || 0}`);
+    this.logger.debug(`Results query ${params.TableName}: ${result?.length || 0}`);
     return result;
   }
   /**
@@ -286,10 +287,10 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   async scan(params: DDB.DocumentClient.QueryInput): Promise<any[]> {
-    logger.debug(`Scan ${params.TableName}`);
+    this.logger.debug(`Scan ${params.TableName}`);
     const result = await this.queryScanHelper(params, [], false);
 
-    logger.debug(`Results scan ${params.TableName}: ${result?.length || 0}`);
+    this.logger.debug(`Results scan ${params.TableName}: ${result?.length || 0}`);
     return result;
   }
   protected async queryScanHelper(
@@ -314,10 +315,10 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   async queryClassic(params: DDB.DocumentClient.QueryInput): Promise<DDB.DocumentClient.QueryOutput> {
-    logger.debug(`Query classic ${params.TableName}`);
+    this.logger.debug(`Query classic ${params.TableName}`);
     const result = await this.dynamo.query(params).promise();
 
-    logger.debug(`Results query classic ${params.TableName}: ${result?.Items?.length || 0}`);
+    this.logger.debug(`Results query classic ${params.TableName}: ${result?.Items?.length || 0}`);
     return result;
   }
   /**
@@ -325,10 +326,10 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   async scanClassic(params: DDB.DocumentClient.ScanInput): Promise<DDB.DocumentClient.ScanOutput> {
-    logger.debug(`Scan classic ${params.TableName}`);
+    this.logger.debug(`Scan classic ${params.TableName}`);
     const result = await this.dynamo.scan(params).promise();
 
-    logger.debug(`Results scan classic ${params.TableName}: ${result?.Items?.length || 0}`);
+    this.logger.debug(`Results scan classic ${params.TableName}: ${result?.Items?.length || 0}`);
     return result;
   }
 
@@ -337,9 +338,9 @@ export class DynamoDB {
    * @param ops the operations to execute in the transaction
    */
   async transactWrites(ops: DDB.DocumentClient.TransactWriteItem[]): Promise<void> {
-    if (!ops.length) return logger.debug('Transaction writes: no elements to write');
+    if (!ops.length) return this.logger.debug('Transaction writes: no elements to write');
 
-    logger.debug('Transaction writes');
+    this.logger.debug('Transaction writes');
     await this.dynamo.transactWrite({ TransactItems: ops.slice(0, 10) }).promise();
   }
 
