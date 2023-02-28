@@ -21,7 +21,7 @@
 <ul class="tsd-hierarchy">
 <li><span class="target">S3</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/b517e44/src/s3.ts#L10">src/s3.ts:10</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/c7ccfc1/src/s3.ts#L9">src/s3.ts:9</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -37,6 +37,7 @@
 <a href="S3.html#DEFAULT_DOWNLOAD_BUCKET_PREFIX" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>DEFAULT_<wbr/>DOWNLOAD_<wbr/>BUCKET_<wbr/>PREFIX</span></a>
 <a href="S3.html#DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>DEFAULT_<wbr/>DOWNLOAD_<wbr/>BUCKET_<wbr/>SEC_<wbr/>TO_<wbr/>EXP</span></a>
 <a href="S3.html#DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>DEFAULT_<wbr/>UPLOAD_<wbr/>BUCKET_<wbr/>SEC_<wbr/>TO_<wbr/>EXP</span></a>
+<a href="S3.html#logger" class="tsd-index-link tsd-kind-property tsd-parent-kind-class"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>logger</span></a>
 <a href="S3.html#s3" class="tsd-index-link tsd-kind-property tsd-parent-kind-class tsd-is-protected"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg><span>s3</span></a>
 </div></section>
 <section class="tsd-index-section">
@@ -57,40 +58,51 @@
 <section class="tsd-panel tsd-member tsd-kind-constructor tsd-parent-kind-class"><a id="constructor" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>constructor</span><a href="#constructor" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none" id="icon-anchor-a"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5" id="icon-anchor-b"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5" id="icon-anchor-c"></path></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-<li class="tsd-signature tsd-anchor-link" id="constructor.new_S3">new <wbr/>S3<span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="S3.html" class="tsd-signature-type" data-tsd-kind="Class">S3</a><a href="#constructor.new_S3" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="constructor.new_S3">new <wbr/>S3<span class="tsd-signature-symbol">(</span>options<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-symbol">{ </span>debug<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="S3.html" class="tsd-signature-type" data-tsd-kind="Class">S3</a><a href="#constructor.new_S3" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></li>
 <li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Initialize a new S3 helper object.</p>
-</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5>options: <span class="tsd-signature-symbol">{ </span>debug<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> = ...</span></h5>
+<ul class="tsd-parameters">
+<li class="tsd-parameter">
+<h5>debug<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">boolean</span></h5></li></ul></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="S3.html" class="tsd-signature-type" data-tsd-kind="Class">S3</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/b517e44/src/s3.ts#L21">src/s3.ts:21</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/c7ccfc1/src/s3.ts#L19">src/s3.ts:19</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="DEFAULT_DOWNLOAD_BUCKET" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>DEFAULT_<wbr/>DOWNLOAD_<wbr/>BUCKET</span><a href="#DEFAULT_DOWNLOAD_BUCKET" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">DEFAULT_<wbr/>DOWNLOAD_<wbr/>BUCKET<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;idea-downloads&#39;</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/b517e44/src/s3.ts#L14">src/s3.ts:14</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/c7ccfc1/src/s3.ts#L13">src/s3.ts:13</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="DEFAULT_DOWNLOAD_BUCKET_PREFIX" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>DEFAULT_<wbr/>DOWNLOAD_<wbr/>BUCKET_<wbr/>PREFIX</span><a href="#DEFAULT_DOWNLOAD_BUCKET_PREFIX" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">DEFAULT_<wbr/>DOWNLOAD_<wbr/>BUCKET_<wbr/>PREFIX<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = &#39;common&#39;</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/b517e44/src/s3.ts#L13">src/s3.ts:13</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/c7ccfc1/src/s3.ts#L12">src/s3.ts:12</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>DEFAULT_<wbr/>DOWNLOAD_<wbr/>BUCKET_<wbr/>SEC_<wbr/>TO_<wbr/>EXP</span><a href="#DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">DEFAULT_<wbr/>DOWNLOAD_<wbr/>BUCKET_<wbr/>SEC_<wbr/>TO_<wbr/>EXP<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 180</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/b517e44/src/s3.ts#L15">src/s3.ts:15</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/c7ccfc1/src/s3.ts#L14">src/s3.ts:14</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>DEFAULT_<wbr/>UPLOAD_<wbr/>BUCKET_<wbr/>SEC_<wbr/>TO_<wbr/>EXP</span><a href="#DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">DEFAULT_<wbr/>UPLOAD_<wbr/>BUCKET_<wbr/>SEC_<wbr/>TO_<wbr/>EXP<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> = 300</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/b517e44/src/s3.ts#L16">src/s3.ts:16</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/c7ccfc1/src/s3.ts#L15">src/s3.ts:15</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class"><a id="logger" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>logger</span><a href="#logger" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
+<div class="tsd-signature">logger<span class="tsd-signature-symbol">:</span> <a href="Logger.html" class="tsd-signature-type" data-tsd-kind="Class">Logger</a><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/c7ccfc1/src/s3.ts#L17">src/s3.ts:17</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a id="s3" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>s3</span><a href="#s3" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <div class="tsd-signature">s3<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">S3</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/b517e44/src/s3.ts#L11">src/s3.ts:11</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/c7ccfc1/src/s3.ts#L10">src/s3.ts:10</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="copyObject" class="tsd-anchor"></a>
@@ -107,7 +119,7 @@
 <h5>options: <a href="../interfaces/CopyObjectOptions.html" class="tsd-signature-type" data-tsd-kind="Interface">CopyObjectOptions</a></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/b517e44/src/s3.ts#L75">src/s3.ts:75</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/c7ccfc1/src/s3.ts#L74">src/s3.ts:74</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="createDownloadURLFromData" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>create<wbr/>DownloadURLFrom<wbr/>Data</span><a href="#createDownloadURLFromData" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -125,7 +137,7 @@
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> options: <a href="../interfaces/CreateDownloadURLFromDataOptions.html" class="tsd-signature-type" data-tsd-kind="Interface">CreateDownloadURLFromDataOptions</a></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">SignedURL</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/b517e44/src/s3.ts#L29">src/s3.ts:29</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/c7ccfc1/src/s3.ts#L28">src/s3.ts:28</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="deleteObject" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>delete<wbr/>Object</span><a href="#deleteObject" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -140,7 +152,7 @@
 <h5>options: <a href="../interfaces/DeleteObjectOptions.html" class="tsd-signature-type" data-tsd-kind="Interface">DeleteObjectOptions</a></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">PutObjectOutput</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/b517e44/src/s3.ts#L113">src/s3.ts:113</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/c7ccfc1/src/s3.ts#L112">src/s3.ts:112</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="doesObjectExist" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>does<wbr/>Object<wbr/>Exist</span><a href="#doesObjectExist" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -155,7 +167,7 @@
 <h5>options: <a href="../interfaces/GetObjectOptions.html" class="tsd-signature-type" data-tsd-kind="Interface">GetObjectOptions</a></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/b517e44/src/s3.ts#L137">src/s3.ts:137</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/c7ccfc1/src/s3.ts#L136">src/s3.ts:136</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="getObject" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Object</span><a href="#getObject" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -170,7 +182,7 @@
 <h5>options: <a href="../interfaces/GetObjectOptions.html" class="tsd-signature-type" data-tsd-kind="Interface">GetObjectOptions</a></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/b517e44/src/s3.ts#L83">src/s3.ts:83</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/c7ccfc1/src/s3.ts#L82">src/s3.ts:82</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="listObjects" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>list<wbr/>Objects</span><a href="#listObjects" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -185,7 +197,7 @@
 <h5>options: <a href="../interfaces/ListObjectsOptions.html" class="tsd-signature-type" data-tsd-kind="Interface">ListObjectsOptions</a></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">ListObjectsOutput</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/b517e44/src/s3.ts#L121">src/s3.ts:121</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/c7ccfc1/src/s3.ts#L120">src/s3.ts:120</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="listObjectsKeys" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>list<wbr/>Objects<wbr/>Keys</span><a href="#listObjectsKeys" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -200,7 +212,7 @@
 <h5>options: <a href="../interfaces/ListObjectsOptions.html" class="tsd-signature-type" data-tsd-kind="Interface">ListObjectsOptions</a></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/b517e44/src/s3.ts#L129">src/s3.ts:129</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/c7ccfc1/src/s3.ts#L128">src/s3.ts:128</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="putObject" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>put<wbr/>Object</span><a href="#putObject" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -215,7 +227,7 @@
 <h5>options: <a href="../interfaces/PutObjectOptions.html" class="tsd-signature-type" data-tsd-kind="Interface">PutObjectOptions</a></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">PutObjectOutput</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/b517e44/src/s3.ts#L100">src/s3.ts:100</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/c7ccfc1/src/s3.ts#L99">src/s3.ts:99</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="signedURLGet" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>signedURLGet</span><a href="#signedURLGet" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -236,7 +248,7 @@
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">SignedURL</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/b517e44/src/s3.ts#L62">src/s3.ts:62</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/c7ccfc1/src/s3.ts#L61">src/s3.ts:61</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-kind-method tsd-parent-kind-class"><a id="signedURLPut" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>signedURLPut</span><a href="#signedURLPut" aria-label="Permalink" class="tsd-anchor-icon"><svg class="icon icon-tabler icon-tabler-link" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><use href="#icon-anchor-a"></use><use href="#icon-anchor-b"></use><use href="#icon-anchor-c"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-kind-method tsd-parent-kind-class">
@@ -257,7 +269,7 @@
 </div></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">SignedURL</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/b517e44/src/s3.ts#L48">src/s3.ts:48</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/c7ccfc1/src/s3.ts#L47">src/s3.ts:47</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-4 col-menu menu-sticky-wrap menu-highlight">
 <div class="tsd-navigation settings">
 <details class="tsd-index-accordion"><summary class="tsd-accordion-summary">
@@ -288,6 +300,7 @@
 <li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="S3.html#DEFAULT_DOWNLOAD_BUCKET_PREFIX" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>DEFAULT_<wbr/>DOWNLOAD_<wbr/>BUCKET_<wbr/>PREFIX</a></li>
 <li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="S3.html#DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>DEFAULT_<wbr/>DOWNLOAD_<wbr/>BUCKET_<wbr/>SEC_<wbr/>TO_<wbr/>EXP</a></li>
 <li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="S3.html#DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>DEFAULT_<wbr/>UPLOAD_<wbr/>BUCKET_<wbr/>SEC_<wbr/>TO_<wbr/>EXP</a></li>
+<li class="tsd-kind-property tsd-parent-kind-class"><a href="S3.html#logger" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>logger</a></li>
 <li class="tsd-kind-property tsd-parent-kind-class tsd-is-protected"><a href="S3.html#s3" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-1024-path"></use><use href="#icon-1024-text"></use></svg>s3</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class"><a href="S3.html#copyObject" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>copy<wbr/>Object</a></li>
 <li class="tsd-kind-method tsd-parent-kind-class"><a href="S3.html#createDownloadURLFromData" class="tsd-index-link"><svg class="tsd-kind-icon" width="24" height="24" viewBox="0 0 24 24"><use href="#icon-2048-path"></use><use href="#icon-2048-text"></use></svg>create<wbr/>DownloadURLFrom<wbr/>Data</a></li>
