@@ -25,7 +25,10 @@ export class S3 {
    * Create a download link of a piece of data (through S3).
    * *Practically*, it uploads the file on an S3 bucket, generating and returning a url to it.
    */
-  async createDownloadURLFromData(data: Buffer | any, options?: CreateDownloadURLFromDataOptions): Promise<SignedURL> {
+  async createDownloadURLFromData(
+    data: Buffer | any,
+    options: CreateDownloadURLFromDataOptions = {}
+  ): Promise<SignedURL> {
     // if needed, randomly generates the key
     if (!options.key) options.key = new Date().getTime().toString().concat(Math.random().toString(36).slice(2));
 
