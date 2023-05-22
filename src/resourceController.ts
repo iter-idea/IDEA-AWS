@@ -35,6 +35,7 @@ export abstract class ResourceController extends GenericController {
 
   protected clientVersion = '?';
   protected clientPlatform = '?';
+  protected clientBundle: string = null;
 
   protected returnStatusCode?: number;
 
@@ -72,6 +73,10 @@ export abstract class ResourceController extends GenericController {
       if (this.queryParams['_p']) {
         this.clientPlatform = this.queryParams['_p'];
         delete this.queryParams['_p'];
+      }
+      if (this.queryParams['_b']) {
+        this.clientBundle = this.queryParams['_b'];
+        delete this.queryParams['_b'];
       }
 
       if (options.useMetrics) this.prepareMetrics();
