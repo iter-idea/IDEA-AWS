@@ -87,7 +87,8 @@ export abstract class ResourceController extends GenericController {
         queryParams: this.queryParams,
         body: this.body,
         version: this.clientVersion,
-        platform: this.clientPlatform
+        platform: this.clientPlatform,
+        bundle: this.clientBundle
       };
       this.logger.info(`START: ${this.httpMethod} ${this.path}`, info);
     } catch (err) {
@@ -379,6 +380,7 @@ export abstract class ResourceController extends GenericController {
     this.metrics.addDimension('userId', this.principalId);
     this.metrics.addDimension('clientVersion', this.clientVersion);
     this.metrics.addDimension('clientPlatform', this.clientPlatform);
+    this.metrics.addDimension('clientBundle', this.clientBundle ?? '-');
     this.metrics.addMetadata('resourceId', this.resourceId);
   }
   /**
