@@ -36,13 +36,13 @@
   },
   "homepage": "https://iter-idea.github.io/IDEA-AWS",
   "dependencies": {
-    "@aws-lambda-powertools/metrics": "^1.4.1",
-    "idea-toolbox": "^6.6.8",
+    "@aws-lambda-powertools/metrics": "^1.12.1",
+    "idea-toolbox": "^6.7.3",
     "nanoid": "^3.3.4",
-    "nodemailer": "^6.7.7",
+    "nodemailer": "^6.9.4",
     "shortid": "^2.2.16",
     "source-map-support": "^0.5.21",
-    "uuid": "^8.3.2"
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@tsconfig/node16": "^1.0.3",
