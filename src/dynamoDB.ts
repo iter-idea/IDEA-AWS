@@ -18,7 +18,9 @@ export class DynamoDB {
   logger = new Logger();
 
   constructor(options: { debug: boolean } = { debug: true }) {
-    this.dynamo = DDB.DynamoDBDocument.from(new DDBClient());
+    this.dynamo = DDB.DynamoDBDocument.from(new DDBClient(), {
+      marshallOptions: { convertEmptyValues: true, removeUndefinedValues: true, convertClassInstanceToMap: true }
+    });
 
     this.logger.level = options.debug ? 'DEBUG' : 'INFO';
   }
