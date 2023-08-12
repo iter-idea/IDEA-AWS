@@ -421,7 +421,7 @@ export abstract class ResourceController extends GenericController {
     });
     const client = new Lambda.LambdaClient();
     const { Payload } = await client.send(command);
-    const payload = JSON.parse(Payload.transformToString());
+    const payload = JSON.parse(Buffer.from(Payload).toString());
     const body = JSON.parse(payload.body);
     if (Number(payload.statusCode) !== 200) throw new Error(body.message);
     return body;
