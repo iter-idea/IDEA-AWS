@@ -131,7 +131,7 @@ export class DynamoDB {
    * Get an item of a DynamoDB table.
    * @param params the params to apply to DynamoDB's function
    */
-  async get(params: DDB.GetCommandInput): Promise<Record<string, any>> {
+  async get(params: DDB.GetCommandInput): Promise<any> {
     this.logger.debug(`Get ${params.TableName}`);
     const result = await this.dynamo.get(params);
 
@@ -172,11 +172,7 @@ export class DynamoDB {
    * @param keys the keys of the objects to retrieve
    * @param ignoreErr if set, ignore the errors and continue the bulk op.
    */
-  async batchGet(
-    table: string,
-    keys: Record<string, AttributeValue>[],
-    ignoreErr?: boolean
-  ): Promise<Record<string, any>[]> {
+  async batchGet(table: string, keys: Record<string, AttributeValue>[], ignoreErr?: boolean): Promise<any[]> {
     if (!keys.length) {
       this.logger.debug(`Batch get ${table}: no elements to get`);
       return [];
@@ -291,7 +287,7 @@ export class DynamoDB {
    * Query a DynamoDB table, avoiding the limits of DynamoDB's Query.
    * @param params the params to apply to DynamoDB's function
    */
-  async query(params: DDB.QueryCommandInput): Promise<Record<string, any>[]> {
+  async query(params: DDB.QueryCommandInput): Promise<any[]> {
     this.logger.debug(`Query ${params.TableName}`);
     const result = await this.queryScanHelper(params, [], true);
 
@@ -302,7 +298,7 @@ export class DynamoDB {
    * Scan a DynamoDB table, avoiding the limits of DynamoDB's Query.
    * @param params the params to apply to DynamoDB's function
    */
-  async scan(params: DDB.ScanCommandInput): Promise<Record<string, any>[]> {
+  async scan(params: DDB.ScanCommandInput): Promise<any[]> {
     this.logger.debug(`Scan ${params.TableName}`);
     const result = await this.queryScanHelper(params, [], false);
 
