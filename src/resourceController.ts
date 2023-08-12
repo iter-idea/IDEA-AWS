@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from 'fs';
-import { Lambda, EventBridge } from 'aws-sdk';
+import * as Lambda from '@aws-sdk/client-lambda';
+import * as EventBridge from '@aws-sdk/client-eventbridge';
 import { APIGatewayProxyEventV2, APIGatewayProxyEvent, Callback } from 'aws-lambda';
 import { APIRequestLog, CognitoUser, Auth0User } from 'idea-toolbox';
 
@@ -412,28 +413,31 @@ export abstract class ResourceController extends GenericController {
     throw new Error('Either "lambda" or "eventBus" parameters must be set.');
   }
   private async invokeInternalAPIRequestWithLambda(params: InternalAPIRequestParams): Promise<any> {
-    const lambdaInvokeParams = {
+    const command = new Lambda.InvokeCommand({
       FunctionName: params.lambda,
       InvocationType: 'RequestResponse',
       Payload: this.mapEventForInternalApiRequest(params),
       Qualifier: params.stage || this.stage
-    };
-    const res = await new Lambda().invoke(lambdaInvokeParams).promise();
-    const payload = JSON.parse(res.Payload as string);
+    });
+    const client = new Lambda.LambdaClient();
+    const { Payload } = await client.send(command);
+    const payload = JSON.parse(Payload.transformToString());
     const body = JSON.parse(payload.body);
     if (Number(payload.statusCode) !== 200) throw new Error(body.message);
     return body;
   }
   private async invokeInternalAPIRequestWithEventBridge(
     params: InternalAPIRequestParams
-  ): Promise<EventBridge.PutEventsResponse> {
+  ): Promise<EventBridge.PutEventsCommandOutput> {
     const request = {
       EventBusName: params.eventBridge.bus,
       Source: this.constructor.name,
       DetailType: params.eventBridge.target,
       Detail: this.mapEventForInternalApiRequest(params)
     };
-    return await new EventBridge().putEvents({ Entries: [request] }).promise();
+    const client = new EventBridge.EventBridgeClient();
+    const command = new EventBridge.PutEventsCommand({ Entries: [request] });
+    return await client.send(command);
   }
   private mapEventForInternalApiRequest(params: InternalAPIRequestParams): string {
     const event = JSON.parse(JSON.stringify(this.event));

@@ -1,4 +1,6 @@
-import { S3 as AWSS3 } from 'aws-sdk';
+import * as AWSS3 from '@aws-sdk/client-s3';
+import { Upload, BodyDataTypes } from '@aws-sdk/lib-storage';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { SignedURL } from 'idea-toolbox';
 
 import { Logger } from './logger';
@@ -7,7 +9,7 @@ import { Logger } from './logger';
  * A wrapper for AWS Simple Storage Service.
  */
 export class S3 {
-  protected s3: AWSS3;
+  protected s3: AWSS3.S3Client;
 
   protected DEFAULT_DOWNLOAD_BUCKET_PREFIX = 'common';
   protected DEFAULT_DOWNLOAD_BUCKET = 'idea-downloads';
@@ -17,7 +19,8 @@ export class S3 {
   logger = new Logger();
 
   constructor(options: { debug: boolean } = { debug: true }) {
-    this.s3 = new AWSS3({ apiVersion: '2006-03-01', signatureVersion: 'v4' });
+    this.s3 = new AWSS3.S3Client();
+
     this.logger.level = options.debug ? 'DEBUG' : 'INFO';
   }
 
@@ -26,19 +29,19 @@ export class S3 {
    * *Practically*, it uploads the file on an S3 bucket, generating and returning a url to it.
    */
   async createDownloadURLFromData(
-    data: Buffer | any,
+    data: BodyDataTypes,
     options: CreateDownloadURLFromDataOptions = {}
   ): Promise<SignedURL> {
     // if needed, randomly generates the key
-    if (!options.key) options.key = new Date().getTime().toString().concat(Math.random().toString(36).slice(2));
+    if (!options.key) options.key = Date.now().toString().concat(Math.random().toString(36).slice(2));
 
     options.key = `${options.prefix || this.DEFAULT_DOWNLOAD_BUCKET_PREFIX}/${options.key}`;
     options.bucket = options.bucket || this.DEFAULT_DOWNLOAD_BUCKET;
     options.secToExp = options.secToExp || this.DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP;
 
-    await this.s3
-      .upload({ Bucket: options.bucket, Key: options.key, Body: data, ContentType: options.contentType })
-      .promise();
+    const params = { Bucket: options.bucket, Key: options.key, Body: data, ContentType: options.contentType };
+    const upload = new Upload({ client: this.s3, params });
+    await upload.done();
 
     return this.signedURLGet(options.bucket, options.key, options.secToExp);
   }
@@ -47,28 +50,22 @@ export class S3 {
    * Get a signed URL to put a file on a S3 bucket.
    * @param expires seconds after which the signed URL expires
    */
-  signedURLPut(bucket: string, key: string, expires?: number): SignedURL {
-    return new SignedURL({
-      url: this.s3.getSignedUrl('putObject', {
-        Bucket: bucket,
-        Key: key,
-        Expires: expires || this.DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP
-      })
-    });
+  async signedURLPut(bucket: string, key: string, expires?: number): Promise<SignedURL> {
+    const putCommand = new AWSS3.PutObjectCommand({ Bucket: bucket, Key: key });
+    const expiresIn = expires || this.DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP;
+    const url = await getSignedUrl(this.s3, putCommand, { expiresIn });
+    return new SignedURL({ url });
   }
 
   /**
    * Get a signed URL to get a file on a S3 bucket.
    * @param expires seconds after which the signed URL expires
    */
-  signedURLGet(bucket: string, key: string, expires?: number): SignedURL {
-    return new SignedURL({
-      url: this.s3.getSignedUrl('getObject', {
-        Bucket: bucket,
-        Key: key,
-        Expires: expires || this.DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP
-      })
-    });
+  async signedURLGet(bucket: string, key: string, expires?: number): Promise<SignedURL> {
+    const getCommand = new AWSS3.GetObjectCommand({ Bucket: bucket, Key: key });
+    const expiresIn = expires || this.DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP;
+    const url = await getSignedUrl(this.s3, getCommand, { expiresIn });
+    return new SignedURL({ url });
   }
 
   /**
@@ -76,21 +73,27 @@ export class S3 {
    */
   async copyObject(options: CopyObjectOptions): Promise<void> {
     this.logger.debug(`S3 copy object: ${options.key}`);
-    await this.s3.copyObject({ CopySource: options.copySource, Bucket: options.bucket, Key: options.key }).promise();
+    const command = new AWSS3.CopyObjectCommand({
+      CopySource: options.copySource,
+      Bucket: options.bucket,
+      Key: options.key
+    });
+    await this.s3.send(command);
   }
 
   /**
    * Get an object from a S3 bucket.
    */
-  async getObject(options: GetObjectOptions): Promise<any> {
+  async getObject(options: GetObjectOptions): Promise<string | AWSS3.GetObjectCommandOutput> {
     this.logger.debug(`S3 get object: ${options.key}`);
-    const result = await this.s3.getObject({ Bucket: options.bucket, Key: options.key }).promise();
+    const command = new AWSS3.GetObjectCommand({ Bucket: options.bucket, Key: options.key });
+    const result = await this.s3.send(command);
 
     switch (options.type) {
       case GetObjectTypes.JSON:
-        return JSON.parse(result.Body.toString('utf-8'));
+        return JSON.parse(await result.Body.transformToString('utf-8'));
       case GetObjectTypes.TEXT:
-        return result.Body.toString('utf-8');
+        return await result.Body.transformToString('utf-8');
       default:
         return result;
     }
@@ -100,13 +103,13 @@ export class S3 {
    * Put an object in a S3 bucket.
    */
   async putObject(options: PutObjectOptions): Promise<AWSS3.PutObjectOutput> {
-    const params: any = { Bucket: options.bucket, Key: options.key, Body: options.body };
+    const params: AWSS3.PutObjectCommandInput = { Bucket: options.bucket, Key: options.key, Body: options.body };
     if (options.contentType) params.ContentType = options.contentType;
     if (options.acl) params.ACL = options.acl;
     if (options.metadata) params.Metadata = options.metadata;
 
     this.logger.debug(`S3 put object: ${options.key}`);
-    return await this.s3.putObject(params).promise();
+    return await this.s3.send(new AWSS3.PutObjectCommand(params));
   }
 
   /**
@@ -114,7 +117,8 @@ export class S3 {
    */
   async deleteObject(options: DeleteObjectOptions): Promise<AWSS3.PutObjectOutput> {
     this.logger.debug(`S3 delete object: ${options.key}`);
-    return await this.s3.deleteObject({ Bucket: options.bucket, Key: options.key }).promise();
+    const deleteCommand = new AWSS3.DeleteObjectCommand({ Bucket: options.bucket, Key: options.key });
+    return await this.s3.send(deleteCommand);
   }
 
   /**
@@ -122,7 +126,8 @@ export class S3 {
    */
   async listObjects(options: ListObjectsOptions): Promise<AWSS3.ListObjectsOutput> {
     this.logger.debug(`S3 list object: ${options.prefix}`);
-    return await this.s3.listObjects({ Bucket: options.bucket, Prefix: options.prefix }).promise();
+    const command = new AWSS3.ListObjectsCommand({ Bucket: options.bucket, Prefix: options.prefix });
+    return await this.s3.send(command);
   }
 
   /**
@@ -138,7 +143,8 @@ export class S3 {
    */
   async doesObjectExist(options: GetObjectOptions): Promise<boolean> {
     try {
-      await this.s3.headObject({ Bucket: options.bucket, Key: options.key }).promise();
+      const command = new AWSS3.HeadObjectCommand({ Bucket: options.bucket, Key: options.key });
+      await this.s3.send(command);
       return true;
     } catch (err) {
       return false;

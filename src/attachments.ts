@@ -33,7 +33,7 @@ export class Attachments {
     const attachmentIdPrefix = this.IUID_ATTACHMENTS_PREFIX.concat('_').concat(project).concat('_').concat(teamId);
     const attachmentId = await this.dynamo.IUNID(attachmentIdPrefix);
 
-    const signedURL = this.s3.signedURLPut(this.S3_ATTACHMENTS_BUCKET, attachmentId);
+    const signedURL = await this.s3.signedURLPut(this.S3_ATTACHMENTS_BUCKET, attachmentId);
     signedURL.id = attachmentId;
     return signedURL;
   }
@@ -41,8 +41,8 @@ export class Attachments {
   /**
    * Get a signedURL to retrieve an attachment.
    */
-  get(attachmentId: string): SignedURL {
-    const signedURL = this.s3.signedURLGet(this.S3_ATTACHMENTS_BUCKET, attachmentId);
+  async get(attachmentId: string): Promise<SignedURL> {
+    const signedURL = await this.s3.signedURLGet(this.S3_ATTACHMENTS_BUCKET, attachmentId);
     signedURL.id = attachmentId;
     return signedURL;
   }

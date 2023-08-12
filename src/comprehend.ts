@@ -1,4 +1,4 @@
-import { Comprehend as AmazonComprehend } from 'aws-sdk';
+import * as AmazonComprehend from '@aws-sdk/client-comprehend';
 import { Sentiment } from 'idea-toolbox';
 
 /**
@@ -8,10 +8,10 @@ export class Comprehend {
   /**
    * The instance of Comprehend.
    */
-  protected comprehend: AmazonComprehend;
+  protected comprehend: AmazonComprehend.ComprehendClient;
 
   constructor(params: { region?: string } = {}) {
-    this.comprehend = new AmazonComprehend({ apiVersion: '2017-11-27', region: params.region });
+    this.comprehend = new AmazonComprehend.ComprehendClient({ region: params.region });
   }
 
   /**
@@ -20,9 +20,8 @@ export class Comprehend {
   async detectSentiment(params: DetectSentimentParameters): Promise<Sentiment> {
     if (!params.language || !params.text) throw new Error('Missing some parameters');
 
-    const result = await this.comprehend
-      .detectSentiment({ LanguageCode: params.language, Text: params.text })
-      .promise();
+    const command = new AmazonComprehend.DetectSentimentCommand({ LanguageCode: params.language, Text: params.text });
+    const result = await this.comprehend.send(command);
 
     return result.Sentiment as Sentiment;
   }
@@ -33,7 +32,8 @@ export class Comprehend {
   async detectDominantLanguage(params: { text: string }): Promise<string> {
     if (!params.text) throw new Error('Missing text');
 
-    const result = await this.comprehend.detectDominantLanguage({ Text: params.text }).promise();
+    const command = new AmazonComprehend.DetectDominantLanguageCommand({ Text: params.text });
+    const result = await this.comprehend.send(command);
     if (!result.Languages.length) throw new Error('Not found');
 
     return result.Languages[0].LanguageCode;

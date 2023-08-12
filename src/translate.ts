@@ -1,4 +1,4 @@
-import { Translate as AWSTranslate } from 'aws-sdk';
+import * as AWSTranslate from '@aws-sdk/client-translate';
 import {
   Languages,
   PDFEntity,
@@ -15,7 +15,7 @@ export class Translate {
   /**
    * The instance of Amazon Translate.
    */
-  protected translate: AWSTranslate;
+  protected translate: AWSTranslate.TranslateClient;
   /**
    * Default input language code.
    */
@@ -33,7 +33,7 @@ export class Translate {
    * Initialize a new Translate helper object.
    */
   constructor(options: { region?: string } = {}) {
-    this.translate = new AWSTranslate({ apiVersion: '2017-07-01', region: options.region });
+    this.translate = new AWSTranslate.TranslateClient({ region: options.region });
     this.sourceLanguageCode = 'en';
     this.targetLanguageCode = 'en';
     this.terminologyNames = new Array<string>();
@@ -50,16 +50,15 @@ export class Translate {
 
     if (!this.sourceLanguageCode || !this.targetLanguageCode || !params.text) throw new Error('Bad parameters');
 
-    const result = await this.translate
-      .translateText({
-        Text: params.text,
-        SourceLanguageCode: this.sourceLanguageCode,
-        TargetLanguageCode: this.targetLanguageCode,
-        TerminologyNames: this.terminologyNames
-      })
-      .promise();
+    const command = new AWSTranslate.TranslateTextCommand({
+      Text: params.text,
+      SourceLanguageCode: this.sourceLanguageCode,
+      TargetLanguageCode: this.targetLanguageCode,
+      TerminologyNames: this.terminologyNames
+    });
+    const { TranslatedText } = await this.translate.send(command);
 
-    return result.TranslatedText;
+    return TranslatedText;
   }
 
   /**
@@ -72,7 +71,7 @@ export class Translate {
     template: PDFTemplateSection[],
     language: string,
     languages: Languages
-  ): Promise<{ [original: string]: string }> {
+  ): Promise<Record<string, string>> {
     // if the language is included in the ones supported by the team, skip
     if (languages.available.some(l => l === language)) return null;
 

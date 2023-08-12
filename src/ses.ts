@@ -1,4 +1,4 @@
-import { SES as AWSSES } from 'aws-sdk';
+import * as AWSSES from '@aws-sdk/client-sesv2';
 import {
   createTransport as NodemailerCreateTransport,
   SentMessageInfo as NodemailerSentMessageInfo,
@@ -13,12 +13,13 @@ import { Logger } from './logger';
  * A wrapper for AWS Simple Email Service.
  */
 export class SES {
-  protected ses: AWSSES;
+  protected ses: AWSSES.SESv2Client;
 
   logger = new Logger();
 
   constructor(options: { region?: string; debug: boolean } = { debug: true }) {
-    this.ses = new AWSSES({ region: options.region });
+    this.ses = new AWSSES.SESv2Client({ region: options.region });
+
     this.logger.level = options.debug ? 'DEBUG' : 'INFO';
   }
 
@@ -26,31 +27,44 @@ export class SES {
   // CONFIG
   //
 
-  async getTemplate(templateName: string): Promise<AWSSES.Template> {
-    return (await this.ses.getTemplate({ TemplateName: templateName }).promise()).Template;
+  async getTemplate(templateName: string): Promise<AWSSES.EmailTemplateContent> {
+    const command = new AWSSES.GetEmailTemplateCommand({ TemplateName: templateName });
+    const { TemplateContent } = await this.ses.send(command);
+    return TemplateContent;
   }
   async setTemplate(templateName: string, subject: string, content: string, isHTML?: boolean): Promise<void> {
-    const template: AWSSES.Template = { TemplateName: templateName, SubjectPart: subject };
-    if (isHTML) template.HtmlPart = content;
-    else template.TextPart = content;
-
     let isNew = false;
     try {
-      await this.ses.getTemplate({ TemplateName: templateName }).promise();
+      const command = new AWSSES.GetEmailTemplateCommand({ TemplateName: templateName });
+      await this.ses.send(command);
     } catch (notFound) {
       isNew = true;
     }
 
-    if (isNew) await this.ses.createTemplate({ Template: template }).promise();
-    else await this.ses.updateTemplate({ Template: template }).promise();
+    const template: AWSSES.CreateEmailTemplateCommandInput | AWSSES.UpdateEmailTemplateCommandInput = {
+      TemplateName: templateName,
+      TemplateContent: { Subject: subject }
+    };
+    if (isHTML) template.TemplateContent.Html = content;
+    else template.TemplateContent.Text = content;
+
+    let command: AWSSES.CreateEmailTemplateCommand | AWSSES.UpdateEmailTemplateCommand;
+    if (isNew) command = new AWSSES.CreateEmailTemplateCommand(template);
+    else command = new AWSSES.UpdateEmailTemplateCommand(template);
+
+    await this.ses.send(command);
   }
   async deleteTemplate(templateName: string): Promise<void> {
-    await this.ses.deleteTemplate({ TemplateName: templateName }).promise();
+    const command = new AWSSES.DeleteEmailTemplateCommand({ TemplateName: templateName });
+    await this.ses.send(command);
   }
-  async testTemplate(templateName: string, data: { [variable: string]: any }): Promise<AWSSES.RenderedTemplate> {
-    return (
-      await this.ses.testRenderTemplate({ TemplateName: templateName, TemplateData: JSON.stringify(data) }).promise()
-    ).RenderedTemplate;
+  async testTemplate(templateName: string, data: { [variable: string]: any }): Promise<string> {
+    const command = new AWSSES.TestRenderEmailTemplateCommand({
+      TemplateName: templateName,
+      TemplateData: JSON.stringify(data)
+    });
+    const { RenderedTemplate } = await this.ses.send(command);
+    return RenderedTemplate;
   }
 
   //
@@ -63,23 +77,27 @@ export class SES {
   async sendTemplatedEmail(
     emailData: TemplatedEmailData,
     sesParams: SESParams
-  ): Promise<AWSSES.SendTemplatedEmailResponse> {
-    const request: AWSSES.SendTemplatedEmailRequest = {
+  ): Promise<AWSSES.SendEmailCommandOutput> {
+    const command = new AWSSES.SendEmailCommand({
       Destination: this.prepareEmailDestination(emailData),
-      Template: emailData.template,
-      TemplateData: JSON.stringify(emailData.templateData ?? {}),
+      Content: {
+        Template: {
+          TemplateName: emailData.template,
+          TemplateData: JSON.stringify(emailData.templateData ?? {})
+        }
+      },
       ConfigurationSetName: emailData.configurationSet,
       ReplyToAddresses: emailData.replyToAddresses,
-      Source: sesParams.sourceName ? `${sesParams.sourceName} <${sesParams.source}>` : sesParams.source,
-      SourceArn: sesParams.sourceArn
-    };
+      FromEmailAddress: sesParams.sourceName ? `${sesParams.sourceName} <${sesParams.source}>` : sesParams.source,
+      FromEmailAddressIdentityArn: sesParams.sourceArn
+    });
 
-    let ses: AWSSES;
+    let ses: AWSSES.SESv2Client;
     if (this.ses.config.region === sesParams.region) ses = this.ses;
-    else ses = new AWSSES({ region: sesParams.region });
+    else ses = new AWSSES.SESv2Client({ region: sesParams.region });
 
     this.logger.debug('SES send templated email');
-    return await ses.sendTemplatedEmail(request).promise();
+    return await ses.send(command);
   }
 
   /**
@@ -102,26 +120,26 @@ export class SES {
   private async searchForCustomSESConfigByTeamId(teamId: string): Promise<SESParams | null> {
     if (!teamId) return null;
     try {
-      return await new DynamoDB().get({ TableName: 'idea_teamsSES', Key: { teamId } });
+      return (await new DynamoDB().get({ TableName: 'idea_teamsSES', Key: { teamId } })) as SESParams;
     } catch (err) {
       return null;
     }
   }
-  private async sendEmailWithSES(emailData: EmailData, sesParams: SESParams): Promise<AWSSES.SendEmailResponse> {
-    const request: AWSSES.SendEmailRequest = {
+  private async sendEmailWithSES(emailData: EmailData, sesParams: SESParams): Promise<AWSSES.SendEmailCommandOutput> {
+    const command = new AWSSES.SendEmailCommand({
       Destination: this.prepareEmailDestination(emailData),
-      Message: this.prepareEmailMessage(emailData),
+      Content: { Simple: this.prepareEmailMessage(emailData) },
       ReplyToAddresses: emailData.replyToAddresses,
-      Source: sesParams.sourceName ? `${sesParams.sourceName} <${sesParams.source}>` : sesParams.source,
-      SourceArn: sesParams.sourceArn
-    };
+      FromEmailAddress: sesParams.sourceName ? `${sesParams.sourceName} <${sesParams.source}>` : sesParams.source,
+      FromEmailAddressIdentityArn: sesParams.sourceArn
+    });
 
-    let ses: AWSSES;
+    let ses: AWSSES.SESv2Client;
     if (this.ses.config.region === sesParams.region) ses = this.ses;
-    else ses = new AWSSES({ region: sesParams.region });
+    else ses = new AWSSES.SESv2Client({ region: sesParams.region });
 
     this.logger.debug('SES send email');
-    return await ses.sendEmail(request).promise();
+    return await ses.send(command);
   }
   private async sendEmailWithNodemailer(
     emailData: EmailData,
@@ -142,9 +160,9 @@ export class SES {
 
     mailOptions.attachments = emailData.attachments;
 
-    let ses: AWSSES;
+    let ses: AWSSES.SESv2Client;
     if (this.ses.config.region === sesParams.region) ses = this.ses;
-    else ses = new AWSSES({ region: sesParams.region });
+    else ses = new AWSSES.SESv2Client({ region: sesParams.region });
 
     this.logger.debug('SES send email (Nodemailer)');
     return await NodemailerCreateTransport({ SES: ses }).sendMail(mailOptions);

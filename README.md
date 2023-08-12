@@ -1,6 +1,6 @@
 # IDEA AWS
 
-AWS wrappers to use in IDEA's back-ends
+AWS wrappers to use in IDEA's back-ends; note: internally we use AWS-SDK _v3_.
 
 ## Installation
 
@@ -18,4 +18,4 @@ Documentation generated with TypeDoc: [link](https://iter-idea.github.io/IDEA-AW
 
 ## Notes
 
-The AWS-SDK is already pre-installed in every Lambda Function; therefore, it's a devDependency.
+The AWS-SDK (v3) is already pre-installed in every Lambda Function; therefore, the clients are all in `devDependency`.

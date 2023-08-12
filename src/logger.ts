@@ -10,17 +10,17 @@ export class Logger {
     this.originalLevel = this.level;
   }
 
-  isEnabled(level: number) {
+  isEnabled(level: number): boolean {
     return level >= ((LogLevels as any)[this.level] || LogLevels.DEBUG);
   }
 
-  appendError(params: any, err: Error) {
+  appendError(params: any, err: Error): any {
     if (!err) return params;
 
     return { ...(params || {}), errorName: err.name, errorMessage: err.message, stackTrace: err.stack };
   }
 
-  log(levelName: string, message: string, params: any) {
+  log(levelName: string, message: string, params: any): void {
     const level = (LogLevels as any)[levelName];
     if (!this.isEnabled(level)) return;
 
@@ -36,27 +36,27 @@ export class Logger {
     );
   }
 
-  debug(msg: string, params: any = {}) {
+  debug(msg: string, params: any = {}): void {
     this.log('DEBUG', msg, params);
   }
-  info(msg: string, params: any = {}) {
+  info(msg: string, params: any = {}): void {
     this.log('INFO', msg, params);
   }
-  warn(msg: string, err: Error | any, params: any = {}) {
+  warn(msg: string, err: Error | any, params: any = {}): void {
     const parameters = this.appendError(params, err);
     this.log('WARN', msg, parameters);
   }
-  error(msg: string, err: Error | any, params: any = {}) {
+  error(msg: string, err: Error | any, params: any = {}): void {
     const parameters = this.appendError(params, err);
     this.log('ERROR', msg, parameters);
   }
 
-  enableDebug() {
+  enableDebug(): () => void {
     this.level = 'DEBUG';
-    return () => this.resetLevel();
+    return (): void => this.resetLevel();
   }
 
-  resetLevel() {
+  resetLevel(): void {
     this.level = this.originalLevel;
   }
 }

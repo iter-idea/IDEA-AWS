@@ -1,4 +1,4 @@
-import { SNS as AWSSNS } from 'aws-sdk';
+import * as AWSSNS from '@aws-sdk/client-sns';
 import { PushNotificationsPlatforms } from 'idea-toolbox';
 
 import { Logger } from './logger';
@@ -38,17 +38,17 @@ export class SNS {
     }
 
     this.logger.debug('SNS ADD PLATFORM ENDPOINT');
-    const result = await new AWSSNS({ apiVersion: '2010-03-31', region: snsParams.region })
-      .createPlatformEndpoint({ PlatformApplicationArn: platformARN, Token: token })
-      .promise();
+    const client = new AWSSNS.SNSClient({ region: snsParams.region });
+    const command = new AWSSNS.CreatePlatformEndpointCommand({ PlatformApplicationArn: platformARN, Token: token });
+    const { EndpointArn } = await client.send(command);
 
-    return result.EndpointArn;
+    return EndpointArn;
   }
 
   /**
    * Publish a message to a SNS endpoint.
    */
-  async publish(snsParams: SNSPublishParams): Promise<AWS.SNS.PublishResponse> {
+  async publish(snsParams: SNSPublishParams): Promise<AWSSNS.PublishCommandOutput> {
     let structuredMessage;
     if (snsParams.json) structuredMessage = { default: JSON.stringify(snsParams.json) };
     else
@@ -69,9 +69,13 @@ export class SNS {
       }
 
     this.logger.debug('SNS PUBLISH IN TOPIC');
-    return await new AWSSNS({ apiVersion: '2010-03-31', region: snsParams.region })
-      .publish({ MessageStructure: 'json', Message: JSON.stringify(structuredMessage), TargetArn: snsParams.endpoint })
-      .promise();
+    const client = new AWSSNS.SNSClient({ region: snsParams.region });
+    const command = new AWSSNS.PublishCommand({
+      MessageStructure: 'json',
+      Message: JSON.stringify(structuredMessage),
+      TargetArn: snsParams.endpoint
+    });
+    return await client.send(command);
   }
 }
 

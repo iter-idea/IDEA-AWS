@@ -1,14 +1,14 @@
-import { CognitoIdentityServiceProvider as CognitoISP } from 'aws-sdk';
+import * as CognitoIP from '@aws-sdk/client-cognito-identity-provider';
 import { CognitoUser, isEmpty } from 'idea-toolbox';
 
 /**
  * A wrapper for AWS Cognito.
  */
 export class Cognito {
-  protected cognito: CognitoISP;
+  protected cognito: CognitoIP.CognitoIdentityProviderClient;
 
   constructor(params: { region?: string } = {}) {
-    this.cognito = new CognitoISP({ apiVersion: '2016-04-18', region: params.region });
+    this.cognito = new CognitoIP.CognitoIdentityProviderClient({ region: params.region });
   }
 
   /**
@@ -17,18 +17,18 @@ export class Cognito {
    */
   setRegion(region: string): void {
     // there is no quick way to change the region without re-creating the object
-    this.cognito = new CognitoISP({ apiVersion: this.cognito.config.apiVersion, region });
+    this.cognito = new CognitoIP.CognitoIdentityProviderClient({ region });
   }
 
   /**
    * Get the attributes of the user, from the authorizer claims.
    * @param claims authorizer claims
    * @return user's data
-   * @deprecated use IdeaX.CognitoUser instead
+   * @deprecated use idea-toolbox's CognitoUser instead
    */
-  getUserByClaims(claims: any): CognitoUserGeneric {
+  getUserByClaims(claims: Record<string, any>): CognitoUserGeneric {
     if (!claims) return null;
-    const user: any = {};
+    const user: Record<string, any> = {};
     // add any additional cognito attribute available in cognito
     for (const p in claims) if (p.startsWith('cognito:')) user[p.slice(8)] = claims[p];
     // map the important attributes with reserved names
@@ -40,9 +40,9 @@ export class Cognito {
   /**
    * Map the complex structure returned by Cognito for a user's attributes in a simple key-value object.
    */
-  private mapCognitoUserAttributesAsPlainObject(user: any): CognitoUserGeneric {
-    const userAttributes: any = {};
-    (user.Attributes || user.UserAttributes || []).forEach((a: any) => (userAttributes[a.Name] = a.Value));
+  private mapCognitoUserAttributesAsPlainObject(user: Record<string, any>): CognitoUserGeneric {
+    const userAttributes: Record<string, any> = {};
+    (user.Attributes || user.UserAttributes || []).forEach((a: any): void => (userAttributes[a.Name] = a.Value));
 
     if (!userAttributes.userId) userAttributes.userId = userAttributes.sub;
     return userAttributes as CognitoUserGeneric;
@@ -52,10 +52,14 @@ export class Cognito {
    * Identify a user by its email address, returning its attributes.
    */
   async getUserByEmail(email: string, cognitoUserPoolId: string): Promise<CognitoUserGeneric> {
-    const user = await this.cognito.adminGetUser({ UserPoolId: cognitoUserPoolId, Username: email }).promise();
-    if (!user) throw new Error('User not found');
-
-    return this.mapCognitoUserAttributesAsPlainObject(user);
+    const command = new CognitoIP.AdminGetUserCommand({ UserPoolId: cognitoUserPoolId, Username: email });
+    try {
+      const user = await this.cognito.send(command);
+      return this.mapCognitoUserAttributesAsPlainObject(user);
+    } catch (error) {
+      if ((error as Error).name === 'UserNotFoundException') throw new Error('User not found');
+      throw error;
+    }
   }
 
   /**
@@ -63,9 +67,12 @@ export class Cognito {
    */
   async getUserBySub(sub: string, cognitoUserPoolId: string): Promise<CognitoUserGeneric> {
     // as of today, there is no a direct way to find a user by its sub: we need to run a query against the users base
-    const usersList = await this.cognito
-      .listUsers({ UserPoolId: cognitoUserPoolId, Filter: `sub = "${sub}"`, Limit: 1 })
-      .promise();
+    const command = new CognitoIP.ListUsersCommand({
+      UserPoolId: cognitoUserPoolId,
+      Filter: `sub = "${sub}"`,
+      Limit: 1
+    });
+    const usersList = await this.cognito.send(command);
     const user = usersList?.Users[0];
     if (!user) throw new Error('User not found');
 
@@ -79,15 +86,12 @@ export class Cognito {
     cognitoUserPoolId: string,
     options: { pagination?: string; users: CognitoUser[] } = { users: [] }
   ): Promise<CognitoUser[]> {
-    const params: CognitoISP.ListUsersRequest = { UserPoolId: cognitoUserPoolId };
+    const params: CognitoIP.ListUsersCommandInput = { UserPoolId: cognitoUserPoolId };
     if (options.pagination) params.PaginationToken = options.pagination;
 
-    const res = await this.cognito.listUsers(params).promise();
+    const { Users, PaginationToken: pagination } = await this.cognito.send(new CognitoIP.ListUsersCommand(params));
 
-    const pagination = res.PaginationToken;
-    const users = options.users.concat(
-      res.Users.map(u => new CognitoUser(this.mapCognitoUserAttributesAsPlainObject(u)))
-    );
+    const users = options.users.concat(Users.map(u => new CognitoUser(this.mapCognitoUserAttributesAsPlainObject(u))));
 
     if (pagination) return await this.listUsers(cognitoUserPoolId, { pagination, users });
     else return users;
@@ -147,7 +151,7 @@ export class Cognito {
       );
     }
 
-    const params: CognitoISP.AdminCreateUserRequest = {
+    const params: CognitoIP.AdminCreateUserCommandInput = {
       UserPoolId: cognitoUserPoolId,
       Username: email,
       UserAttributes
@@ -155,12 +159,12 @@ export class Cognito {
     if (options.skipNotification) params.MessageAction = 'SUPPRESS';
     if (options.temporaryPassword) params.TemporaryPassword = options.temporaryPassword;
 
-    const result = await this.cognito.adminCreateUser(params).promise();
+    const { User } = await this.cognito.send(new CognitoIP.AdminCreateUserCommand(params));
 
-    const userId = this.mapCognitoUserAttributesAsPlainObject(result.User).sub;
+    const userId = this.mapCognitoUserAttributesAsPlainObject(User).sub;
 
-    if (userId) return userId;
-    else throw new Error('Creation failed');
+    if (!userId) throw new Error('Creation failed');
+    return userId;
   }
 
   /**
@@ -169,14 +173,14 @@ export class Cognito {
   async resendPassword(email: string, cognitoUserPoolId: string, options: CreateUserOptions = {}): Promise<void> {
     if (isEmpty(email, 'email')) throw new Error('Invalid email');
 
-    const params: CognitoISP.AdminCreateUserRequest = {
+    const params: CognitoIP.AdminCreateUserCommandInput = {
       UserPoolId: cognitoUserPoolId,
       Username: email,
       MessageAction: 'RESEND'
     };
     if (options.temporaryPassword) params.TemporaryPassword = options.temporaryPassword;
 
-    await this.cognito.adminCreateUser(params).promise();
+    await this.cognito.send(new CognitoIP.AdminCreateUserCommand(params));
   }
 
   /**
@@ -197,14 +201,14 @@ export class Cognito {
         .toString(36)
         .slice(2, 2 + RANDOM_PASSWORD_LENGTH);
 
-    const params: CognitoISP.AdminSetUserPasswordRequest = {
+    const params: CognitoIP.AdminSetUserPasswordCommandInput = {
       UserPoolId: cognitoUserPoolId,
       Username: email,
       Password: password,
       Permanent: options.permanent
     };
 
-    await this.cognito.adminSetUserPassword(params).promise();
+    await this.cognito.send(new CognitoIP.AdminSetUserPasswordCommand(params));
   }
 
   /**
@@ -213,7 +217,8 @@ export class Cognito {
   async deleteUser(email: string, cognitoUserPoolId: string): Promise<void> {
     if (isEmpty(email, 'email')) throw new Error('Invalid email');
 
-    await this.cognito.adminDeleteUser({ UserPoolId: cognitoUserPoolId, Username: email }).promise();
+    const command = new CognitoIP.AdminDeleteUserCommand({ UserPoolId: cognitoUserPoolId, Username: email });
+    await this.cognito.send(command);
   }
 
   /**
@@ -224,18 +229,17 @@ export class Cognito {
     password: string,
     cognitoUserPoolId: string,
     cognitoUserPoolClientId: string
-  ): Promise<CognitoISP.AuthenticationResultType> {
-    const result = await this.cognito
-      .adminInitiateAuth({
-        UserPoolId: cognitoUserPoolId,
-        ClientId: cognitoUserPoolClientId,
-        AuthFlow: 'ADMIN_NO_SRP_AUTH',
-        AuthParameters: { USERNAME: email, PASSWORD: password }
-      })
-      .promise();
+  ): Promise<CognitoIP.AuthenticationResultType> {
+    const command = new CognitoIP.AdminInitiateAuthCommand({
+      UserPoolId: cognitoUserPoolId,
+      ClientId: cognitoUserPoolClientId,
+      AuthFlow: 'ADMIN_NO_SRP_AUTH',
+      AuthParameters: { USERNAME: email, PASSWORD: password }
+    });
+    const { AuthenticationResult } = await this.cognito.send(command);
 
-    if (result?.AuthenticationResult) return result.AuthenticationResult;
-    else throw new Error('Sign-in failed');
+    if (!AuthenticationResult) throw new Error('Sign-in failed');
+    return AuthenticationResult;
   }
 
   /**
@@ -246,18 +250,17 @@ export class Cognito {
     refreshToken: string,
     cognitoUserPoolId: string,
     cognitoUserPoolClientId: string
-  ): Promise<CognitoISP.AuthenticationResultType> {
-    const result = await this.cognito
-      .adminInitiateAuth({
-        UserPoolId: cognitoUserPoolId,
-        ClientId: cognitoUserPoolClientId,
-        AuthFlow: 'REFRESH_TOKEN_AUTH',
-        AuthParameters: { USERNAME: email, REFRESH_TOKEN: refreshToken }
-      })
-      .promise();
+  ): Promise<CognitoIP.AuthenticationResultType> {
+    const command = new CognitoIP.AdminInitiateAuthCommand({
+      UserPoolId: cognitoUserPoolId,
+      ClientId: cognitoUserPoolClientId,
+      AuthFlow: 'REFRESH_TOKEN_AUTH',
+      AuthParameters: { USERNAME: email, REFRESH_TOKEN: refreshToken }
+    });
+    const { AuthenticationResult } = await this.cognito.send(command);
 
-    if (result?.AuthenticationResult) return result.AuthenticationResult;
-    else throw new Error('Refresh failed');
+    if (!AuthenticationResult) throw new Error('Refresh failed');
+    return AuthenticationResult;
   }
 
   /**
@@ -266,16 +269,15 @@ export class Cognito {
   async updateEmail(email: string, newEmail: string, cognitoUserPoolId: string): Promise<void> {
     if (isEmpty(newEmail, 'email')) throw new Error('Invalid new email');
 
-    await this.cognito
-      .adminUpdateUserAttributes({
-        UserPoolId: cognitoUserPoolId,
-        Username: email,
-        UserAttributes: [
-          { Name: 'email', Value: newEmail },
-          { Name: 'email_verified', Value: 'true' }
-        ]
-      })
-      .promise();
+    const command = new CognitoIP.AdminUpdateUserAttributesCommand({
+      UserPoolId: cognitoUserPoolId,
+      Username: email,
+      UserAttributes: [
+        { Name: 'email', Value: newEmail },
+        { Name: 'email_verified', Value: 'true' }
+      ]
+    });
+    await this.cognito.send(command);
 
     // sign out the user from all its devices and resolve
     await this.globalSignOut(newEmail, cognitoUserPoolId);
@@ -295,22 +297,20 @@ export class Cognito {
 
     const tokensForPasswordChange = await this.signIn(email, oldPassword, cognitoUserPoolId, cognitoUserPoolClientId);
 
-    await this.cognito
-      .changePassword({
-        AccessToken: tokensForPasswordChange.AccessToken,
-        PreviousPassword: oldPassword,
-        ProposedPassword: newPassword
-      })
-      .promise();
+    const command = new CognitoIP.ChangePasswordCommand({
+      AccessToken: tokensForPasswordChange.AccessToken,
+      PreviousPassword: oldPassword,
+      ProposedPassword: newPassword
+    });
+    await this.cognito.send(command);
   }
 
   /**
    * Send to a user the instructions to change the password.
    */
-  async forgotPassword(email: string, cognitoUserPoolClientId: string): Promise<CognitoISP.CodeDeliveryDetailsType> {
-    const { CodeDeliveryDetails } = await this.cognito
-      .forgotPassword({ Username: email, ClientId: cognitoUserPoolClientId })
-      .promise();
+  async forgotPassword(email: string, cognitoUserPoolClientId: string): Promise<CognitoIP.CodeDeliveryDetailsType> {
+    const command = new CognitoIP.ForgotPasswordCommand({ Username: email, ClientId: cognitoUserPoolClientId });
+    const { CodeDeliveryDetails } = await this.cognito.send(command);
     return CodeDeliveryDetails;
   }
 
@@ -330,16 +330,20 @@ export class Cognito {
       })
     );
 
-    await this.cognito
-      .adminUpdateUserAttributes({ UserPoolId: cognitoUserPoolId, Username: user.email, UserAttributes })
-      .promise();
+    const command = new CognitoIP.AdminUpdateUserAttributesCommand({
+      UserPoolId: cognitoUserPoolId,
+      Username: user.email,
+      UserAttributes
+    });
+    await this.cognito.send(command);
   }
 
   /**
    * Sign out the user from all devices.
    */
   async globalSignOut(email: string, cognitoUserPoolId: string): Promise<void> {
-    await this.cognito.adminUserGlobalSignOut({ Username: email, UserPoolId: cognitoUserPoolId }).promise();
+    const command = new CognitoIP.AdminUserGlobalSignOutCommand({ Username: email, UserPoolId: cognitoUserPoolId });
+    await this.cognito.send(command);
   }
 
   /**
@@ -350,9 +354,12 @@ export class Cognito {
     if (!confirmationCode) throw new Error('Invalid confirmation code');
     if (!cognitoUserPoolClientId) throw new Error('Invalid client ID');
 
-    await this.cognito
-      .confirmSignUp({ Username: email, ConfirmationCode: confirmationCode, ClientId: cognitoUserPoolClientId })
-      .promise();
+    const command = new CognitoIP.ConfirmSignUpCommand({
+      Username: email,
+      ConfirmationCode: confirmationCode,
+      ClientId: cognitoUserPoolClientId
+    });
+    await this.cognito.send(command);
   }
 
   /**
@@ -362,10 +369,10 @@ export class Cognito {
     cognitoUserPoolId: string,
     options: { pagination?: string; groups: CognitoGroup[] } = { groups: [] }
   ): Promise<CognitoGroup[]> {
-    const params: CognitoISP.ListGroupsRequest = { UserPoolId: cognitoUserPoolId };
+    const params: CognitoIP.ListGroupsRequest = { UserPoolId: cognitoUserPoolId };
     if (options.pagination) params.NextToken = options.pagination;
 
-    const res = await this.cognito.listGroups(params).promise();
+    const res = await this.cognito.send(new CognitoIP.ListGroupsCommand(params));
 
     const pagination = res.NextToken;
     const groups = options.groups.concat(
@@ -379,13 +386,15 @@ export class Cognito {
    * Create a new group in the user pool.
    */
   async createGroup(groupName: string, cognitoUserPoolId: string): Promise<void> {
-    await this.cognito.createGroup({ GroupName: groupName, UserPoolId: cognitoUserPoolId }).promise();
+    const command = new CognitoIP.CreateGroupCommand({ GroupName: groupName, UserPoolId: cognitoUserPoolId });
+    await this.cognito.send(command);
   }
   /**
    * Delete a group from the user pool.
    */
   async deleteGroup(groupName: string, cognitoUserPoolId: string): Promise<void> {
-    await this.cognito.deleteGroup({ GroupName: groupName, UserPoolId: cognitoUserPoolId }).promise();
+    const command = new CognitoIP.DeleteGroupCommand({ GroupName: groupName, UserPoolId: cognitoUserPoolId });
+    await this.cognito.send(command);
   }
 
   /**
@@ -396,13 +405,13 @@ export class Cognito {
     cognitoUserPoolId: string,
     options: { pagination?: string; users: CognitoUser[] } = { users: [] }
   ): Promise<CognitoUser[]> {
-    const params: CognitoISP.ListUsersInGroupRequest = {
+    const params: CognitoIP.ListUsersInGroupRequest = {
       UserPoolId: cognitoUserPoolId,
       GroupName: group
     };
     if (options.pagination) params.NextToken = options.pagination;
 
-    const res = await this.cognito.listUsersInGroup(params).promise();
+    const res = await this.cognito.send(new CognitoIP.ListUsersInGroupCommand(params));
 
     const pagination = res.NextToken;
     const users = options.users.concat(
@@ -418,9 +427,12 @@ export class Cognito {
   async addUserToGroup(email: string, group: string, cognitoUserPoolId: string): Promise<void> {
     const user = new CognitoUser(await this.getUserByEmail(email, cognitoUserPoolId));
 
-    await this.cognito
-      .adminAddUserToGroup({ UserPoolId: cognitoUserPoolId, GroupName: group, Username: user.userId })
-      .promise();
+    const command = new CognitoIP.AdminAddUserToGroupCommand({
+      UserPoolId: cognitoUserPoolId,
+      GroupName: group,
+      Username: user.userId
+    });
+    await this.cognito.send(command);
   }
   /**
    * Remove a user (by email) from a group in the user pool.
@@ -428,9 +440,12 @@ export class Cognito {
   async removeUserFromGroup(email: string, group: string, cognitoUserPoolId: string): Promise<void> {
     const user = new CognitoUser(await this.getUserByEmail(email, cognitoUserPoolId));
 
-    await this.cognito
-      .adminRemoveUserFromGroup({ UserPoolId: cognitoUserPoolId, GroupName: group, Username: user.userId })
-      .promise();
+    const command = new CognitoIP.AdminRemoveUserFromGroupCommand({
+      UserPoolId: cognitoUserPoolId,
+      GroupName: group,
+      Username: user.userId
+    });
+    await this.cognito.send(command);
   }
 }
 
