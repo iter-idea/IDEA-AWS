@@ -1,5 +1,5 @@
 import * as DDB from '@aws-sdk/lib-dynamodb';
-import { DynamoDB as DDBClient, AttributeValue, WriteRequest, TransactWriteItem } from '@aws-sdk/client-dynamodb';
+import { DynamoDB as DDBClient, WriteRequest, TransactWriteItem } from '@aws-sdk/client-dynamodb';
 import * as DDBUtils from '@aws-sdk/util-dynamodb';
 import { v4 as UUIDV4 } from 'uuid';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -30,7 +30,7 @@ export class DynamoDB {
    * @data the data in DynamoDB's original format to convert in plain objects
    * @options the options to use to convert the data
    */
-  unmarshall(data: Record<string, AttributeValue>, options?: DDBUtils.unmarshallOptions): Record<string, any> {
+  unmarshall(data: Record<string, any>, options?: DDBUtils.unmarshallOptions): Record<string, any> {
     return DDBUtils.unmarshall(data, options);
   }
 
@@ -174,7 +174,7 @@ export class DynamoDB {
    * @param keys the keys of the objects to retrieve
    * @param ignoreErr if set, ignore the errors and continue the bulk op.
    */
-  async batchGet(table: string, keys: Record<string, AttributeValue>[], ignoreErr?: boolean): Promise<any[]> {
+  async batchGet(table: string, keys: Record<string, any>[], ignoreErr?: boolean): Promise<any[]> {
     if (!keys.length) {
       this.logger.debug(`Batch get ${table}: no elements to get`);
       return [];
@@ -184,7 +184,7 @@ export class DynamoDB {
   }
   protected async batchGetHelper(
     table: string,
-    keys: Record<string, AttributeValue>[],
+    keys: Record<string, any>[],
     resultElements: Record<string, any>[],
     ignoreErr: boolean,
     currentChunk = 0,
@@ -233,14 +233,14 @@ export class DynamoDB {
    * @param table the target DynamoDB table
    * @param keys the keys to delete
    */
-  async batchDelete(table: string, keys: Record<string, AttributeValue>[]): Promise<void> {
+  async batchDelete(table: string, keys: Record<string, any>[]): Promise<void> {
     if (!keys.length) return this.logger.debug(`Batch write (delete) ${table}: no elements to write`);
 
     await this.batchWriteHelper(table, keys, false);
   }
   protected async batchWriteHelper(
     table: string,
-    itemsOrKeys: Record<string, any>[] | Record<string, AttributeValue>[],
+    itemsOrKeys: Record<string, any>[],
     isPut: boolean,
     currentChunk = 0,
     chunkSize = 25
