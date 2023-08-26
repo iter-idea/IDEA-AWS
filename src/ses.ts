@@ -1,3 +1,4 @@
+import { SESClient as SESOldClient, SendRawEmailCommand } from '@aws-sdk/client-ses';
 import * as AWSSES from '@aws-sdk/client-sesv2';
 import {
   createTransport as NodemailerCreateTransport,
@@ -160,12 +161,13 @@ export class SES {
 
     mailOptions.attachments = emailData.attachments;
 
-    let ses: AWSSES.SESv2Client;
-    if (this.ses.config.region === sesParams.region) ses = this.ses;
-    else ses = new AWSSES.SESv2Client({ region: sesParams.region });
+    // note: Nodemailer doesn't support SESv2 as of August 2023
+    const ses = new SESOldClient({ region: sesParams.region });
 
     this.logger.debug('SES send email (Nodemailer)');
-    return await NodemailerCreateTransport({ SES: ses }).sendMail(mailOptions);
+    // note: this is a workaround to make Nodemailer works with AWS SDK 3;
+    // see: https://github.com/nodemailer/nodemailer/issues/1430
+    return await NodemailerCreateTransport({ SES: { ses, aws: { SendRawEmailCommand } } }).sendMail(mailOptions);
   }
 
   private prepareEmailDestination(emailData: BasicEmailData): AWSSES.Destination {
