@@ -1,5 +1,5 @@
 import * as DDB from '@aws-sdk/lib-dynamodb';
-import { DynamoDB as DDBClient, WriteRequest, TransactWriteItem } from '@aws-sdk/client-dynamodb';
+import { DynamoDB as DDBClient, WriteRequest } from '@aws-sdk/client-dynamodb';
 import * as DDBUtils from '@aws-sdk/util-dynamodb';
 import { v4 as UUIDV4 } from 'uuid';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -351,7 +351,7 @@ export class DynamoDB {
    * Execute a series of max 10 write operations in a single transaction.
    * @param ops the operations to execute in the transaction
    */
-  async transactWrites(ops: TransactWriteItem[]): Promise<void> {
+  async transactWrites(ops: { ConditionCheck?: any; Put?: any; Delete?: any; Update?: any }[]): Promise<void> {
     if (!ops.length) return this.logger.debug('Transaction writes: no elements to write');
 
     this.logger.debug('Transaction writes');
