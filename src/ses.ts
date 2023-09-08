@@ -18,7 +18,8 @@ export class SES {
 
   logger = new Logger();
 
-  constructor(options: { region?: string; debug: boolean } = { debug: true }) {
+  constructor(params?: { region?: string; debug?: boolean }) {
+    const options = Object.assign({}, params, { debug: true });
     this.ses = new AWSSES.SESv2Client({ region: options.region });
 
     this.logger.level = options.debug ? 'DEBUG' : 'INFO';

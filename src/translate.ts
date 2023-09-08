@@ -32,7 +32,8 @@ export class Translate {
   /**
    * Initialize a new Translate helper object.
    */
-  constructor(options: { region?: string } = {}) {
+  constructor(params?: { region?: string }) {
+    const options = Object.assign({}, params);
     this.translate = new AWSTranslate.TranslateClient({ region: options.region });
     this.sourceLanguageCode = 'en';
     this.targetLanguageCode = 'en';

@@ -9,7 +9,8 @@ import { Logger } from './logger';
 export class SNS {
   logger = new Logger();
 
-  constructor(options: { debug: boolean } = { debug: true }) {
+  constructor(params?: { debug?: boolean }) {
+    const options = Object.assign({}, params, { debug: true });
     this.logger.level = options.debug ? 'DEBUG' : 'INFO';
   }
 

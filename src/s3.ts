@@ -18,7 +18,8 @@ export class S3 {
 
   logger = new Logger();
 
-  constructor(options: { debug: boolean } = { debug: true }) {
+  constructor(params?: { debug?: boolean }) {
+    const options = Object.assign({}, params, { debug: true });
     this.s3 = new AWSS3.S3Client();
 
     this.logger.level = options.debug ? 'DEBUG' : 'INFO';

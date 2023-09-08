@@ -5,8 +5,9 @@ export class Logger {
   level: string;
   private originalLevel: string;
 
-  constructor({ level = process.env.LOG_LEVEL } = {}) {
-    this.level = (level || 'DEBUG').toUpperCase();
+  constructor(params?: { level?: string }) {
+    const options = Object.assign({}, params, { level: process.env.LOG_LEVEL });
+    this.level = (options.level ?? 'DEBUG').toUpperCase();
     this.originalLevel = this.level;
   }
 

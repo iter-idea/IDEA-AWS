@@ -17,7 +17,8 @@ export class DynamoDB {
   protected dynamo: DDB.DynamoDBDocument;
   logger = new Logger();
 
-  constructor(options: { debug: boolean } = { debug: true }) {
+  constructor(params?: { debug?: boolean }) {
+    const options = Object.assign({}, params, { debug: true });
     this.dynamo = DDB.DynamoDBDocument.from(new DDBClient(), {
       marshallOptions: { convertEmptyValues: true, removeUndefinedValues: true, convertClassInstanceToMap: true }
     });

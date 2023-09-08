@@ -7,8 +7,9 @@ import { CognitoUser, isEmpty } from 'idea-toolbox';
 export class Cognito {
   protected cognito: CognitoIP.CognitoIdentityProviderClient;
 
-  constructor(params: { region?: string } = {}) {
-    this.cognito = new CognitoIP.CognitoIdentityProviderClient({ region: params.region });
+  constructor(params?: { region?: string }) {
+    const options = Object.assign({}, params);
+    this.cognito = new CognitoIP.CognitoIdentityProviderClient({ region: options.region });
   }
 
   /**

@@ -10,8 +10,9 @@ export class Comprehend {
    */
   protected comprehend: AmazonComprehend.ComprehendClient;
 
-  constructor(params: { region?: string } = {}) {
-    this.comprehend = new AmazonComprehend.ComprehendClient({ region: params.region });
+  constructor(params?: { region?: string }) {
+    const options = Object.assign({}, params);
+    this.comprehend = new AmazonComprehend.ComprehendClient({ region: options.region });
   }
 
   /**
