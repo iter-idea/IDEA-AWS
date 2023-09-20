@@ -50,7 +50,7 @@ export class S3 {
   /**
    * Get a signed URL to put a file on a S3 bucket.
    */
-  async signedURLPut(bucket: string, key: string, options?: SignedURLOptions): Promise<SignedURL> {
+  async signedURLPut(bucket: string, key: string, options: SignedURLOptions = {}): Promise<SignedURL> {
     const putParams: AWSS3.PutObjectCommandInput = { Bucket: bucket, Key: key };
     if (options.filename) putParams.ContentDisposition = `attachment; filename ="${cleanFilename(options.filename)}"`;
     const expiresIn = options.secToExp || this.DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP;
@@ -62,7 +62,7 @@ export class S3 {
   /**
    * Get a signed URL to get a file on a S3 bucket.
    */
-  async signedURLGet(bucket: string, key: string, options?: SignedURLOptions): Promise<SignedURL> {
+  async signedURLGet(bucket: string, key: string, options: SignedURLOptions = {}): Promise<SignedURL> {
     const getParams: AWSS3.GetObjectCommandInput = { Bucket: bucket, Key: key };
     if (options.filename)
       getParams.ResponseContentDisposition = `attachment; filename ="${cleanFilename(options.filename)}"`;
