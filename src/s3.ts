@@ -44,28 +44,31 @@ export class S3 {
     const upload = new Upload({ client: this.s3, params });
     await upload.done();
 
-    return this.signedURLGet(options.bucket, options.key, options.secToExp);
+    return this.signedURLGet(options.bucket, options.key, { secToExp: options.secToExp, filename: options.filename });
   }
 
   /**
    * Get a signed URL to put a file on a S3 bucket.
-   * @param expires seconds after which the signed URL expires
    */
-  async signedURLPut(bucket: string, key: string, expires?: number): Promise<SignedURL> {
-    const putCommand = new AWSS3.PutObjectCommand({ Bucket: bucket, Key: key });
-    const expiresIn = expires || this.DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP;
-    const url = await getSignedUrl(this.s3, putCommand, { expiresIn });
+  async signedURLPut(bucket: string, key: string, options?: SignedURLOptions): Promise<SignedURL> {
+    const putParams: AWSS3.PutObjectCommandInput = { Bucket: bucket, Key: key };
+    if (options.filename) putParams.ContentDisposition = `attachment; filename ="${cleanFilename(options.filename)}"`;
+    const expiresIn = options.secToExp || this.DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP;
+
+    const url = await getSignedUrl(this.s3, new AWSS3.PutObjectCommand(putParams), { expiresIn });
     return new SignedURL({ url });
   }
 
   /**
    * Get a signed URL to get a file on a S3 bucket.
-   * @param expires seconds after which the signed URL expires
    */
-  async signedURLGet(bucket: string, key: string, expires?: number): Promise<SignedURL> {
-    const getCommand = new AWSS3.GetObjectCommand({ Bucket: bucket, Key: key });
-    const expiresIn = expires || this.DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP;
-    const url = await getSignedUrl(this.s3, getCommand, { expiresIn });
+  async signedURLGet(bucket: string, key: string, options?: SignedURLOptions): Promise<SignedURL> {
+    const getParams: AWSS3.GetObjectCommandInput = { Bucket: bucket, Key: key };
+    if (options.filename)
+      getParams.ResponseContentDisposition = `attachment; filename ="${cleanFilename(options.filename)}"`;
+    const expiresIn = options.secToExp || this.DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP;
+
+    const url = await getSignedUrl(this.s3, new AWSS3.GetObjectCommand(getParams), { expiresIn });
     return new SignedURL({ url });
   }
 
@@ -87,7 +90,12 @@ export class S3 {
    */
   async getObject(options: GetObjectOptions): Promise<string | AWSS3.GetObjectCommandOutput> {
     this.logger.debug(`S3 get object: ${options.key}`);
-    const command = new AWSS3.GetObjectCommand({ Bucket: options.bucket, Key: options.key });
+
+    const params: AWSS3.GetObjectCommandInput = { Bucket: options.bucket, Key: options.key };
+    if (!options.type && options.filename)
+      params.ResponseContentDisposition = `attachment; filename ="${cleanFilename(options.filename)}"`;
+
+    const command = new AWSS3.GetObjectCommand(params);
     const result = await this.s3.send(command);
 
     switch (options.type) {
@@ -108,6 +116,7 @@ export class S3 {
     if (options.contentType) params.ContentType = options.contentType;
     if (options.acl) params.ACL = options.acl;
     if (options.metadata) params.Metadata = options.metadata;
+    if (options.filename) params.ContentDisposition = `attachment; filename ="${cleanFilename(options.filename)}"`;
 
     this.logger.debug(`S3 put object: ${options.key}`);
     return await this.s3.send(new AWSS3.PutObjectCommand(params));
@@ -177,6 +186,26 @@ export interface CreateDownloadURLFromDataOptions {
    * Seconds to URL expiration; default: `180`.
    */
   secToExp?: number;
+  /**
+   * The suggested name for the file once it's downloaded/saved.
+   * Note: the string is cleaned to ensure maximum compatibility with every OS.
+   */
+  filename?: string;
+}
+
+/**
+ * Options for generating a signed URL.
+ */
+export interface SignedURLOptions {
+  /**
+   * Seconds to URL expiration; default: `180` for GET, `300` for PUT.
+   */
+  secToExp?: number;
+  /**
+   * The suggested name for the file once it's downloaded/saved.
+   * Note: the string is cleaned to ensure maximum compatibility with every OS.
+   */
+  filename?: string;
 }
 
 /**
@@ -213,6 +242,11 @@ export interface GetObjectOptions {
    * Enum: JSON; useful to cast the result.
    */
   type?: GetObjectTypes;
+  /**
+   * The suggested name for the file once it's downloaded/saved.
+   * Note: the string is cleaned to ensure maximum compatibility with every OS.
+   */
+  filename?: string;
 }
 
 /**
@@ -251,6 +285,11 @@ export interface PutObjectOptions {
    * A set of metadata as attributes
    */
   metadata?: any;
+  /**
+   * The suggested name for the file once it's downloaded/saved.
+   * Note: the string is cleaned to ensure maximum compatibility with every OS.
+   */
+  filename?: string;
 }
 
 /**
@@ -280,3 +319,8 @@ export interface ListObjectsOptions {
    */
   prefix?: string;
 }
+
+/**
+ * Clean a filename to be compatible with most OS.
+ */
+export const cleanFilename = (filename: string): string => filename.replace(/[^a-z0-9-.\s]/gi, '_');
