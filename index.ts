@@ -9,6 +9,7 @@ export * from './src/s3';
 export * from './src/secretsManager';
 export * from './src/ses';
 export * from './src/sns';
+export * from './src/ssm';
 export * from './src/translate';
 export * from './src/attachments';
 

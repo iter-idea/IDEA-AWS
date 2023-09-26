@@ -55,6 +55,7 @@
     "@aws-sdk/client-ses": "^3.398.0",
     "@aws-sdk/client-sesv2": "^3.388.0",
     "@aws-sdk/client-sns": "^3.388.0",
+    "@aws-sdk/client-ssm": "^3.419.0",
     "@aws-sdk/client-translate": "^3.388.0",
     "@aws-sdk/lib-dynamodb": "^3.388.0",
     "@aws-sdk/lib-storage": "^3.388.0",
