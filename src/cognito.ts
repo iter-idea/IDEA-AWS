@@ -314,6 +314,23 @@ export class Cognito {
     const { CodeDeliveryDetails } = await this.cognito.send(command);
     return CodeDeliveryDetails;
   }
+  /**
+   * Complete the flow of a password forgot.
+   */
+  async confirmForgotPassword(
+    email: string,
+    newPassword: string,
+    confirmationCode: string,
+    cognitoUserPoolClientId: string
+  ): Promise<void> {
+    const command = new CognitoIP.ConfirmForgotPasswordCommand({
+      ClientId: cognitoUserPoolClientId,
+      Username: email,
+      ConfirmationCode: confirmationCode,
+      Password: newPassword
+    });
+    await this.cognito.send(command);
+  }
 
   /**
    * Update a (Cognito)User's attributes, excluding the attributes that require specific methods.
