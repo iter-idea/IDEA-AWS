@@ -1,6 +1,6 @@
 {
   "name": "idea-aws",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "description": "AWS wrappers to use in IDEA's back-ends",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
