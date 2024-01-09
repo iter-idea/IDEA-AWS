@@ -1,29 +1,19 @@
 import * as DDB from '@aws-sdk/lib-dynamodb';
 import { DynamoDB as DDBClient, WriteRequest } from '@aws-sdk/client-dynamodb';
 import * as DDBUtils from '@aws-sdk/util-dynamodb';
-import { v4 as UUIDV4 } from 'uuid';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import { customAlphabet as AlphabetNanoID } from 'nanoid';
 const NanoID = AlphabetNanoID('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 25);
-import { characters as ShortIdCharacters, generate as ShortIdGenerate } from 'shortid';
-
-import { Logger } from './logger';
 
 /**
  * A wrapper for AWS DynamoDB.
  */
 export class DynamoDB {
   protected dynamo: DDB.DynamoDBDocument;
-  logger = new Logger();
 
-  constructor(params?: { debug?: boolean }) {
-    const options = Object.assign({}, params, { debug: true });
+  constructor() {
     this.dynamo = DDB.DynamoDBDocument.from(new DDBClient(), {
       marshallOptions: { convertEmptyValues: true, removeUndefinedValues: true, convertClassInstanceToMap: true }
     });
-
-    this.logger.level = options.debug ? 'DEBUG' : 'INFO';
   }
 
   /**
@@ -36,18 +26,6 @@ export class DynamoDB {
   }
 
   /**
-   * Returns an IUID: IDEA's Unique IDentifier, which is an id unique through an IDEA's AWS account and region.
-   * Note: no need of an auth check for external uses: the permissions depend from the context in which it's executed.
-   * @deprecated use IUNID instead (nano version)
-   * @param project project code
-   * @return the IUID
-   */
-  async IUID(project: string): Promise<string> {
-    const MAX_ATTEMPTS = 3;
-    if (!project) throw new Error('Missing project');
-    return await this.identifiersGeneratorHelper(project, 'IUID', 0, MAX_ATTEMPTS);
-  }
-  /**
    * Returns an IUNID: IDEA's Unique Nano IDentifier, which is an id unique through an IDEA's AWS account and region.
    * Note: no need of an auth check for external uses: the permissions depend from the context in which it's executed.
    * @param project project code
@@ -56,48 +34,17 @@ export class DynamoDB {
   async IUNID(project: string): Promise<string> {
     const MAX_ATTEMPTS = 3;
     if (!project) throw new Error('Missing project');
-    return await this.identifiersGeneratorHelper(project, 'IUNID', 0, MAX_ATTEMPTS);
+    return await this.IUNIDHelper(project, 0, MAX_ATTEMPTS);
   }
-  /**
-   * Returns an ISID: IDEA's Short IDentifier, which is a short, unique id intended to be used in small namespaces.
-   * Note: no need of an auth check for external uses: the permissions depend from the context in which it's executed.
-   * @param project project code
-   * @return the ISID
-   */
-  async ISID(project: string): Promise<string> {
-    const MAX_ATTEMPTS = 3;
-    if (!project) throw new Error('Missing project');
-    return await this.identifiersGeneratorHelper(project, 'ISID', 0, MAX_ATTEMPTS);
-  }
-  protected async identifiersGeneratorHelper(
-    project: string,
-    type: 'IUNID' | 'IUID' | 'ISID',
-    attempt: number,
-    maxAttempts: number
-  ): Promise<string> {
+  protected async IUNIDHelper(project: string, attempt: number, maxAttempts: number): Promise<string> {
     if (attempt > maxAttempts) throw new Error('Operation failed');
 
-    let id, result;
-    switch (type) {
-      case 'IUNID':
-        id = NanoID();
-        result = `${project}_${id}`;
-        break;
-      case 'IUID':
-        id = UUIDV4();
-        result = `${project}_${id}`;
-        break;
-      case 'ISID':
-        // avoid _ characters (to avoid concatenation problems with ids) -- it must be anyway 64 chars-long
-        ShortIdCharacters('0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-@');
-        id = ShortIdGenerate();
-        result = id;
-        break;
-    }
+    const id = NanoID();
+    const result = `${project}_${id}`;
 
     try {
       await this.put({
-        TableName: 'idea_'.concat(type),
+        TableName: 'idea_IUNID',
         Item: { project, id },
         ConditionExpression: 'NOT (#p = :project AND #id = :id)',
         ExpressionAttributeNames: { '#p': 'project', '#id': 'id' },
@@ -107,7 +54,7 @@ export class DynamoDB {
       return result;
     } catch (err) {
       // ID exists, try again
-      await this.identifiersGeneratorHelper(project, type, attempt + 1, maxAttempts);
+      await this.IUNIDHelper(project, attempt + 1, maxAttempts);
     }
   }
 
@@ -117,8 +64,8 @@ export class DynamoDB {
    * @param key the key of the counter
    */
   async getAtomicCounterByKey(key: string): Promise<number> {
-    this.logger.debug(`Get atomic counter for ${key}`);
-    const result = await this.update({
+    console.debug(`Get atomic counter for ${key}`);
+    const { Attributes } = await this.update({
       TableName: 'idea_atomicCounters',
       Key: { key },
       UpdateExpression: 'ADD atomicCounter :increment',
@@ -126,8 +73,8 @@ export class DynamoDB {
       ReturnValues: 'UPDATED_NEW'
     });
 
-    if (!result?.Attributes?.atomicCounter) throw new Error('Operation failed');
-    else return result.Attributes.atomicCounter;
+    if (!Attributes.atomicCounter) throw new Error('Operation failed');
+    return Attributes.atomicCounter;
   }
 
   /**
@@ -135,11 +82,11 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   async get(params: DDB.GetCommandInput): Promise<any> {
-    this.logger.debug(`Get ${params.TableName}`);
-    const result = await this.dynamo.get(params);
+    console.debug(`Get ${params.TableName}`);
+    const { Item } = await this.dynamo.get(params);
 
-    if (!result?.Item) throw new Error('Not found');
-    return result.Item;
+    if (!Item) throw new Error('Not found');
+    return Item;
   }
 
   /**
@@ -147,7 +94,7 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   async put(params: DDB.PutCommandInput): Promise<DDB.PutCommandOutput> {
-    this.logger.debug(`Put ${params.TableName}`);
+    console.debug(`Put ${params.TableName}`);
     return await this.dynamo.put(params);
   }
 
@@ -156,7 +103,7 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   async update(params: DDB.UpdateCommandInput): Promise<DDB.UpdateCommandOutput> {
-    this.logger.debug(`Update ${params.TableName}`);
+    console.debug(`Update ${params.TableName}`);
     return await this.dynamo.update(params);
   }
 
@@ -165,7 +112,7 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   async delete(params: DDB.DeleteCommandInput): Promise<DDB.DeleteCommandOutput> {
-    this.logger.debug(`Delete ${params.TableName}`);
+    console.debug(`Delete ${params.TableName}`);
     return await this.dynamo.delete(params);
   }
 
@@ -177,7 +124,7 @@ export class DynamoDB {
    */
   async batchGet(table: string, keys: Record<string, any>[], ignoreErr?: boolean): Promise<any[]> {
     if (!keys.length) {
-      this.logger.debug(`Batch get ${table}: no elements to get`);
+      console.debug(`Batch get ${table}: no elements to get`);
       return [];
     }
 
@@ -197,7 +144,7 @@ export class DynamoDB {
       }
     };
 
-    this.logger.debug(`Batch get ${table}: ${currentChunk} of ${keys.length}`);
+    console.debug(`Batch get ${table}: ${currentChunk} of ${keys.length}`);
 
     let result: DDB.BatchGetCommandOutput;
     try {
@@ -223,7 +170,7 @@ export class DynamoDB {
    * @param items the objects to insert
    */
   async batchPut(table: string, items: Record<string, any>[]): Promise<void> {
-    if (!items.length) return this.logger.debug(`Batch write (put) ${table}: no elements to write`);
+    if (!items.length) return console.debug(`Batch write (put) ${table}: no elements to write`);
 
     await this.batchWriteHelper(table, items, true);
   }
@@ -235,7 +182,7 @@ export class DynamoDB {
    * @param keys the keys to delete
    */
   async batchDelete(table: string, keys: Record<string, any>[]): Promise<void> {
-    if (!keys.length) return this.logger.debug(`Batch write (delete) ${table}: no elements to write`);
+    if (!keys.length) return console.debug(`Batch write (delete) ${table}: no elements to write`);
 
     await this.batchWriteHelper(table, keys, false);
   }
@@ -246,7 +193,7 @@ export class DynamoDB {
     currentChunk = 0,
     chunkSize = 25
   ): Promise<void> {
-    this.logger.debug(`Batch write (${isPut ? 'put' : 'delete'}) ${table}: ${currentChunk} of ${itemsOrKeys.length}`);
+    console.debug(`Batch write (${isPut ? 'put' : 'delete'}) ${table}: ${currentChunk} of ${itemsOrKeys.length}`);
 
     let requests: WriteRequest[];
     if (isPut)
@@ -278,7 +225,7 @@ export class DynamoDB {
         attempts++;
 
         const waitSeconds = getRandomInt(attempts * 5);
-        this.logger.debug(`Batch write throttled: waiting ${waitSeconds} seconds to retry`);
+        console.debug(`Batch write throttled: waiting ${waitSeconds} seconds to retry`);
         await wait(waitSeconds);
       } else {
         params.RequestItems = null;
@@ -291,10 +238,10 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   async query(params: DDB.QueryCommandInput): Promise<any[]> {
-    this.logger.debug(`Query ${params.TableName}`);
+    console.debug(`Query ${params.TableName}`);
     const result = await this.queryScanHelper(params, [], true);
 
-    this.logger.debug(`Results query ${params.TableName}: ${result?.length || 0}`);
+    console.debug(`Results query ${params.TableName}: ${result.length ?? 0}`);
     return result;
   }
   /**
@@ -302,10 +249,10 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   async scan(params: DDB.ScanCommandInput): Promise<any[]> {
-    this.logger.debug(`Scan ${params.TableName}`);
+    console.debug(`Scan ${params.TableName}`);
     const result = await this.queryScanHelper(params, [], false);
 
-    this.logger.debug(`Results scan ${params.TableName}: ${result?.length || 0}`);
+    console.debug(`Results scan ${params.TableName}: ${result.length ?? 0}`);
     return result;
   }
   protected async queryScanHelper(
@@ -330,10 +277,10 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   async queryClassic(params: DDB.QueryCommandInput): Promise<DDB.QueryCommandOutput> {
-    this.logger.debug(`Query classic ${params.TableName}`);
+    console.debug(`Query classic ${params.TableName}`);
     const result = await this.dynamo.query(params);
 
-    this.logger.debug(`Results query classic ${params.TableName}: ${result?.Items?.length || 0}`);
+    console.debug(`Results query classic ${params.TableName}: ${result.Items.length ?? 0}`);
     return result;
   }
   /**
@@ -341,21 +288,21 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   async scanClassic(params: DDB.ScanCommandInput): Promise<DDB.ScanCommandOutput> {
-    this.logger.debug(`Scan classic ${params.TableName}`);
+    console.debug(`Scan classic ${params.TableName}`);
     const result = await this.dynamo.scan(params);
 
-    this.logger.debug(`Results scan classic ${params.TableName}: ${result?.Items?.length || 0}`);
+    console.debug(`Results scan classic ${params.TableName}: ${result.Items.length ?? 0}`);
     return result;
   }
 
   /**
-   * Execute a series of max 10 write operations in a single transaction.
+   * Execute a series of write operations in a single transaction.
    * @param ops the operations to execute in the transaction
    */
   async transactWrites(ops: { ConditionCheck?: any; Put?: any; Delete?: any; Update?: any }[]): Promise<void> {
-    if (!ops.length) return this.logger.debug('Transaction writes: no elements to write');
+    if (!ops.length) return console.debug('Transaction writes: no elements to write');
 
-    this.logger.debug('Transaction writes');
-    await this.dynamo.transactWrite({ TransactItems: ops.slice(0, 10) });
+    console.debug('Transaction writes');
+    await this.dynamo.transactWrite({ TransactItems: ops });
   }
 }
