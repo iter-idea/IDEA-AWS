@@ -25,7 +25,7 @@ Note: the log level is controlled by each Lambda function&#39;s configuration.</
 <ul class="tsd-hierarchy">
 <li><span class="target">Logger</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/47ee674/src/logger.ts#L5">src/logger.ts:5</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/617b6b1/src/logger.ts#L5">src/logger.ts:5</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -55,67 +55,67 @@ Note: the log level is controlled by each Lambda function&#39;s configuration.</
 <section class="tsd-panel tsd-member"><a id="debug" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>debug</span><a href="#debug" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
-<li class="tsd-signature tsd-anchor-link" id="debug.debug-1"><span class="tsd-kind-call-signature">debug</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">_</span>, <span class="tsd-kind-parameter">params</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#debug.debug-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="debug.debug-1"><span class="tsd-kind-call-signature">debug</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">summary</span>, <span class="tsd-kind-parameter">content</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#debug.debug-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">_</span>: <span class="tsd-signature-type">string</span></h5></li>
+<h5><span class="tsd-kind-parameter">summary</span>: <span class="tsd-signature-type">string</span></h5></li>
 <li>
-<h5><span class="tsd-kind-parameter">params</span>: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = {}</span></h5></li></ul></div>
+<h5><span class="tsd-kind-parameter">content</span>: <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> = {}</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/47ee674/src/logger.ts#L6">src/logger.ts:6</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/617b6b1/src/logger.ts#L6">src/logger.ts:6</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="error" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>error</span><a href="#error" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
-<li class="tsd-signature tsd-anchor-link" id="error.error-1"><span class="tsd-kind-call-signature">error</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">_</span>, <span class="tsd-kind-parameter">err</span>, <span class="tsd-kind-parameter">params</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#error.error-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="error.error-1"><span class="tsd-kind-call-signature">error</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">summary</span>, <span class="tsd-kind-parameter">error</span>, <span class="tsd-kind-parameter">content</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#error.error-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">_</span>: <span class="tsd-signature-type">string</span></h5></li>
+<h5><span class="tsd-kind-parameter">summary</span>: <span class="tsd-signature-type">string</span></h5></li>
 <li>
-<h5><span class="tsd-kind-parameter">err</span>: <span class="tsd-signature-type">any</span></h5></li>
+<h5><span class="tsd-kind-parameter">error</span>: <span class="tsd-signature-type">any</span></h5></li>
 <li>
-<h5><span class="tsd-kind-parameter">params</span>: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = {}</span></h5></li></ul></div>
+<h5><span class="tsd-kind-parameter">content</span>: <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> = {}</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/47ee674/src/logger.ts#L13">src/logger.ts:13</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/617b6b1/src/logger.ts#L13">src/logger.ts:13</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="info" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>info</span><a href="#info" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
-<li class="tsd-signature tsd-anchor-link" id="info.info-1"><span class="tsd-kind-call-signature">info</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">_</span>, <span class="tsd-kind-parameter">params</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#info.info-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="info.info-1"><span class="tsd-kind-call-signature">info</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">summary</span>, <span class="tsd-kind-parameter">content</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#info.info-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">_</span>: <span class="tsd-signature-type">string</span></h5></li>
+<h5><span class="tsd-kind-parameter">summary</span>: <span class="tsd-signature-type">string</span></h5></li>
 <li>
-<h5><span class="tsd-kind-parameter">params</span>: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = {}</span></h5></li></ul></div>
+<h5><span class="tsd-kind-parameter">content</span>: <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> = {}</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/47ee674/src/logger.ts#L8">src/logger.ts:8</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/617b6b1/src/logger.ts#L8">src/logger.ts:8</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="warn" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>warn</span><a href="#warn" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
-<li class="tsd-signature tsd-anchor-link" id="warn.warn-1"><span class="tsd-kind-call-signature">warn</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">_</span>, <span class="tsd-kind-parameter">err</span>, <span class="tsd-kind-parameter">params</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#warn.warn-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="warn.warn-1"><span class="tsd-kind-call-signature">warn</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">summary</span>, <span class="tsd-kind-parameter">error</span>, <span class="tsd-kind-parameter">content</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#warn.warn-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">_</span>: <span class="tsd-signature-type">string</span></h5></li>
+<h5><span class="tsd-kind-parameter">summary</span>: <span class="tsd-signature-type">string</span></h5></li>
 <li>
-<h5><span class="tsd-kind-parameter">err</span>: <span class="tsd-signature-type">any</span></h5></li>
+<h5><span class="tsd-kind-parameter">error</span>: <span class="tsd-signature-type">any</span></h5></li>
 <li>
-<h5><span class="tsd-kind-parameter">params</span>: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = {}</span></h5></li></ul></div>
+<h5><span class="tsd-kind-parameter">content</span>: <span class="tsd-signature-type">object</span><span class="tsd-signature-symbol"> = {}</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/47ee674/src/logger.ts#L10">src/logger.ts:10</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/617b6b1/src/logger.ts#L10">src/logger.ts:10</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
