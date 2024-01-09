@@ -5,6 +5,7 @@ import * as AWSSecretsManager from '@aws-sdk/client-secrets-manager';
  */
 export class SecretsManager {
   protected sm: AWSSecretsManager.SecretsManagerClient;
+  protected cache = new Map<string, string>();
 
   constructor() {
     this.sm = new AWSSecretsManager.SecretsManagerClient();
@@ -13,9 +14,11 @@ export class SecretsManager {
   /**
    * Get a secret string from the Secret Manager by its id.
    */
-  async getStringById(secretId: string): Promise<string> {
+  async getStringById(secretId: string, options: { noCache?: boolean } = {}): Promise<string> {
+    if (!options.noCache && this.cache.has(secretId)) return this.cache.get(secretId);
     const command = new AWSSecretsManager.GetSecretValueCommand({ SecretId: secretId });
-    const result = await this.sm.send(command);
-    return result.SecretString;
+    const { SecretString } = await this.sm.send(command);
+    this.cache.set(secretId, SecretString);
+    return SecretString;
   }
 }
