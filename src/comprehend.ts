@@ -5,13 +5,9 @@ import { Sentiment } from 'idea-toolbox';
  * A wrapper for Amazon Comprehend.
  */
 export class Comprehend {
-  /**
-   * The instance of Comprehend.
-   */
   protected comprehend: AmazonComprehend.ComprehendClient;
 
-  constructor(params?: { region?: string }) {
-    const options = Object.assign({}, params);
+  constructor(options: { region?: string } = {}) {
     this.comprehend = new AmazonComprehend.ComprehendClient({ region: options.region });
   }
 
@@ -22,9 +18,9 @@ export class Comprehend {
     if (!params.language || !params.text) throw new Error('Missing some parameters');
 
     const command = new AmazonComprehend.DetectSentimentCommand({ LanguageCode: params.language, Text: params.text });
-    const result = await this.comprehend.send(command);
+    const { Sentiment } = await this.comprehend.send(command);
 
-    return result.Sentiment as Sentiment;
+    return Sentiment as Sentiment;
   }
 
   /**
@@ -34,10 +30,10 @@ export class Comprehend {
     if (!params.text) throw new Error('Missing text');
 
     const command = new AmazonComprehend.DetectDominantLanguageCommand({ Text: params.text });
-    const result = await this.comprehend.send(command);
-    if (!result.Languages.length) throw new Error('Not found');
+    const { Languages } = await this.comprehend.send(command);
+    if (!Languages.length) throw new Error('Not found');
 
-    return result.Languages[0].LanguageCode;
+    return Languages[0].LanguageCode;
   }
 }
 
