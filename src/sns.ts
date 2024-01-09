@@ -1,93 +1,83 @@
 import * as AWSSNS from '@aws-sdk/client-sns';
 import { PushNotificationsPlatforms } from 'idea-toolbox';
 
-import { Logger } from './logger';
-
 /**
  * A wrapper for AWS Simple Notification Service.
  */
 export class SNS {
-  logger = new Logger();
+  protected client: AWSSNS.SNSClient;
 
-  constructor(params?: { debug?: boolean }) {
-    const options = Object.assign({}, params, { debug: true });
-    this.logger.level = options.debug ? 'DEBUG' : 'INFO';
+  constructor(options: { region?: string } = {}) {
+    this.client = new AWSSNS.SNSClient({ region: options.region });
   }
 
   /**
    * Create a new endpoint in the SNS platform specified.
    * @return platform endpoint ARN
    */
-  async createPushPlatormEndpoint(
+  async createPlatormEndpoint(
     platform: PushNotificationsPlatforms,
     token: string,
-    snsParams: SNSParams
+    options: SNSCreateEndpointParams
   ): Promise<string> {
     let platformARN: string;
     switch (platform) {
       case PushNotificationsPlatforms.APNS:
-        platformARN = snsParams.appleArn;
+        platformARN = options.appleArn;
         break;
       case PushNotificationsPlatforms.APNS_SANDBOX:
-        platformARN = snsParams.appleDevArn;
+        platformARN = options.appleDevArn;
         break;
       case PushNotificationsPlatforms.FCM:
-        platformARN = snsParams.androidArn;
+        platformARN = options.androidArn;
         break;
       default:
         throw new Error('Unsupported platform');
     }
 
-    this.logger.debug('SNS ADD PLATFORM ENDPOINT');
-    const client = new AWSSNS.SNSClient({ region: snsParams.region });
+    console.debug('SNS add platform endpoint');
     const command = new AWSSNS.CreatePlatformEndpointCommand({ PlatformApplicationArn: platformARN, Token: token });
-    const { EndpointArn } = await client.send(command);
-
+    const { EndpointArn } = await this.client.send(command);
     return EndpointArn;
   }
 
   /**
    * Publish a message to a SNS endpoint.
    */
-  async publish(snsParams: SNSPublishParams): Promise<AWSSNS.PublishCommandOutput> {
+  async publish(options: SNSPublishParams): Promise<AWSSNS.PublishCommandOutput> {
     let structuredMessage;
-    if (snsParams.json) structuredMessage = { default: JSON.stringify(snsParams.json) };
+    if (options.json) structuredMessage = { default: JSON.stringify(options.json) };
     else
-      switch (snsParams.platform) {
+      switch (options.platform) {
         case PushNotificationsPlatforms.APNS:
-          structuredMessage = { APNS: JSON.stringify({ aps: { alert: snsParams.message } }) };
+          structuredMessage = { APNS: JSON.stringify({ aps: { alert: options.message } }) };
           break;
         case PushNotificationsPlatforms.APNS_SANDBOX:
-          structuredMessage = { APNS_SANDBOX: JSON.stringify({ aps: { alert: snsParams.message } }) };
+          structuredMessage = { APNS_SANDBOX: JSON.stringify({ aps: { alert: options.message } }) };
           break;
         case PushNotificationsPlatforms.FCM:
           structuredMessage = {
-            GCM: JSON.stringify({ notification: { body: snsParams.message, title: snsParams.message } })
+            GCM: JSON.stringify({ notification: { body: options.message, title: options.message } })
           };
           break;
         default:
           throw new Error('Unsupported platform');
       }
 
-    this.logger.debug('SNS PUBLISH IN TOPIC');
-    const client = new AWSSNS.SNSClient({ region: snsParams.region });
+    console.debug('SNS publish in topic');
     const command = new AWSSNS.PublishCommand({
       MessageStructure: 'json',
       Message: JSON.stringify(structuredMessage),
-      TargetArn: snsParams.endpoint
+      TargetArn: options.endpoint
     });
-    return await client.send(command);
+    return await this.client.send(command);
   }
 }
 
 /**
- * SNS configuration.
+ * Options for creating a SNS endpoint.
  */
-export interface SNSParams {
-  /**
-   * SNS region.
-   */
-  region: string;
+export interface SNSCreateEndpointParams {
   /**
    * ARN to production of Apple's (iOS, MacOS) notification services.
    */
@@ -102,11 +92,10 @@ export interface SNSParams {
   androidArn?: string;
 }
 
+/**
+ * Options to publish a message on a SNS endpoint.
+ */
 export interface SNSPublishParams {
-  /**
-   * SNS region.
-   */
-  region: string;
   /**
    * The endpoint of the notification.
    */
