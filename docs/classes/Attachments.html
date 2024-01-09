@@ -24,7 +24,7 @@
 <ul class="tsd-hierarchy">
 <li><span class="target">Attachments</span></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/e523f3b/src/attachments.ts#L9">src/attachments.ts:9</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/47ee674/src/attachments.ts#L9">src/attachments.ts:9</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -38,7 +38,7 @@
 <h3 class="tsd-index-heading">Properties</h3>
 <div class="tsd-index-list"><a href="Attachments.html#IUID_ATTACHMENTS_PREFIX" class="tsd-index-link tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-1024"><rect fill="var(--color-icon-background)" stroke="#FF984D" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M9.354 16V7.24H12.174C12.99 7.24 13.638 7.476 14.118 7.948C14.606 8.412 14.85 9.036 14.85 9.82C14.85 10.604 14.606 11.232 14.118 11.704C13.638 12.168 12.99 12.4 12.174 12.4H10.434V16H9.354ZM10.434 11.428H12.174C12.646 11.428 13.022 11.284 13.302 10.996C13.59 10.7 13.734 10.308 13.734 9.82C13.734 9.324 13.59 8.932 13.302 8.644C13.022 8.356 12.646 8.212 12.174 8.212H10.434V11.428Z" fill="var(--color-text)"></path></g></svg><span>IUID_<wbr/>ATTACHMENTS_<wbr/>PREFIX</span></a>
 <a href="Attachments.html#S3_ATTACHMENTS_BUCKET" class="tsd-index-link tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>S3_<wbr/>ATTACHMENTS_<wbr/>BUCKET</span></a>
-<a href="Attachments.html#dynamo" class="tsd-index-link tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>dynamo</span></a>
+<a href="Attachments.html#ddb" class="tsd-index-link tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>ddb</span></a>
 <a href="Attachments.html#s3" class="tsd-index-link tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>s3</span></a>
 </div></section>
 <section class="tsd-index-section">
@@ -51,18 +51,28 @@
 <section class="tsd-panel tsd-member"><a id="constructor" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>constructor</span><a href="#constructor" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><g stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" id="icon-anchor"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14a3.5 3.5 0 0 0 5 0l4 -4a3.5 3.5 0 0 0 -5 -5l-.5 .5"></path><path d="M14 10a3.5 3.5 0 0 0 -5 0l-4 4a3.5 3.5 0 0 0 5 5l.5 -.5"></path></g></svg></a></h3>
 <ul class="tsd-signatures">
-<li class="tsd-signature tsd-anchor-link" id="constructor.new_Attachments"><span class="tsd-kind-constructor-signature">new <wbr/>Attachments</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Attachments.html" class="tsd-signature-type tsd-kind-class">Attachments</a><a href="#constructor.new_Attachments" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="constructor.new_Attachments"><span class="tsd-kind-constructor-signature">new <wbr/>Attachments</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">ddb</span>, <span class="tsd-kind-parameter">s3</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="Attachments.html" class="tsd-signature-type tsd-kind-class">Attachments</a><a href="#constructor.new_Attachments" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">ddb</span>: <a href="DynamoDB.html" class="tsd-signature-type tsd-kind-class">DynamoDB</a></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">s3</span>: <a href="S3.html" class="tsd-signature-type tsd-kind-class">S3</a></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="Attachments.html" class="tsd-signature-type tsd-kind-class">Attachments</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/e523f3b/src/attachments.ts#L24">src/attachments.ts:24</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/47ee674/src/attachments.ts#L19">src/attachments.ts:19</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-is-protected"><a id="IUID_ATTACHMENTS_PREFIX" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>IUID_<wbr/>ATTACHMENTS_<wbr/>PREFIX</span><a href="#IUID_ATTACHMENTS_PREFIX" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">IUID_<wbr/>ATTACHMENTS_<wbr/>PREFIX</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
+<div class="tsd-signature"><span class="tsd-kind-property">IUID_<wbr/>ATTACHMENTS_<wbr/>PREFIX</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = ...</span></div>
+<div class="tsd-comment tsd-typography"><p>The prefix for attachment IDs. Fallback to IDEA&#39;s default one.</p>
+</div>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/e523f3b/src/attachments.ts#L22">src/attachments.ts:22</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/47ee674/src/attachments.ts#L17">src/attachments.ts:17</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected"><a id="S3_ATTACHMENTS_BUCKET" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>S3_<wbr/>ATTACHMENTS_<wbr/>BUCKET</span><a href="#S3_ATTACHMENTS_BUCKET" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">S3_<wbr/>ATTACHMENTS_<wbr/>BUCKET</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> = ...</span></div>
@@ -70,23 +80,17 @@
 </div>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/e523f3b/src/attachments.ts#L21">src/attachments.ts:21</a></li></ul></aside></section>
-<section class="tsd-panel tsd-member tsd-is-protected"><a id="dynamo" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>dynamo</span><a href="#dynamo" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">dynamo</span><span class="tsd-signature-symbol">:</span> <a href="DynamoDB.html" class="tsd-signature-type tsd-kind-class">DynamoDB</a></div>
-<div class="tsd-comment tsd-typography"><p>The instance of DynamoDB.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/47ee674/src/attachments.ts#L13">src/attachments.ts:13</a></li></ul></aside></section>
+<section class="tsd-panel tsd-member tsd-is-protected"><a id="ddb" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>ddb</span><a href="#ddb" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<div class="tsd-signature"><span class="tsd-kind-property">ddb</span><span class="tsd-signature-symbol">:</span> <a href="DynamoDB.html" class="tsd-signature-type tsd-kind-class">DynamoDB</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/e523f3b/src/attachments.ts#L13">src/attachments.ts:13</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/47ee674/src/attachments.ts#L19">src/attachments.ts:19</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected"><a id="s3" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>s3</span><a href="#s3" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<div class="tsd-signature"><span class="tsd-kind-property">s3</span><span class="tsd-signature-symbol">:</span> <a href="S3.html" class="tsd-signature-type tsd-kind-class">S3</a></div>
-<div class="tsd-comment tsd-typography"><p>The instance of S3.</p>
-</div>
-<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<div class="tsd-signature"><span class="tsd-kind-property">s3</span><span class="tsd-signature-symbol">:</span> <a href="S3.html" class="tsd-signature-type tsd-kind-class">S3</a></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/e523f3b/src/attachments.ts#L17">src/attachments.ts:17</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/47ee674/src/attachments.ts#L19">src/attachments.ts:19</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member"><a id="get" class="tsd-anchor"></a>
@@ -104,7 +108,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">SignedURL</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/e523f3b/src/attachments.ts#L44">src/attachments.ts:44</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/47ee674/src/attachments.ts#L36">src/attachments.ts:36</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member"><a id="put" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>put</span><a href="#put" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -122,7 +126,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type ">SignedURL</span><span class="tsd-signature-symbol">&gt;</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/e523f3b/src/attachments.ts#L32">src/attachments.ts:32</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/47ee674/src/attachments.ts#L24">src/attachments.ts:24</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -145,14 +149,13 @@
 <li><a href="#constructor" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-512"></use></svg><span>constructor</span></a></li>
 <li><a href="#IUID_ATTACHMENTS_PREFIX" class="tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>IUID_<wbr/>ATTACHMENTS_<wbr/>PREFIX</span></a></li>
 <li><a href="#S3_ATTACHMENTS_BUCKET" class="tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>S3_<wbr/>ATTACHMENTS_<wbr/>BUCKET</span></a></li>
-<li><a href="#dynamo" class="tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>dynamo</span></a></li>
+<li><a href="#ddb" class="tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>ddb</span></a></li>
 <li><a href="#s3" class="tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>s3</span></a></li>
 <li><a href="#get" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>get</span></a></li>
 <li><a href="#put" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>put</span></a></li></ul></div></details></div>
 <div class="site-menu">
 <nav class="tsd-navigation"><a href="../modules.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-4"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-namespace)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.33 16V7.24H10.77L13.446 14.74C13.43 14.54 13.41 14.296 13.386 14.008C13.37 13.712 13.354 13.404 13.338 13.084C13.33 12.756 13.326 12.448 13.326 12.16V7.24H14.37V16H12.93L10.266 8.5C10.282 8.692 10.298 8.936 10.314 9.232C10.33 9.52 10.342 9.828 10.35 10.156C10.366 10.476 10.374 10.784 10.374 11.08V16H9.33Z" fill="var(--color-text)"></path></g></svg><span>idea-<wbr/>aws</span></a>
 <ul class="tsd-small-nested-navigation">
-<li><a href="../enums/GetObjectTypes.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-8"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-enum)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.45 16V7.24H14.49V8.224H10.518V10.936H14.07V11.908H10.518V15.016H14.49V16H9.45Z" fill="var(--color-text)"></path></g></svg><span>Get<wbr/>Object<wbr/>Types</span></a></li>
 <li><a href="Attachments.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-128"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-class)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M11.898 16.1201C11.098 16.1201 10.466 15.8961 10.002 15.4481C9.53803 15.0001 9.30603 14.3841 9.30603 13.6001V9.64012C9.30603 8.85612 9.53803 8.24012 10.002 7.79212C10.466 7.34412 11.098 7.12012 11.898 7.12012C12.682 7.12012 13.306 7.34812 13.77 7.80412C14.234 8.25212 14.466 8.86412 14.466 9.64012H13.386C13.386 9.14412 13.254 8.76412 12.99 8.50012C12.734 8.22812 12.37 8.09212 11.898 8.09212C11.426 8.09212 11.054 8.22412 10.782 8.48812C10.518 8.75212 10.386 9.13212 10.386 9.62812V13.6001C10.386 14.0961 10.518 14.4801 10.782 14.7521C11.054 15.0161 11.426 15.1481 11.898 15.1481C12.37 15.1481 12.734 15.0161 12.99 14.7521C13.254 14.4801 13.386 14.0961 13.386 13.6001H14.466C14.466 14.3761 14.234 14.9921 13.77 15.4481C13.306 15.8961 12.682 16.1201 11.898 16.1201Z" fill="var(--color-text)"></path></g></svg><span>Attachments</span></a></li>
 <li><a href="Cognito.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Cognito</span></a></li>
 <li><a href="Comprehend.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Comprehend</span></a></li>
@@ -179,12 +182,13 @@
 <li><a href="../interfaces/EmailAttachment.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Email<wbr/>Attachment</span></a></li>
 <li><a href="../interfaces/EmailData.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Email<wbr/>Data</span></a></li>
 <li><a href="../interfaces/GetObjectOptions.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Get<wbr/>Object<wbr/>Options</span></a></li>
+<li><a href="../interfaces/HeadObjectOptions.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Head<wbr/>Object<wbr/>Options</span></a></li>
 <li><a href="../interfaces/InternalAPIRequestParams.html" class="deprecated"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>InternalAPIRequest<wbr/>Params</span></a></li>
 <li><a href="../interfaces/ListObjectsOptions.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>List<wbr/>Objects<wbr/>Options</span></a></li>
 <li><a href="../interfaces/PutObjectOptions.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Put<wbr/>Object<wbr/>Options</span></a></li>
 <li><a href="../interfaces/ResourceControllerOptions.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Resource<wbr/>Controller<wbr/>Options</span></a></li>
 <li><a href="../interfaces/SESParams.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>SESParams</span></a></li>
-<li><a href="../interfaces/SNSParams.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>SNSParams</span></a></li>
+<li><a href="../interfaces/SNSCreateEndpointParams.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>SNSCreate<wbr/>Endpoint<wbr/>Params</span></a></li>
 <li><a href="../interfaces/SNSPublishParams.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>SNSPublish<wbr/>Params</span></a></li>
 <li><a href="../interfaces/SignedURLOptions.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>SignedURLOptions</span></a></li>
 <li><a href="../interfaces/TemplatedEmailData.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Templated<wbr/>Email<wbr/>Data</span></a></li>
