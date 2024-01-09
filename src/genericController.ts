@@ -29,10 +29,10 @@ export abstract class GenericController {
   /**
    * Default callback for the Lambda.
    */
-  protected done(err: any, res?: any): void {
-    if (err) this.logger.info('END-FAILED', { error: err.message || err.errorMessage });
+  protected done(error: Error | any, res?: any): void {
+    if (error) this.logger.error('END-FAILED', error);
     else this.logger.info('END-SUCCESS');
 
-    this.callback(err, res);
+    this.callback(error, res);
   }
 }

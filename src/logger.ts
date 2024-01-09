@@ -1,66 +1,15 @@
 /**
- * Manage structured logging.
+ * Manage structured logging in the context of a Lambda function.
+ * Note: the log level is controlled by each Lambda function's configuration.
  */
 export class Logger {
-  level: string;
-  private originalLevel: string;
+  debug = (_: string, params: any = {}): void => console.debug({ _, ...params });
 
-  constructor(params?: { level?: string }) {
-    const options = Object.assign({}, params, { level: process.env.LOG_LEVEL });
-    this.level = (options.level ?? 'DEBUG').toUpperCase();
-    this.originalLevel = this.level;
-  }
+  info = (_: string, params: any = {}): void => console.info({ _, ...params });
 
-  isEnabled(level: number): boolean {
-    return level >= ((LogLevels as any)[this.level] || LogLevels.DEBUG);
-  }
+  warn = (_: string, err: Error | any, params: any = {}): void =>
+    console.warn({ _, ...params, errorType: err.name, errorMessage: err.message, stackTrace: err.stack });
 
-  appendError(params: any, err: Error): any {
-    if (!err) return params;
-
-    return { ...(params || {}), errorName: err.name, errorMessage: err.message, stackTrace: err.stack };
-  }
-
-  log(levelName: string, message: string, params: any): void {
-    const level = (LogLevels as any)[levelName];
-    if (!this.isEnabled(level)) return;
-
-    const logMsg = { ...params, level, sLevel: levelName, message };
-
-    const consoleMethods = { DEBUG: console.debug, INFO: console.info, WARN: console.warn, ERROR: console.error };
-
-    // re-order message and params to appear earlier in the log row
-    (consoleMethods as any)[levelName](
-      JSON.stringify({ message, ...params, ...logMsg }, (_, value) =>
-        typeof value === 'bigint' ? value.toString() : value
-      )
-    );
-  }
-
-  debug(msg: string, params: any = {}): void {
-    this.log('DEBUG', msg, params);
-  }
-  info(msg: string, params: any = {}): void {
-    this.log('INFO', msg, params);
-  }
-  warn(msg: string, err: Error | any, params: any = {}): void {
-    const parameters = this.appendError(params, err);
-    this.log('WARN', msg, parameters);
-  }
-  error(msg: string, err: Error | any, params: any = {}): void {
-    const parameters = this.appendError(params, err);
-    this.log('ERROR', msg, parameters);
-  }
-
-  enableDebug(): () => void {
-    this.level = 'DEBUG';
-    return (): void => this.resetLevel();
-  }
-
-  resetLevel(): void {
-    this.level = this.originalLevel;
-  }
+  error = (_: string, err: Error | any, params: any = {}): void =>
+    console.error({ _, ...params, errorType: err.name, errorMessage: err.message, stackTrace: err.stack });
 }
-
-// levels here are identical to bunyan practices (https://github.com/trentm/node-bunyan#levels)
-const LogLevels = { DEBUG: 20, INFO: 30, WARN: 40, ERROR: 50 };

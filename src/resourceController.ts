@@ -82,19 +82,10 @@ export abstract class ResourceController extends GenericController {
 
       if (options.useMetrics) this.prepareMetrics();
 
-      // print the initial log
-      const info = {
-        principalId: this.principalId,
-        queryParams: this.queryParams,
-        body: this.body,
-        version: this.clientVersion,
-        platform: this.clientPlatform,
-        bundle: this.clientBundle
-      };
-      this.logger.info(`START: ${this.httpMethod} ${this.path}`, info);
+      this.logger.info(`START: ${this.httpMethod} ${this.path}`, this.getEventInfo());
     } catch (err) {
       this.initError = true;
-      this.done(this.controlHandlerError(err, 'INIT-ERROR', 'Malformed request'));
+      this.done(this.remapHandlerError(err, 'INIT-ERROR', 'Malformed request'));
     }
   }
   private initFromEventV2(event: APIGatewayProxyEventV2, options: ResourceControllerOptions): void {
@@ -141,6 +132,16 @@ export abstract class ResourceController extends GenericController {
     } catch (error) {
       throw new RCError('Malformed body');
     }
+  }
+  protected getEventInfo(): Record<string, any> {
+    return {
+      principalId: this.principalId,
+      queryParams: this.queryParams,
+      body: this.body,
+      version: this.clientVersion,
+      platform: this.clientPlatform,
+      bundle: this.clientBundle
+    };
   }
 
   /**
@@ -215,29 +216,37 @@ export abstract class ResourceController extends GenericController {
 
         this.done(null, response);
       } catch (err) {
-        this.done(this.controlHandlerError(err, 'HANDLER-ERROR', 'Operation failed'));
+        this.done(this.remapHandlerError(err, 'HANDLER-ERROR', 'Operation failed'));
       }
     } catch (err) {
-      this.done(this.controlHandlerError(err, 'AUTH-CHECK-ERROR', 'Forbidden'));
+      this.done(this.remapHandlerError(err, 'AUTH-CHECK-ERROR', 'Forbidden'));
     }
   };
-  private controlHandlerError(err: any = {}, context: string, replaceWithErrorMessage: string): Error {
-    if (err instanceof RCError) return new Error(err.message);
-
-    this.logger.error(context, err);
-    return new Error(replaceWithErrorMessage);
+  private remapHandlerError(
+    err: Error | RCError | any,
+    context: string,
+    replaceWithMessage: string
+  ): RCError | RCUnhandledError {
+    if (err instanceof RCError) return err;
+    const error = err as RCUnhandledError;
+    error.context = context;
+    error.internalMessage = error.message;
+    error.message = replaceWithMessage;
+    return error;
   }
-  protected done(err: any, res?: any, statusCode = this.returnStatusCode || (err ? 400 : 200)): void {
-    if (err) this.logger.info('END-FAILED', { statusCode, error: err.message || err.errorMessage });
-    else this.logger.info('END-SUCCESS', { statusCode });
+  protected done(error?: Error | any, result?: any, statusCode = this.returnStatusCode ?? (error ? 400 : 200)): void {
+    const logContent: any = { statusCode, event: this.getEventInfo() };
+    if (result) logContent.result = Array.isArray(result) ? `Array (${result.length})` : result;
+    if (error) this.logger.error(`END-FAILED: ${this.httpMethod} ${this.path}`, error, logContent);
+    else this.logger.info(`END-SUCCESS: ${this.httpMethod} ${this.path}`, logContent);
 
-    if (this.logRequestsWithKey) this.storeLog(!err);
+    if (this.logRequestsWithKey) this.storeLog(!error);
 
-    if (this.metrics) this.publishMetrics(statusCode, err);
+    if (this.metrics) this.publishMetrics(statusCode, error);
 
     this.callback(null, {
       statusCode: String(statusCode),
-      body: err ? JSON.stringify({ message: err.message }) : JSON.stringify(res || {}),
+      body: error ? JSON.stringify({ message: error.message }) : JSON.stringify(result ?? {}),
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
   }
@@ -393,7 +402,7 @@ export abstract class ResourceController extends GenericController {
     this.metrics.addMetric('statusCode', statusCode);
     if (error) {
       this.metrics.addMetric('failed');
-      this.metrics.addMetadata('errorMessage', error.name);
+      this.metrics.addMetadata('error', error.name);
     } else this.metrics.addMetric('success');
     this.metrics.publishStoredMetrics();
   }
@@ -417,7 +426,7 @@ export abstract class ResourceController extends GenericController {
       FunctionName: params.lambda,
       InvocationType: 'RequestResponse',
       Payload: this.mapEventForInternalApiRequest(params),
-      Qualifier: params.stage || this.stage
+      Qualifier: params.stage ?? this.stage
     });
     const client = new Lambda.LambdaClient();
     const { Payload } = await client.send(command);
@@ -444,13 +453,13 @@ export abstract class ResourceController extends GenericController {
 
     // change only the event attributes we need; e.g. the authorization is unchanged
     if (!event.requestContext) event.requestContext = {};
-    event.requestContext.stage = params.stage || this.stage;
+    event.requestContext.stage = params.stage ?? this.stage;
     if (!event.requestContext.http) event.requestContext.http = {};
     event.requestContext.http.method = event.httpMethod = params.httpMethod;
     event.routeKey = event.resource = params.resource;
-    event.pathParameters = params.pathParams || {};
-    event.queryStringParameters = params.queryParams || {};
-    event.body = JSON.stringify(params.body || {});
+    event.pathParameters = params.pathParams ?? {};
+    event.queryStringParameters = params.queryParams ?? {};
+    event.body = JSON.stringify(params.body ?? {});
     event.rawPath = event.path = params.resource;
     for (const p in event.pathParameters)
       if (event.pathParameters[p]) event.rawPath = event.path = event.path.replace(`{${p}}`, event.pathParameters[p]);
@@ -479,7 +488,7 @@ export abstract class ResourceController extends GenericController {
     if (!this.sharedResourceExists(`i18n/${lang}.json`)) return;
     // set the languages
     this.currentLang = lang;
-    this.defaultLang = defLang || lang;
+    this.defaultLang = defLang ?? lang;
     this.translations = {};
     // load the translations in the chosen language
     this.translations[this.currentLang] = JSON.parse(
@@ -610,4 +619,18 @@ export class RCError extends Error {
     super(message);
     Object.setPrototypeOf(this, RCError.prototype);
   }
+}
+
+/**
+ * An unhandled error thrown inside the RC (i.e. `!(error instanceof RCError)`) .
+ */
+class RCUnhandledError extends Error {
+  /**
+   * The context of the error.
+   */
+  context: string;
+  /**
+   * The original error message before it was replaced by a public-facing message.
+   */
+  internalMessage: string;
 }
