@@ -12,32 +12,26 @@ import {
  * A wrapper for Amazon Translate.
  */
 export class Translate {
-  /**
-   * The instance of Amazon Translate.
-   */
   protected translate: AWSTranslate.TranslateClient;
+
   /**
    * Default input language code.
    */
-  sourceLanguageCode: string;
+  sourceLanguageCode = 'en';
   /**
    * Default output language code.
    */
-  targetLanguageCode: string;
+  targetLanguageCode = 'en';
   /**
    * Default terminology list.
    */
-  terminologyNames: string[];
+  terminologyNames: string[] = [];
 
   /**
    * Initialize a new Translate helper object.
    */
-  constructor(params?: { region?: string }) {
-    const options = Object.assign({}, params);
+  constructor(options: { region?: string } = {}) {
     this.translate = new AWSTranslate.TranslateClient({ region: options.region });
-    this.sourceLanguageCode = 'en';
-    this.targetLanguageCode = 'en';
-    this.terminologyNames = new Array<string>();
   }
 
   /**
@@ -112,7 +106,7 @@ export class Translate {
         switch (s.type) {
           case PDFTemplateSectionTypes.ROW:
             s.columns
-              .filter((_, index) => s.doesColumnContainAField(index))
+              .filter((_, index): boolean => s.doesColumnContainAField(index))
               .forEach(field => {
                 field = field as PDFTemplateSimpleField | PDFTemplateComplexField;
                 if (field.isComplex()) {
@@ -142,7 +136,7 @@ export class Translate {
             innerSections.push({ data: entity[s.context], template: s.innerTemplate });
             break;
           case PDFTemplateSectionTypes.REPEATED_INNER_SECTION:
-            entity[s.context].forEach((element: PDFEntity) =>
+            entity[s.context].forEach((element: PDFEntity): number =>
               innerSections.push({ data: element, template: s.innerTemplate })
             );
             break;
