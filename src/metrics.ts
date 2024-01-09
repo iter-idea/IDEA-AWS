@@ -6,9 +6,9 @@ import { Metrics, MetricUnits } from '@aws-lambda-powertools/metrics';
 export class CloudWatchMetrics {
   private metrics: Metrics;
 
-  constructor(params?: { project?: string }) {
-    const options = Object.assign({}, params, { project: 'unknownProject' });
-    this.metrics = new Metrics({ namespace: options.project });
+  constructor(options: { project?: string } = {}) {
+    const namespace = options.project ?? 'unknownProject';
+    this.metrics = new Metrics({ namespace });
   }
 
   /**
