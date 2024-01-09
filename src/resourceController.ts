@@ -82,7 +82,7 @@ export abstract class ResourceController extends GenericController {
 
       if (options.useMetrics) this.prepareMetrics();
 
-      this.logger.info(`START: ${this.httpMethod} ${this.path}`, this.getEventInfo());
+      this.logger.info('START', { event: this.getEventSummary() });
     } catch (err) {
       this.initError = true;
       this.done(this.remapHandlerError(err, 'INIT-ERROR', 'Malformed request'));
@@ -133,8 +133,10 @@ export abstract class ResourceController extends GenericController {
       throw new RCError('Malformed body');
     }
   }
-  protected getEventInfo(): Record<string, any> {
+  protected getEventSummary(): Record<string, any> {
     return {
+      httpMethod: this.httpMethod,
+      path: this.path,
       principalId: this.principalId,
       queryParams: this.queryParams,
       body: this.body,
@@ -224,21 +226,26 @@ export abstract class ResourceController extends GenericController {
   };
   private remapHandlerError(
     err: Error | RCError | any,
-    context: string,
+    interceptedInContext: string,
     replaceWithMessage: string
   ): RCError | RCUnhandledError {
     if (err instanceof RCError) return err;
     const error = err as RCUnhandledError;
-    error.context = context;
+    error.intercepted = interceptedInContext;
     error.internalMessage = error.message;
     error.message = replaceWithMessage;
     return error;
   }
-  protected done(error?: Error | any, result?: any, statusCode = this.returnStatusCode ?? (error ? 400 : 200)): void {
-    const logContent: any = { statusCode, event: this.getEventInfo() };
-    if (result) logContent.result = Array.isArray(result) ? `Array (${result.length})` : result;
-    if (error) this.logger.error(`END-FAILED: ${this.httpMethod} ${this.path}`, error, logContent);
-    else this.logger.info(`END-SUCCESS: ${this.httpMethod} ${this.path}`, logContent);
+  protected done(
+    error?: Error | any,
+    rawResult?: any,
+    statusCode = this.returnStatusCode ?? (error ? 400 : 200)
+  ): void {
+    const result = error ? { message: error.message } : rawResult ?? {};
+
+    if (error) this.logger.error('END-FAILED', error, { statusCode, event: this.getEventSummary() });
+    else this.logger.info('END-SUCCESS', { statusCode, event: this.getEventSummary() });
+    this.logger.debug('END-DETAIL', Array.isArray(result) ? { array: result.length } : result);
 
     if (this.logRequestsWithKey) this.storeLog(!error);
 
@@ -246,7 +253,7 @@ export abstract class ResourceController extends GenericController {
 
     this.callback(null, {
       statusCode: String(statusCode),
-      body: error ? JSON.stringify({ message: error.message }) : JSON.stringify(result ?? {}),
+      body: JSON.stringify(result),
       headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
     });
   }
@@ -626,9 +633,9 @@ export class RCError extends Error {
  */
 class RCUnhandledError extends Error {
   /**
-   * The context of the error.
+   * The context where the error was intercepted.
    */
-  context: string;
+  intercepted: string;
   /**
    * The original error message before it was replaced by a public-facing message.
    */

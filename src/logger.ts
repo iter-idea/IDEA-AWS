@@ -3,13 +3,13 @@
  * Note: the log level is controlled by each Lambda function's configuration.
  */
 export class Logger {
-  debug = (_: string, params: any = {}): void => console.debug({ _, ...params });
+  debug = (summary: string, content: object = {}): void => console.debug({ summary, ...content });
 
-  info = (_: string, params: any = {}): void => console.info({ _, ...params });
+  info = (summary: string, content: object = {}): void => console.info({ summary, ...content });
 
-  warn = (_: string, err: Error | any, params: any = {}): void =>
-    console.warn({ _, ...params, errorType: err.name, errorMessage: err.message, stackTrace: err.stack });
+  warn = (summary: string, error: Error | any, content: object = {}): void =>
+    console.warn({ summary, ...content, error });
 
-  error = (_: string, err: Error | any, params: any = {}): void =>
-    console.error({ _, ...params, errorType: err.name, errorMessage: err.message, stackTrace: err.stack });
+  error = (summary: string, error: Error | any, content: object = {}): void =>
+    console.error({ summary, ...content, error });
 }

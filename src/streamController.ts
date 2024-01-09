@@ -11,6 +11,6 @@ export abstract class StreamController extends GenericController {
 
     this.records = event.Records ?? [];
 
-    this.logger.info(`START STREAM: ${this.records.length ?? 0} records`);
+    this.logger.info('START STREAM', { records: this.records.length ?? 0 });
   }
 }
