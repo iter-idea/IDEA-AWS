@@ -245,7 +245,7 @@ export abstract class ResourceController extends GenericController {
 
     if (error) this.logger.error('END-FAILED', error, { statusCode, event: this.getEventSummary() });
     else this.logger.info('END-SUCCESS', { statusCode, event: this.getEventSummary() });
-    this.logger.debug('END-DETAIL', Array.isArray(result) ? { array: result.length } : result);
+    this.logger.debug('END-DETAIL', { result: Array.isArray(result) ? { array: result.length } : result });
 
     if (this.logRequestsWithKey) this.storeLog(!error);
 
