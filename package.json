@@ -27,7 +27,8 @@
     "cognito",
     "comprehend",
     "secretsManager",
-    "cloudWatch"
+    "cloudWatch",
+    "ssm"
   ],
   "author": "ITER IDEA <info@iter-idea.com> (https://iter-idea.com)",
   "license": "ISC",
@@ -36,13 +37,11 @@
   },
   "homepage": "https://iter-idea.github.io/IDEA-AWS",
   "dependencies": {
-    "@aws-lambda-powertools/metrics": "^1.12.1",
+    "@aws-lambda-powertools/metrics": "^1.17.0",
     "idea-toolbox": "^7.0.1",
-    "nanoid": "^3.3.4",
-    "nodemailer": "^6.9.4",
-    "shortid": "^2.2.16",
-    "source-map-support": "^0.5.21",
-    "uuid": "^9.0.0"
+    "nanoid": "^3.3.7",
+    "nodemailer": "^6.9.8",
+    "source-map-support": "^0.5.21"
   },
   "peerDependencies": {
     "@aws-sdk/client-cognito-identity-provider": "^3.388.0",
@@ -64,11 +63,9 @@
   },
   "devDependencies": {
     "@tsconfig/node18": "^18.2.0",
-    "@types/aws-lambda": "^8.10.119",
+    "@types/aws-lambda": "^8.10.131",
     "@types/node": "^18.17.4",
-    "@types/nodemailer": "^6.4.4",
-    "@types/shortid": "^0.0.29",
-    "@types/uuid": "^9.0.2",
+    "@types/nodemailer": "^6.4.14",
     "@typescript-eslint/eslint-plugin": "^5.47.0",
     "@typescript-eslint/parser": "^5.47.0",
     "eslint": "^8.46.0",
