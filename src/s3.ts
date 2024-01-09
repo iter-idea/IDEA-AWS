@@ -3,8 +3,6 @@ import { Upload, BodyDataTypes } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { SignedURL } from 'idea-toolbox';
 
-import { Logger } from './logger';
-
 /**
  * A wrapper for AWS Simple Storage Service.
  */
@@ -16,13 +14,8 @@ export class S3 {
   protected DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP = 180;
   protected DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP = 300;
 
-  logger = new Logger();
-
-  constructor(params?: { debug?: boolean }) {
-    const options = Object.assign({}, params, { debug: true });
+  constructor() {
     this.s3 = new AWSS3.S3Client();
-
-    this.logger.level = options.debug ? 'DEBUG' : 'INFO';
   }
 
   /**
@@ -36,9 +29,9 @@ export class S3 {
     // if needed, randomly generates the key
     if (!options.key) options.key = Date.now().toString().concat(Math.random().toString(36).slice(2));
 
-    options.key = `${options.prefix || this.DEFAULT_DOWNLOAD_BUCKET_PREFIX}/${options.key}`;
-    options.bucket = options.bucket || this.DEFAULT_DOWNLOAD_BUCKET;
-    options.secToExp = options.secToExp || this.DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP;
+    options.key = `${options.prefix ?? this.DEFAULT_DOWNLOAD_BUCKET_PREFIX}/${options.key}`;
+    options.bucket = options.bucket ?? this.DEFAULT_DOWNLOAD_BUCKET;
+    options.secToExp = options.secToExp ?? this.DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP;
 
     const params = { Bucket: options.bucket, Key: options.key, Body: data, ContentType: options.contentType };
     const upload = new Upload({ client: this.s3, params });
@@ -53,7 +46,7 @@ export class S3 {
   async signedURLPut(bucket: string, key: string, options: SignedURLOptions = {}): Promise<SignedURL> {
     const putParams: AWSS3.PutObjectCommandInput = { Bucket: bucket, Key: key };
     if (options.filename) putParams.ContentDisposition = `attachment; filename ="${cleanFilename(options.filename)}"`;
-    const expiresIn = options.secToExp || this.DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP;
+    const expiresIn = options.secToExp ?? this.DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP;
 
     const url = await getSignedUrl(this.s3, new AWSS3.PutObjectCommand(putParams), { expiresIn });
     return new SignedURL({ url });
@@ -66,7 +59,7 @@ export class S3 {
     const getParams: AWSS3.GetObjectCommandInput = { Bucket: bucket, Key: key };
     if (options.filename)
       getParams.ResponseContentDisposition = `attachment; filename ="${cleanFilename(options.filename)}"`;
-    const expiresIn = options.secToExp || this.DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP;
+    const expiresIn = options.secToExp ?? this.DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP;
 
     const url = await getSignedUrl(this.s3, new AWSS3.GetObjectCommand(getParams), { expiresIn });
     return new SignedURL({ url });
@@ -76,7 +69,7 @@ export class S3 {
    * Make a copy of an object of the bucket.
    */
   async copyObject(options: CopyObjectOptions): Promise<void> {
-    this.logger.debug(`S3 copy object: ${options.key}`);
+    console.debug(`S3 copy object: ${options.key}`);
     const command = new AWSS3.CopyObjectCommand({
       CopySource: options.copySource,
       Bucket: options.bucket,
@@ -88,24 +81,29 @@ export class S3 {
   /**
    * Get an object from a S3 bucket.
    */
-  async getObject(options: GetObjectOptions): Promise<string | AWSS3.GetObjectCommandOutput> {
-    this.logger.debug(`S3 get object: ${options.key}`);
+  async getObject(options: GetObjectOptions): Promise<AWSS3.GetObjectCommandOutput> {
+    console.debug(`S3 get object: ${options.key}`);
 
     const params: AWSS3.GetObjectCommandInput = { Bucket: options.bucket, Key: options.key };
-    if (!options.type && options.filename)
+    if (options.filename)
       params.ResponseContentDisposition = `attachment; filename ="${cleanFilename(options.filename)}"`;
 
     const command = new AWSS3.GetObjectCommand(params);
-    const result = await this.s3.send(command);
-
-    switch (options.type) {
-      case GetObjectTypes.JSON:
-        return JSON.parse(await result.Body.transformToString('utf-8'));
-      case GetObjectTypes.TEXT:
-        return await result.Body.transformToString('utf-8');
-      default:
-        return result;
-    }
+    return await this.s3.send(command);
+  }
+  /**
+   * Get an object from a S3 bucket and parse the content as a JSON object.
+   */
+  async getObjectAsJSON(options: GetObjectOptions): Promise<any> {
+    const result = await this.getObject(options);
+    return JSON.parse(await result.Body.transformToString('utf-8'));
+  }
+  /**
+   * Get an object from a S3 bucket and convert the content to string.
+   */
+  async getObjectAsText(options: GetObjectOptions): Promise<string> {
+    const result = await this.getObject(options);
+    return await result.Body.transformToString('utf-8');
   }
 
   /**
@@ -118,7 +116,7 @@ export class S3 {
     if (options.metadata) params.Metadata = options.metadata;
     if (options.filename) params.ContentDisposition = `attachment; filename ="${cleanFilename(options.filename)}"`;
 
-    this.logger.debug(`S3 put object: ${options.key}`);
+    console.debug(`S3 put object: ${options.key}`);
     return await this.s3.send(new AWSS3.PutObjectCommand(params));
   }
 
@@ -126,7 +124,7 @@ export class S3 {
    * Delete an object from an S3 bucket.
    */
   async deleteObject(options: DeleteObjectOptions): Promise<AWSS3.PutObjectOutput> {
-    this.logger.debug(`S3 delete object: ${options.key}`);
+    console.debug(`S3 delete object: ${options.key}`);
     const deleteCommand = new AWSS3.DeleteObjectCommand({ Bucket: options.bucket, Key: options.key });
     return await this.s3.send(deleteCommand);
   }
@@ -135,7 +133,7 @@ export class S3 {
    * List the objects of an S3 bucket.
    */
   async listObjects(options: ListObjectsOptions): Promise<AWSS3.ListObjectsOutput> {
-    this.logger.debug(`S3 list object: ${options.prefix}`);
+    console.debug(`S3 list object: ${options.prefix}`);
     const command = new AWSS3.ListObjectsCommand({ Bucket: options.bucket, Prefix: options.prefix });
     return await this.s3.send(command);
   }
@@ -149,13 +147,14 @@ export class S3 {
   }
 
   /**
-   * Check whether an object on an S3 bucket exists.
+   * Check whether an object exists in an S3 bucket.
    */
-  async doesObjectExist(options: GetObjectOptions): Promise<boolean> {
+  async doesObjectExist(options: HeadObjectOptions): Promise<boolean> {
     try {
       const command = new AWSS3.HeadObjectCommand({ Bucket: options.bucket, Key: options.key });
-      await this.s3.send(command);
-      return true;
+      const { ContentLength } = await this.s3.send(command);
+      if (options.emptyMeansNotFound) return ContentLength > 0;
+      else return true;
     } catch (err) {
       return false;
     }
@@ -235,13 +234,9 @@ export interface GetObjectOptions {
    */
   bucket: string;
   /**
-   * The complete filepath of the bucket from which to acquire the file.
+   * The complete filepath (within the bucket) from which to acquire the file.
    */
   key: string;
-  /**
-   * Enum: JSON; useful to cast the result.
-   */
-  type?: GetObjectTypes;
   /**
    * The suggested name for the file once it's downloaded/saved.
    * Note: the string is cleaned to ensure maximum compatibility with every OS.
@@ -250,11 +245,21 @@ export interface GetObjectOptions {
 }
 
 /**
- * The managed types to convert objects coming from an S3 bucket.
+ * Options for getting the head (main metadata, without the content) of an object.
  */
-export enum GetObjectTypes {
-  JSON = 'JSON',
-  TEXT = 'TEXT'
+export interface HeadObjectOptions {
+  /**
+   * The bucket from which to acquire the file.
+   */
+  bucket: string;
+  /**
+   * The complete filepath (within the bucket) from which to acquire the file.
+   */
+  key: string;
+  /**
+   * If set, the request will fail in case the object is empty (`ContentLength === 0`).
+   */
+  emptyMeansNotFound?: boolean;
 }
 
 /**
