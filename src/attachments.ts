@@ -8,30 +8,22 @@ import { S3 } from './s3';
  */
 export class Attachments {
   /**
-   * The instance of DynamoDB.
-   */
-  protected dynamo: DynamoDB;
-  /**
-   * The instance of S3.
-   */
-  protected s3: S3;
-  /**
    * The bucket where from to retrieve the attachments. Fallback to IDEA's default one.
    */
-  protected S3_ATTACHMENTS_BUCKET = process.env['S3_ATTACHMENTS_BUCKET'] || 'idea-attachments';
-  protected IUID_ATTACHMENTS_PREFIX = process.env['IUID_ATTACHMENTS_PREFIX'] || 'ATT';
+  protected S3_ATTACHMENTS_BUCKET = process.env.S3_ATTACHMENTS_BUCKET ?? 'idea-attachments';
+  /**
+   * The prefix for attachment IDs. Fallback to IDEA's default one.
+   */
+  protected IUID_ATTACHMENTS_PREFIX = process.env.IUID_ATTACHMENTS_PREFIX ?? 'ATT';
 
-  constructor() {
-    this.dynamo = new DynamoDB();
-    this.s3 = new S3();
-  }
+  constructor(protected ddb: DynamoDB, protected s3: S3) {}
 
   /**
    * Get a signedURL to put an attachment.
    */
   async put(project: string, teamId: string): Promise<SignedURL> {
-    const attachmentIdPrefix = this.IUID_ATTACHMENTS_PREFIX.concat('_').concat(project).concat('_').concat(teamId);
-    const attachmentId = await this.dynamo.IUNID(attachmentIdPrefix);
+    const attachmentIdPrefix = this.IUID_ATTACHMENTS_PREFIX.concat('_', project, '_', teamId);
+    const attachmentId = await this.ddb.IUNID(attachmentIdPrefix);
 
     const signedURL = await this.s3.signedURLPut(this.S3_ATTACHMENTS_BUCKET, attachmentId);
     signedURL.id = attachmentId;
