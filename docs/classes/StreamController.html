@@ -26,7 +26,7 @@
 <ul class="tsd-hierarchy">
 <li><span class="target">StreamController</span></li></ul></li></ul></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/7e451ec/src/streamController.ts#L6">src/streamController.ts:6</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/ea7e5ae/src/streamController.ts#L8">src/streamController.ts:8</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-index-accordion" open><summary class="tsd-accordion-summary tsd-index-summary">
@@ -47,7 +47,9 @@
 <h3 class="tsd-index-heading">Methods</h3>
 <div class="tsd-index-list"><a href="StreamController.html#done" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-2048"><rect fill="var(--color-icon-background)" stroke="#FF4DB8" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="12"></rect><path d="M9.162 16V7.24H10.578L11.514 10.072C11.602 10.328 11.674 10.584 11.73 10.84C11.794 11.088 11.842 11.28 11.874 11.416C11.906 11.28 11.954 11.088 12.018 10.84C12.082 10.584 12.154 10.324 12.234 10.06L13.122 7.24H14.538V16H13.482V12.82C13.482 12.468 13.49 12.068 13.506 11.62C13.53 11.172 13.558 10.716 13.59 10.252C13.622 9.78 13.654 9.332 13.686 8.908C13.726 8.476 13.762 8.1 13.794 7.78L12.366 12.16H11.334L9.894 7.78C9.934 8.092 9.97 8.456 10.002 8.872C10.042 9.28 10.078 9.716 10.11 10.18C10.142 10.636 10.166 11.092 10.182 11.548C10.206 12.004 10.218 12.428 10.218 12.82V16H9.162Z" fill="var(--color-text)"></path></g></svg><span>done</span></a>
 <a href="StreamController.html#getLambdaLogLevel" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>get<wbr/>Lambda<wbr/>Log<wbr/>Level</span></a>
-<a href="StreamController.html#handleRequest" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>handle<wbr/>Request</span></a>
+<a href="StreamController.html#handleControllerError" class="tsd-index-link tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>handle<wbr/>Controller<wbr/>Error</span></a>
+<a href="StreamController.html#handleRecord" class="tsd-index-link tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>handle<wbr/>Record</span></a>
+<a href="StreamController.html#handleRequest" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>handle<wbr/>Request</span></a>
 <a href="StreamController.html#setLambdaLogLevel" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>set<wbr/>Lambda<wbr/>Log<wbr/>Level</span></a>
 <a href="StreamController.html#silentLambdaLogs" class="tsd-index-link tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>silent<wbr/>Lambda<wbr/>Logs</span></a>
 </div></section></div></details></section></section>
@@ -68,7 +70,7 @@
 <h4 class="tsd-returns-title">Returns <a href="StreamController.html" class="tsd-signature-type tsd-kind-class">StreamController</a></h4><aside class="tsd-sources">
 <p>Overrides <a href="GenericController.html">GenericController</a>.<a href="GenericController.html#constructor">constructor</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/7e451ec/src/streamController.ts#L9">src/streamController.ts:9</a></li></ul></aside></li></ul></section></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/ea7e5ae/src/streamController.ts#L11">src/streamController.ts:11</a></li></ul></aside></li></ul></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Properties</h2>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="callback" class="tsd-anchor"></a>
@@ -76,30 +78,30 @@
 <div class="tsd-signature"><span class="tsd-kind-property">callback</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div><aside class="tsd-sources">
 <p>Inherited from <a href="GenericController.html">GenericController</a>.<a href="GenericController.html#callback">callback</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/7e451ec/src/genericController.ts#L10">src/genericController.ts:10</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/ea7e5ae/src/genericController.ts#L10">src/genericController.ts:10</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="event" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>event</span><a href="#event" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">event</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span></div><aside class="tsd-sources">
 <p>Inherited from <a href="GenericController.html">GenericController</a>.<a href="GenericController.html#event">event</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/7e451ec/src/genericController.ts#L9">src/genericController.ts:9</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/ea7e5ae/src/genericController.ts#L9">src/genericController.ts:9</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="logger" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>logger</span><a href="#logger" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">logger</span><span class="tsd-signature-symbol">:</span> <a href="LambdaLogger.html" class="tsd-signature-type tsd-kind-class">LambdaLogger</a><span class="tsd-signature-symbol"> = ...</span></div><aside class="tsd-sources">
 <p>Inherited from <a href="GenericController.html">GenericController</a>.<a href="GenericController.html#logger">logger</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/7e451ec/src/genericController.ts#L12">src/genericController.ts:12</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/ea7e5ae/src/genericController.ts#L12">src/genericController.ts:12</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member"><a id="records" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>records</span><a href="#records" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">records</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">[]</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/7e451ec/src/streamController.ts#L7">src/streamController.ts:7</a></li></ul></aside></section></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/ea7e5ae/src/streamController.ts#L9">src/streamController.ts:9</a></li></ul></aside></section></section>
 <section class="tsd-panel-group tsd-member-group">
 <h2>Methods</h2>
 <section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="done" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>done</span><a href="#done" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-protected tsd-is-inherited">
-<li class="tsd-signature tsd-anchor-link" id="done.done-1"><span class="tsd-kind-call-signature">done</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">error</span>, <span class="tsd-kind-parameter">res</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#done.done-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-signature tsd-anchor-link" id="done.done-1"><span class="tsd-kind-call-signature">done</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">error</span><span class="tsd-signature-symbol">?</span>, <span class="tsd-kind-parameter">res</span><span class="tsd-signature-symbol">?</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#done.done-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
 <div class="tsd-comment tsd-typography"><p>Default callback for the Lambda.</p>
 </div>
@@ -107,14 +109,14 @@
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li>
-<h5><span class="tsd-kind-parameter">error</span>: <span class="tsd-signature-type">any</span></h5></li>
+<h5><span class="tsd-kind-parameter">error</span>: <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol"> = null</span></h5></li>
 <li>
 <h5><code class="tsd-tag ts-flagOptional">Optional</code> <span class="tsd-kind-parameter">res</span>: <span class="tsd-signature-type">any</span></h5></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="GenericController.html">GenericController</a>.<a href="GenericController.html#done">done</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/7e451ec/src/genericController.ts#L32">src/genericController.ts:32</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/ea7e5ae/src/genericController.ts#L35">src/genericController.ts:35</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="getLambdaLogLevel" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>get<wbr/>Lambda<wbr/>Log<wbr/>Level</span><a href="#getLambdaLogLevel" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -127,19 +129,53 @@ Note: &quot;FATAL&quot; means that no log will be printed.</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="GenericController.html">GenericController</a>.<a href="GenericController.html#getLambdaLogLevel">getLambdaLogLevel</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/7e451ec/src/genericController.ts#L43">src/genericController.ts:43</a></li></ul></aside></li></ul></section>
-<section class="tsd-panel tsd-member tsd-is-inherited"><a id="handleRequest" class="tsd-anchor"></a>
-<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagAbstract">Abstract</code> <span>handle<wbr/>Request</span><a href="#handleRequest" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
-<ul class="tsd-signatures tsd-is-inherited">
-<li class="tsd-signature tsd-anchor-link" id="handleRequest.handleRequest-1"><span class="tsd-kind-call-signature">handle<wbr/>Request</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">void</span><a href="#handleRequest.handleRequest-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/ea7e5ae/src/genericController.ts#L64">src/genericController.ts:64</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-protected tsd-is-inherited"><a id="handleControllerError" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <span>handle<wbr/>Controller<wbr/>Error</span><a href="#handleControllerError" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-protected tsd-is-inherited">
+<li class="tsd-signature tsd-anchor-link" id="handleControllerError.handleControllerError-1"><span class="tsd-kind-call-signature">handle<wbr/>Controller<wbr/>Error</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">err</span>, <span class="tsd-kind-parameter">interceptedInContext</span>, <span class="tsd-kind-parameter">replaceWithMessage</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="UnhandledError.html" class="tsd-signature-type tsd-kind-class">UnhandledError</a><span class="tsd-signature-symbol"> | </span><a href="HandledError.html" class="tsd-signature-type tsd-kind-class">HandledError</a><a href="#handleControllerError.handleControllerError-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
 <li class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>The main function, that handle the request and should terminate with an invokation of the method <code>done</code>.</p>
+<div class="tsd-comment tsd-typography"><p>Remap an error to manage the logging and make sure no unhandled error is returned to the requester.</p>
 </div>
-<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">err</span>: <span class="tsd-signature-type">any</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">interceptedInContext</span>: <span class="tsd-signature-type">string</span></h5></li>
+<li>
+<h5><span class="tsd-kind-parameter">replaceWithMessage</span>: <span class="tsd-signature-type">string</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <a href="UnhandledError.html" class="tsd-signature-type tsd-kind-class">UnhandledError</a><span class="tsd-signature-symbol"> | </span><a href="HandledError.html" class="tsd-signature-type tsd-kind-class">HandledError</a></h4>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
-<p>Inherited from <a href="GenericController.html">GenericController</a>.<a href="GenericController.html#handleRequest">handleRequest</a></p>
+<p>Inherited from <a href="GenericController.html">GenericController</a>.<a href="GenericController.html#handleControllerError">handleControllerError</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/7e451ec/src/genericController.ts#L27">src/genericController.ts:27</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/ea7e5ae/src/genericController.ts#L47">src/genericController.ts:47</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member tsd-is-protected"><a id="handleRecord" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><code class="tsd-tag ts-flagProtected">Protected</code> <code class="tsd-tag ts-flagAbstract">Abstract</code> <span>handle<wbr/>Record</span><a href="#handleRecord" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures tsd-is-protected">
+<li class="tsd-signature tsd-anchor-link" id="handleRecord.handleRecord-1"><span class="tsd-kind-call-signature">handle<wbr/>Record</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">record</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#handleRecord.handleRecord-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li>
+<h5><span class="tsd-kind-parameter">record</span>: <span class="tsd-signature-type ">DynamoDBRecord</span></h5></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/ea7e5ae/src/streamController.ts#L16">src/streamController.ts:16</a></li></ul></aside></li></ul></section>
+<section class="tsd-panel tsd-member"><a id="handleRequest" class="tsd-anchor"></a>
+<h3 class="tsd-anchor-link"><span>handle<wbr/>Request</span><a href="#handleRequest" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="tsd-signature tsd-anchor-link" id="handleRequest.handleRequest-1"><span class="tsd-kind-call-signature">handle<wbr/>Request</span><span class="tsd-signature-symbol">(</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#handleRequest.handleRequest-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></li>
+<li class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>The main function (to override), that handles the request and must terminate invoking the method <code>done</code>.</p>
+</div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type ">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4>
+<div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
+<p>Overrides <a href="GenericController.html">GenericController</a>.<a href="GenericController.html#handleRequest">handleRequest</a></p>
+<ul>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/ea7e5ae/src/streamController.ts#L18">src/streamController.ts:18</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="setLambdaLogLevel" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>set<wbr/>Lambda<wbr/>Log<wbr/>Level</span><a href="#setLambdaLogLevel" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -156,7 +192,7 @@ Note: &quot;FATAL&quot; means that no log will be printed.</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="GenericController.html">GenericController</a>.<a href="GenericController.html#setLambdaLogLevel">setLambdaLogLevel</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/7e451ec/src/genericController.ts#L49">src/genericController.ts:49</a></li></ul></aside></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/ea7e5ae/src/genericController.ts#L70">src/genericController.ts:70</a></li></ul></aside></li></ul></section>
 <section class="tsd-panel tsd-member tsd-is-inherited"><a id="silentLambdaLogs" class="tsd-anchor"></a>
 <h3 class="tsd-anchor-link"><span>silent<wbr/>Lambda<wbr/>Logs</span><a href="#silentLambdaLogs" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24"><use href="#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures tsd-is-inherited">
@@ -168,7 +204,7 @@ Note: &quot;FATAL&quot; means that no log will be printed.</p>
 <div class="tsd-comment tsd-typography"></div><aside class="tsd-sources">
 <p>Inherited from <a href="GenericController.html">GenericController</a>.<a href="GenericController.html#silentLambdaLogs">silentLambdaLogs</a></p>
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/7e451ec/src/genericController.ts#L55">src/genericController.ts:55</a></li></ul></aside></li></ul></section></section></div>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/ea7e5ae/src/genericController.ts#L76">src/genericController.ts:76</a></li></ul></aside></li></ul></section></section></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -195,7 +231,9 @@ Note: &quot;FATAL&quot; means that no log will be printed.</p>
 <li><a href="#records" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-1024"></use></svg><span>records</span></a></li>
 <li><a href="#done" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>done</span></a></li>
 <li><a href="#getLambdaLogLevel" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>get<wbr/>Lambda<wbr/>Log<wbr/>Level</span></a></li>
-<li><a href="#handleRequest" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>handle<wbr/>Request</span></a></li>
+<li><a href="#handleControllerError" class="tsd-is-protected tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>handle<wbr/>Controller<wbr/>Error</span></a></li>
+<li><a href="#handleRecord" class="tsd-is-protected"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>handle<wbr/>Record</span></a></li>
+<li><a href="#handleRequest" class=""><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>handle<wbr/>Request</span></a></li>
 <li><a href="#setLambdaLogLevel" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>set<wbr/>Lambda<wbr/>Log<wbr/>Level</span></a></li>
 <li><a href="#silentLambdaLogs" class="tsd-is-inherited"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-2048"></use></svg><span>silent<wbr/>Lambda<wbr/>Logs</span></a></li></ul></div></details></div>
 <div class="site-menu">
@@ -206,8 +244,8 @@ Note: &quot;FATAL&quot; means that no log will be printed.</p>
 <li><a href="Comprehend.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Comprehend</span></a></li>
 <li><a href="DynamoDB.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>DynamoDB</span></a></li>
 <li><a href="GenericController.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Generic<wbr/>Controller</span></a></li>
+<li><a href="HandledError.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Handled<wbr/>Error</span></a></li>
 <li><a href="LambdaLogger.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Lambda<wbr/>Logger</span></a></li>
-<li><a href="RCError.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>RCError</span></a></li>
 <li><a href="ResourceController.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Resource<wbr/>Controller</span></a></li>
 <li><a href="S3.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>S3</span></a></li>
 <li><a href="SES.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>SES</span></a></li>
@@ -216,6 +254,7 @@ Note: &quot;FATAL&quot; means that no log will be printed.</p>
 <li><a href="StreamController.html" class="current"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Stream<wbr/>Controller</span></a></li>
 <li><a href="SystemsManager.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Systems<wbr/>Manager</span></a></li>
 <li><a href="Translate.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Translate</span></a></li>
+<li><a href="UnhandledError.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-128"></use></svg><span>Unhandled<wbr/>Error</span></a></li>
 <li><a href="../interfaces/BasicEmailData.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><g id="icon-256"><rect fill="var(--color-icon-background)" stroke="var(--color-ts-interface)" stroke-width="1.5" x="1" y="1" width="22" height="22" rx="6"></rect><path d="M9.51 16V15.016H11.298V8.224H9.51V7.24H14.19V8.224H12.402V15.016H14.19V16H9.51Z" fill="var(--color-text)"></path></g></svg><span>Basic<wbr/>Email<wbr/>Data</span></a></li>
 <li><a href="../interfaces/CognitoGroup.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Cognito<wbr/>Group</span></a></li>
 <li><a href="../interfaces/CognitoUserGeneric.html"><svg class="tsd-kind-icon" viewBox="0 0 24 24"><use href="#icon-256"></use></svg><span>Cognito<wbr/>User<wbr/>Generic</span></a></li>
