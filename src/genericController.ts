@@ -22,18 +22,39 @@ export abstract class GenericController {
   }
 
   /**
-   * The main function, that handle the request and should terminate with an invokation of the method `done`.
+   * The main function (to override), that handles the request and must terminate invoking the method `done`.
    */
-  abstract handleRequest(): void;
+  async handleRequest(): Promise<void> {
+    this.logger.info('START');
+    this.done();
+  }
 
   /**
    * Default callback for the Lambda.
    */
-  protected done(error: Error | any, res?: any): void {
-    if (error) this.logger.error('END-FAILED', error);
-    else this.logger.info('END-SUCCESS');
+  protected done(error: Error | any = null, res?: any): void {
+    if (error) {
+      if ((error as UnhandledError).unhandled) this.logger.error('END-FAILED', error);
+      else this.logger.warn('END-FAILED', error);
+    } else this.logger.info('END-SUCCESS');
 
     this.callback(error, res);
+  }
+
+  /**
+   * Remap an error to manage the logging and make sure no unhandled error is returned to the requester.
+   */
+  protected handleControllerError(
+    err: Error | HandledError | any,
+    interceptedInContext: string,
+    replaceWithMessage: string
+  ): HandledError | UnhandledError {
+    if (err instanceof HandledError) return err;
+    const error = err as UnhandledError;
+    error.unhandled = interceptedInContext;
+    error.internalMessage = error.message;
+    error.message = replaceWithMessage;
+    return error;
   }
 
   /**
@@ -55,4 +76,28 @@ export abstract class GenericController {
   silentLambdaLogs(): void {
     process.env.AWS_LAMBDA_LOG_LEVEL = 'FATAL';
   }
+}
+
+/**
+ * A specific type of error in the context of the Controller, to distinguish from "unhandled" errors.
+ */
+export class HandledError extends Error {
+  constructor(message: string) {
+    super(message);
+    Object.setPrototypeOf(this, HandledError.prototype);
+  }
+}
+
+/**
+ * An unhandled error thrown inside the controller (i.e. `!(error instanceof HandledError)`) .
+ */
+export class UnhandledError extends Error {
+  /**
+   * The context where the unhandled error was intercepted.
+   */
+  unhandled: string;
+  /**
+   * The original error message before it was replaced by a public-facing message.
+   */
+  internalMessage: string;
 }

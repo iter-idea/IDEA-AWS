@@ -5,7 +5,7 @@ import { APIGatewayProxyEventV2, APIGatewayProxyEvent, Callback } from 'aws-lamb
 import { APIRequestLog, CognitoUser, Auth0User } from 'idea-toolbox';
 
 import { CloudWatchMetrics } from './metrics';
-import { GenericController } from './genericController';
+import { GenericController, HandledError, UnhandledError } from './genericController';
 import { DynamoDB } from './dynamoDB';
 
 /**
@@ -81,11 +81,9 @@ export abstract class ResourceController extends GenericController {
       }
 
       if (options.useMetrics) this.prepareMetrics();
-
-      this.logger.info('START', { event: this.getEventSummary() });
     } catch (err) {
       this.initError = true;
-      this.done(this.remapHandlerError(err, 'INIT-ERROR', 'Malformed request'));
+      this.done(this.handleControllerError(err, 'INIT-ERROR', 'Malformed request'));
     }
   }
   private initFromEventV2(event: APIGatewayProxyEventV2, options: ResourceControllerOptions): void {
@@ -108,7 +106,7 @@ export abstract class ResourceController extends GenericController {
     try {
       this.body = (event.body ? JSON.parse(event.body) : {}) || {};
     } catch (error) {
-      throw new RCError('Malformed body');
+      throw new HandledError('Malformed body');
     }
   }
   private initFromEventV1(event: APIGatewayProxyEvent, options: ResourceControllerOptions): void {
@@ -130,7 +128,7 @@ export abstract class ResourceController extends GenericController {
     try {
       this.body = (event.body ? JSON.parse(event.body) : {}) || {};
     } catch (error) {
-      throw new RCError('Malformed body');
+      throw new HandledError('Malformed body');
     }
   }
   protected getEventSummary(): Record<string, any> {
@@ -160,6 +158,8 @@ export abstract class ResourceController extends GenericController {
   ///
 
   handleRequest = async (): Promise<void> => {
+    this.logger.info('START', { event: this.getEventSummary() });
+
     if (this.initError) return;
     try {
       await this.checkAuthBeforeRequest();
@@ -188,7 +188,7 @@ export abstract class ResourceController extends GenericController {
               response = await this.headResource();
               break;
             default:
-              this.done(new RCError('Unsupported method'));
+              this.done(new HandledError('Unsupported method'));
           }
         } else {
           switch (this.httpMethod) {
@@ -212,30 +212,18 @@ export abstract class ResourceController extends GenericController {
               response = await this.headResources();
               break;
             default:
-              this.done(new RCError('Unsupported method'));
+              this.done(new HandledError('Unsupported method'));
           }
         }
 
         this.done(null, response);
       } catch (err) {
-        this.done(this.remapHandlerError(err, 'HANDLER-ERROR', 'Operation failed'));
+        this.done(this.handleControllerError(err, 'HANDLER-ERROR', 'Operation failed'));
       }
     } catch (err) {
-      this.done(this.remapHandlerError(err, 'AUTH-CHECK-ERROR', 'Forbidden'));
+      this.done(this.handleControllerError(err, 'AUTH-CHECK-ERROR', 'Forbidden'));
     }
   };
-  private remapHandlerError(
-    err: Error | RCError | any,
-    interceptedInContext: string,
-    replaceWithMessage: string
-  ): RCError | RCUnhandledError {
-    if (err instanceof RCError) return err;
-    const error = err as RCUnhandledError;
-    error.unhandled = interceptedInContext;
-    error.internalMessage = error.message;
-    error.message = replaceWithMessage;
-    return error;
-  }
   protected done(
     error?: Error | any,
     rawResult?: any,
@@ -243,12 +231,12 @@ export abstract class ResourceController extends GenericController {
   ): void {
     const result = error ? { message: error.message } : rawResult ?? {};
 
+    this.logger.debug('END-DETAIL', { result: Array.isArray(result) ? { array: result.length } : result });
     const finalLogContent = { statusCode, event: this.getEventSummary() };
     if (error) {
-      if ((error as RCUnhandledError).unhandled) this.logger.error('END-FAILED', error, finalLogContent);
+      if ((error as UnhandledError).unhandled) this.logger.error('END-FAILED', error, finalLogContent);
       else this.logger.warn('END-FAILED', error, finalLogContent);
     } else this.logger.info('END-SUCCESS', finalLogContent);
-    this.logger.debug('END-DETAIL', { result: Array.isArray(result) ? { array: result.length } : result });
 
     if (this.logRequestsWithKey) this.storeLog(!error);
 
@@ -271,73 +259,73 @@ export abstract class ResourceController extends GenericController {
    * To @override
    */
   protected async getResource(): Promise<any> {
-    throw new RCError('Unsupported method');
+    throw new HandledError('Unsupported method');
   }
   /**
    * To @override
    */
   protected async postResource(): Promise<any> {
-    throw new RCError('Unsupported method');
+    throw new HandledError('Unsupported method');
   }
   /**
    * To @override
    */
   protected async putResource(): Promise<any> {
-    throw new RCError('Unsupported method');
+    throw new HandledError('Unsupported method');
   }
   /**
    * To @override
    */
   protected async deleteResource(): Promise<any> {
-    throw new RCError('Unsupported method');
+    throw new HandledError('Unsupported method');
   }
   /**
    * To @override
    */
   protected async headResource(): Promise<any> {
-    throw new RCError('Unsupported method');
+    throw new HandledError('Unsupported method');
   }
   /**
    * To @override
    */
   protected async getResources(): Promise<any> {
-    throw new RCError('Unsupported method');
+    throw new HandledError('Unsupported method');
   }
   /**
    * To @override
    */
   protected async postResources(): Promise<any> {
-    throw new RCError('Unsupported method');
+    throw new HandledError('Unsupported method');
   }
   /**
    * To @override
    */
   protected async putResources(): Promise<any> {
-    throw new RCError('Unsupported method');
+    throw new HandledError('Unsupported method');
   }
   /**
    * To @override
    */
   protected async patchResource(): Promise<any> {
-    throw new RCError('Unsupported method');
+    throw new HandledError('Unsupported method');
   }
   /**
    * To @override
    */
   protected async patchResources(): Promise<any> {
-    throw new RCError('Unsupported method');
+    throw new HandledError('Unsupported method');
   }
   /**
    * To @override
    */
   protected async deleteResources(): Promise<any> {
-    throw new RCError('Unsupported method');
+    throw new HandledError('Unsupported method');
   }
   /**
    * To @override
    */
   protected async headResources(): Promise<any> {
-    throw new RCError('Unsupported method');
+    throw new HandledError('Unsupported method');
   }
 
   ///
@@ -619,28 +607,4 @@ export interface InternalAPIRequestParams {
    * The body of the request.
    */
   body?: any;
-}
-
-/**
- * Explicitly define a specific type of error to use in the RC's handler, to distinguish it from the normal errors.
- */
-export class RCError extends Error {
-  constructor(message: string) {
-    super(message);
-    Object.setPrototypeOf(this, RCError.prototype);
-  }
-}
-
-/**
- * An unhandled error thrown inside the RC (i.e. `!(error instanceof RCError)`) .
- */
-class RCUnhandledError extends Error {
-  /**
-   * The context where the unhandled error was intercepted.
-   */
-  unhandled: string;
-  /**
-   * The original error message before it was replaced by a public-facing message.
-   */
-  internalMessage: string;
 }

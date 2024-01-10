@@ -1,3 +1,5 @@
+import { DynamoDBRecord } from 'aws-lambda';
+
 import { GenericController } from './genericController';
 
 /**
@@ -8,9 +10,16 @@ export abstract class StreamController extends GenericController {
 
   constructor(event: any, callback: any) {
     super(event, callback);
-
     this.records = event.Records ?? [];
+  }
 
-    this.logger.info('START STREAM', { records: this.records.length ?? 0 });
+  protected abstract handleRecord(record: DynamoDBRecord): Promise<void>;
+
+  async handleRequest(): Promise<void> {
+    this.logger.info('START', { streamOfRecords: this.records.length ?? 0 });
+
+    await Promise.all(this.records.map(record => this.handleRecord(record)))
+      .then((): void => this.done())
+      .catch((err: Error): void => this.done(this.handleControllerError(err, 'STREAM-ERROR', 'Operation failed')));
   }
 }
