@@ -1,6 +1,6 @@
 import 'source-map-support/register';
 
-import { Logger } from './logger';
+import { LambdaLogger } from './lambdaLogger';
 
 /**
  * An abstract class to inherit to manage some resources with an AWS Lambda function.
@@ -9,7 +9,7 @@ export abstract class GenericController {
   protected event: any;
   protected callback: any;
 
-  protected logger = new Logger();
+  protected logger = new LambdaLogger();
 
   /**
    * Initialize a new GenericController helper object.
@@ -34,5 +34,25 @@ export abstract class GenericController {
     else this.logger.info('END-SUCCESS');
 
     this.callback(error, res);
+  }
+
+  /**
+   * Get the current log level for the current Lambda function's `logger`.
+   * Note: "FATAL" means that no log will be printed.
+   */
+  getLambdaLogLevel(): 'TRACE' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL' {
+    return process.env.AWS_LAMBDA_LOG_LEVEL as any;
+  }
+  /**
+   * Set the log level for the current Lambda function's `logger`.
+   */
+  setLambdaLogLevel(logLevel: 'TRACE' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL'): void {
+    process.env.AWS_LAMBDA_LOG_LEVEL = logLevel;
+  }
+  /**
+   * Raise the log level of the current Lambda function's `logger` to "FATAL", hence avoiding printing any log.
+   */
+  silentLambdaLogs(): void {
+    process.env.AWS_LAMBDA_LOG_LEVEL = 'FATAL';
   }
 }

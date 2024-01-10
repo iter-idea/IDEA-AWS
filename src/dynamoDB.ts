@@ -4,11 +4,14 @@ import * as DDBUtils from '@aws-sdk/util-dynamodb';
 import { customAlphabet as AlphabetNanoID } from 'nanoid';
 const NanoID = AlphabetNanoID('0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 25);
 
+import { LambdaLogger } from './lambdaLogger';
+
 /**
  * A wrapper for AWS DynamoDB.
  */
 export class DynamoDB {
   protected dynamo: DDB.DynamoDBDocument;
+  protected logger = new LambdaLogger();
 
   constructor() {
     this.dynamo = DDB.DynamoDBDocument.from(new DDBClient(), {
@@ -64,7 +67,7 @@ export class DynamoDB {
    * @param key the key of the counter
    */
   async getAtomicCounterByKey(key: string): Promise<number> {
-    console.debug(`Get atomic counter for ${key}`);
+    this.logger.trace(`Get atomic counter for ${key}`);
     const { Attributes } = await this.update({
       TableName: 'idea_atomicCounters',
       Key: { key },
@@ -82,7 +85,7 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   async get(params: DDB.GetCommandInput): Promise<any> {
-    console.debug(`Get ${params.TableName}`);
+    this.logger.trace(`Get ${params.TableName}`);
     const { Item } = await this.dynamo.get(params);
 
     if (!Item) throw new Error('Not found');
@@ -94,7 +97,7 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   async put(params: DDB.PutCommandInput): Promise<DDB.PutCommandOutput> {
-    console.debug(`Put ${params.TableName}`);
+    this.logger.trace(`Put ${params.TableName}`);
     return await this.dynamo.put(params);
   }
 
@@ -103,7 +106,7 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   async update(params: DDB.UpdateCommandInput): Promise<DDB.UpdateCommandOutput> {
-    console.debug(`Update ${params.TableName}`);
+    this.logger.trace(`Update ${params.TableName}`);
     return await this.dynamo.update(params);
   }
 
@@ -112,7 +115,7 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   async delete(params: DDB.DeleteCommandInput): Promise<DDB.DeleteCommandOutput> {
-    console.debug(`Delete ${params.TableName}`);
+    this.logger.trace(`Delete ${params.TableName}`);
     return await this.dynamo.delete(params);
   }
 
@@ -124,7 +127,7 @@ export class DynamoDB {
    */
   async batchGet(table: string, keys: Record<string, any>[], ignoreErr?: boolean): Promise<any[]> {
     if (!keys.length) {
-      console.debug(`Batch get ${table}: no elements to get`);
+      this.logger.trace(`Batch get ${table}: no elements to get`);
       return [];
     }
 
@@ -144,7 +147,7 @@ export class DynamoDB {
       }
     };
 
-    console.debug(`Batch get ${table}: ${currentChunk} of ${keys.length}`);
+    this.logger.trace(`Batch get ${table}: ${currentChunk} of ${keys.length}`);
 
     let result: DDB.BatchGetCommandOutput;
     try {
@@ -170,7 +173,7 @@ export class DynamoDB {
    * @param items the objects to insert
    */
   async batchPut(table: string, items: Record<string, any>[]): Promise<void> {
-    if (!items.length) return console.debug(`Batch write (put) ${table}: no elements to write`);
+    if (!items.length) return this.logger.trace(`Batch write (put) ${table}: no elements to write`);
 
     await this.batchWriteHelper(table, items, true);
   }
@@ -182,7 +185,7 @@ export class DynamoDB {
    * @param keys the keys to delete
    */
   async batchDelete(table: string, keys: Record<string, any>[]): Promise<void> {
-    if (!keys.length) return console.debug(`Batch write (delete) ${table}: no elements to write`);
+    if (!keys.length) return this.logger.trace(`Batch write (delete) ${table}: no elements to write`);
 
     await this.batchWriteHelper(table, keys, false);
   }
@@ -193,7 +196,7 @@ export class DynamoDB {
     currentChunk = 0,
     chunkSize = 25
   ): Promise<void> {
-    console.debug(`Batch write (${isPut ? 'put' : 'delete'}) ${table}: ${currentChunk} of ${itemsOrKeys.length}`);
+    this.logger.trace(`Batch write (${isPut ? 'put' : 'delete'}) ${table}: ${currentChunk} of ${itemsOrKeys.length}`);
 
     let requests: WriteRequest[];
     if (isPut)
@@ -225,7 +228,7 @@ export class DynamoDB {
         attempts++;
 
         const waitSeconds = getRandomInt(attempts * 5);
-        console.debug(`Batch write throttled: waiting ${waitSeconds} seconds to retry`);
+        this.logger.trace(`Batch write throttled: waiting ${waitSeconds} seconds to retry`);
         await wait(waitSeconds);
       } else {
         params.RequestItems = null;
@@ -238,10 +241,10 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   async query(params: DDB.QueryCommandInput): Promise<any[]> {
-    console.debug(`Query ${params.TableName}`);
+    this.logger.trace(`Query ${params.TableName}`);
     const result = await this.queryScanHelper(params, [], true);
 
-    console.debug(`Results query ${params.TableName}: ${result.length ?? 0}`);
+    this.logger.trace(`Results query ${params.TableName}: ${result.length ?? 0}`);
     return result;
   }
   /**
@@ -249,10 +252,10 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   async scan(params: DDB.ScanCommandInput): Promise<any[]> {
-    console.debug(`Scan ${params.TableName}`);
+    this.logger.trace(`Scan ${params.TableName}`);
     const result = await this.queryScanHelper(params, [], false);
 
-    console.debug(`Results scan ${params.TableName}: ${result.length ?? 0}`);
+    this.logger.trace(`Results scan ${params.TableName}: ${result.length ?? 0}`);
     return result;
   }
   protected async queryScanHelper(
@@ -277,10 +280,10 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   async queryClassic(params: DDB.QueryCommandInput): Promise<DDB.QueryCommandOutput> {
-    console.debug(`Query classic ${params.TableName}`);
+    this.logger.trace(`Query classic ${params.TableName}`);
     const result = await this.dynamo.query(params);
 
-    console.debug(`Results query classic ${params.TableName}: ${result.Items.length ?? 0}`);
+    this.logger.trace(`Results query classic ${params.TableName}: ${result.Items.length ?? 0}`);
     return result;
   }
   /**
@@ -288,10 +291,10 @@ export class DynamoDB {
    * @param params the params to apply to DynamoDB's function
    */
   async scanClassic(params: DDB.ScanCommandInput): Promise<DDB.ScanCommandOutput> {
-    console.debug(`Scan classic ${params.TableName}`);
+    this.logger.trace(`Scan classic ${params.TableName}`);
     const result = await this.dynamo.scan(params);
 
-    console.debug(`Results scan classic ${params.TableName}: ${result.Items.length ?? 0}`);
+    this.logger.trace(`Results scan classic ${params.TableName}: ${result.Items.length ?? 0}`);
     return result;
   }
 
@@ -300,9 +303,9 @@ export class DynamoDB {
    * @param ops the operations to execute in the transaction
    */
   async transactWrites(ops: { ConditionCheck?: any; Put?: any; Delete?: any; Update?: any }[]): Promise<void> {
-    if (!ops.length) return console.debug('Transaction writes: no elements to write');
+    if (!ops.length) return this.logger.trace('Transaction writes: no elements to write');
 
-    console.debug('Transaction writes');
+    this.logger.trace('Transaction writes');
     await this.dynamo.transactWrite({ TransactItems: ops });
   }
 }

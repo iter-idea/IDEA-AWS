@@ -231,7 +231,7 @@ export abstract class ResourceController extends GenericController {
   ): RCError | RCUnhandledError {
     if (err instanceof RCError) return err;
     const error = err as RCUnhandledError;
-    error.intercepted = interceptedInContext;
+    error.unhandled = interceptedInContext;
     error.internalMessage = error.message;
     error.message = replaceWithMessage;
     return error;
@@ -243,8 +243,11 @@ export abstract class ResourceController extends GenericController {
   ): void {
     const result = error ? { message: error.message } : rawResult ?? {};
 
-    if (error) this.logger.error('END-FAILED', error, { statusCode, event: this.getEventSummary() });
-    else this.logger.info('END-SUCCESS', { statusCode, event: this.getEventSummary() });
+    const finalLogContent = { statusCode, event: this.getEventSummary() };
+    if (error) {
+      if ((error as RCUnhandledError).unhandled) this.logger.error('END-FAILED', error, finalLogContent);
+      else this.logger.warn('END-FAILED', error, finalLogContent);
+    } else this.logger.info('END-SUCCESS', finalLogContent);
     this.logger.debug('END-DETAIL', { result: Array.isArray(result) ? { array: result.length } : result });
 
     if (this.logRequestsWithKey) this.storeLog(!error);
@@ -633,9 +636,9 @@ export class RCError extends Error {
  */
 class RCUnhandledError extends Error {
   /**
-   * The context where the error was intercepted.
+   * The context where the unhandled error was intercepted.
    */
-  intercepted: string;
+  unhandled: string;
   /**
    * The original error message before it was replaced by a public-facing message.
    */

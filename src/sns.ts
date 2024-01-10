@@ -1,11 +1,14 @@
 import * as AWSSNS from '@aws-sdk/client-sns';
 import { PushNotificationsPlatforms } from 'idea-toolbox';
 
+import { LambdaLogger } from './lambdaLogger';
+
 /**
  * A wrapper for AWS Simple Notification Service.
  */
 export class SNS {
   protected client: AWSSNS.SNSClient;
+  protected logger = new LambdaLogger();
 
   constructor(options: { region?: string } = {}) {
     this.client = new AWSSNS.SNSClient({ region: options.region });
@@ -35,7 +38,7 @@ export class SNS {
         throw new Error('Unsupported platform');
     }
 
-    console.debug('SNS add platform endpoint');
+    this.logger.trace('SNS add platform endpoint');
     const command = new AWSSNS.CreatePlatformEndpointCommand({ PlatformApplicationArn: platformARN, Token: token });
     const { EndpointArn } = await this.client.send(command);
     return EndpointArn;
@@ -64,7 +67,7 @@ export class SNS {
           throw new Error('Unsupported platform');
       }
 
-    console.debug('SNS publish in topic');
+    this.logger.trace('SNS publish in topic');
     const command = new AWSSNS.PublishCommand({
       MessageStructure: 'json',
       Message: JSON.stringify(structuredMessage),

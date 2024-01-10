@@ -8,12 +8,14 @@ import {
 import { Headers } from 'nodemailer/lib/mailer';
 
 import { DynamoDB } from './dynamoDB';
+import { LambdaLogger } from './lambdaLogger';
 
 /**
  * A wrapper for AWS Simple Email Service.
  */
 export class SES {
   protected ses: AWSSES.SESv2Client;
+  protected logger = new LambdaLogger();
 
   constructor(options: { region?: string } = {}) {
     this.ses = new AWSSES.SESv2Client({ region: options.region });
@@ -92,7 +94,7 @@ export class SES {
     if (this.ses.config.region === sesParams.region) ses = this.ses;
     else ses = new AWSSES.SESv2Client({ region: sesParams.region });
 
-    console.debug('SES send templated email');
+    this.logger.trace('SES send templated email');
     return await ses.send(command);
   }
 
@@ -134,7 +136,7 @@ export class SES {
     if (this.ses.config.region === sesParams.region) ses = this.ses;
     else ses = new AWSSES.SESv2Client({ region: sesParams.region });
 
-    console.debug('SES send email');
+    this.logger.trace('SES send email');
     return await ses.send(command);
   }
   private async sendEmailWithNodemailer(
@@ -159,7 +161,7 @@ export class SES {
     // note: Nodemailer doesn't support SESv2 as of August 2023
     const ses = new SESOldClient({ region: sesParams.region });
 
-    console.debug('SES send email (Nodemailer)');
+    this.logger.trace('SES send email (Nodemailer)');
     // note: this is a workaround to make Nodemailer works with AWS SDK 3;
     // see: https://github.com/nodemailer/nodemailer/issues/1430
     return await NodemailerCreateTransport({ SES: { ses, aws: { SendRawEmailCommand } } }).sendMail(mailOptions);

@@ -13,4 +13,4 @@ export * from './src/ssm';
 export * from './src/translate';
 export * from './src/attachments';
 
-export * from './src/logger';
+export * from './src/lambdaLogger';
