@@ -50,6 +50,8 @@ export abstract class ResourceController extends GenericController {
   protected metrics: CloudWatchMetrics;
 
   protected tracer: Tracer;
+  protected tracerLambdaSegment: any;
+  protected tracerRCSegment: any;
 
   protected currentLang: string;
   protected defaultLang: string;
@@ -171,12 +173,11 @@ export abstract class ResourceController extends GenericController {
 
     this.logger.info('START', { event: this.getEventSummary() });
 
-    let lambdaSegment, rcSegment;
     if (this.tracer) {
-      lambdaSegment = this.tracer.getSegment();
-      if (lambdaSegment) {
-        rcSegment = lambdaSegment.addNewSubsegment('RC');
-        this.tracer.setSegment(rcSegment);
+      this.tracerLambdaSegment = this.tracer.getSegment();
+      if (this.tracerLambdaSegment) {
+        this.tracerRCSegment = this.tracerLambdaSegment.addNewSubsegment('RC');
+        this.tracer.setSegment(this.tracerRCSegment);
       }
       this.tracer.annotateColdStart();
       this.tracer.addServiceNameAnnotation();
@@ -244,11 +245,6 @@ export abstract class ResourceController extends GenericController {
       }
     } catch (err) {
       this.done(this.handleControllerError(err, 'AUTH-CHECK-ERROR', 'Forbidden'));
-    } finally {
-      if (this.tracer && lambdaSegment && rcSegment) {
-        rcSegment.close();
-        this.tracer.setSegment(lambdaSegment);
-      }
     }
   };
   protected done(
@@ -268,6 +264,11 @@ export abstract class ResourceController extends GenericController {
       else this.logger.warn('END-FAILED', error, finalLogContent);
       if (this.tracer) this.tracer.addErrorAsMetadata(error);
     } else this.logger.info('END-SUCCESS', finalLogContent);
+
+    if (this.tracer) {
+      if (this.tracerRCSegment) this.tracerRCSegment.close();
+      if (this.tracerLambdaSegment) this.tracer.setSegment(this.tracerLambdaSegment);
+    }
 
     if (this.logRequestsWithKey) this.storeLog(!error);
 
