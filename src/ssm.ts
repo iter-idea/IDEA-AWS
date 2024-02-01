@@ -4,11 +4,11 @@ import * as AWSSystemsManager from '@aws-sdk/client-ssm';
  * A wrapper for AWS Systems Manager (SSM).
  */
 export class SystemsManager {
-  protected ssm: AWSSystemsManager.SSMClient;
+  client: AWSSystemsManager.SSMClient;
   protected cache = new Map<string, string>();
 
   constructor() {
-    this.ssm = new AWSSystemsManager.SSMClient();
+    this.client = new AWSSystemsManager.SSMClient();
   }
 
   /**
@@ -20,7 +20,7 @@ export class SystemsManager {
   ): Promise<string> {
     if (!options.noCache && this.cache.has(name)) return this.cache.get(name);
     const command = new AWSSystemsManager.GetParameterCommand({ Name: name, WithDecryption: options.withDecryption });
-    const { Parameter } = await this.ssm.send(command);
+    const { Parameter } = await this.client.send(command);
     this.cache.set(name, Parameter.Value);
     return Parameter.Value;
   }

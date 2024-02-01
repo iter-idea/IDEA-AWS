@@ -7,7 +7,7 @@ import { LambdaLogger } from './lambdaLogger';
  * A wrapper for AWS Simple Notification Service.
  */
 export class SNS {
-  protected client: AWSSNS.SNSClient;
+  client: AWSSNS.SNSClient;
   protected logger = new LambdaLogger();
 
   constructor(options: { region?: string } = {}) {

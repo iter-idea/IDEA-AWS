@@ -14,11 +14,11 @@ import { LambdaLogger } from './lambdaLogger';
  * A wrapper for AWS Simple Email Service.
  */
 export class SES {
-  protected ses: AWSSES.SESv2Client;
+  client: AWSSES.SESv2Client;
   protected logger = new LambdaLogger();
 
   constructor(options: { region?: string } = {}) {
-    this.ses = new AWSSES.SESv2Client({ region: options.region });
+    this.client = new AWSSES.SESv2Client({ region: options.region });
   }
 
   //
@@ -27,14 +27,14 @@ export class SES {
 
   async getTemplate(templateName: string): Promise<AWSSES.EmailTemplateContent> {
     const command = new AWSSES.GetEmailTemplateCommand({ TemplateName: templateName });
-    const { TemplateContent } = await this.ses.send(command);
+    const { TemplateContent } = await this.client.send(command);
     return TemplateContent;
   }
   async setTemplate(templateName: string, subject: string, content: string, isHTML?: boolean): Promise<void> {
     let isNew = false;
     try {
       const command = new AWSSES.GetEmailTemplateCommand({ TemplateName: templateName });
-      await this.ses.send(command);
+      await this.client.send(command);
     } catch (notFound) {
       isNew = true;
     }
@@ -50,18 +50,18 @@ export class SES {
     if (isNew) command = new AWSSES.CreateEmailTemplateCommand(template);
     else command = new AWSSES.UpdateEmailTemplateCommand(template);
 
-    await this.ses.send(command);
+    await this.client.send(command);
   }
   async deleteTemplate(templateName: string): Promise<void> {
     const command = new AWSSES.DeleteEmailTemplateCommand({ TemplateName: templateName });
-    await this.ses.send(command);
+    await this.client.send(command);
   }
   async testTemplate(templateName: string, data: { [variable: string]: any }): Promise<string> {
     const command = new AWSSES.TestRenderEmailTemplateCommand({
       TemplateName: templateName,
       TemplateData: JSON.stringify(data)
     });
-    const { RenderedTemplate } = await this.ses.send(command);
+    const { RenderedTemplate } = await this.client.send(command);
     return RenderedTemplate;
   }
 
@@ -91,7 +91,7 @@ export class SES {
     });
 
     let ses: AWSSES.SESv2Client;
-    if (this.ses.config.region === sesParams.region) ses = this.ses;
+    if (this.client.config.region === sesParams.region) ses = this.client;
     else ses = new AWSSES.SESv2Client({ region: sesParams.region });
 
     this.logger.trace('SES send templated email');
@@ -133,7 +133,7 @@ export class SES {
     });
 
     let ses: AWSSES.SESv2Client;
-    if (this.ses.config.region === sesParams.region) ses = this.ses;
+    if (this.client.config.region === sesParams.region) ses = this.client;
     else ses = new AWSSES.SESv2Client({ region: sesParams.region });
 
     this.logger.trace('SES send email');

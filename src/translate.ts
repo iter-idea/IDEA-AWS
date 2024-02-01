@@ -12,7 +12,7 @@ import {
  * A wrapper for Amazon Translate.
  */
 export class Translate {
-  protected translate: AWSTranslate.TranslateClient;
+  client: AWSTranslate.TranslateClient;
 
   /**
    * Default input language code.
@@ -31,7 +31,7 @@ export class Translate {
    * Initialize a new Translate helper object.
    */
   constructor(options: { region?: string } = {}) {
-    this.translate = new AWSTranslate.TranslateClient({ region: options.region });
+    this.client = new AWSTranslate.TranslateClient({ region: options.region });
   }
 
   /**
@@ -51,7 +51,7 @@ export class Translate {
       TargetLanguageCode: this.targetLanguageCode,
       TerminologyNames: this.terminologyNames
     });
-    const { TranslatedText } = await this.translate.send(command);
+    const { TranslatedText } = await this.client.send(command);
 
     return TranslatedText;
   }

@@ -9,7 +9,7 @@ import { LambdaLogger } from './lambdaLogger';
  * A wrapper for AWS Simple Storage Service.
  */
 export class S3 {
-  protected s3: AWSS3.S3Client;
+  client: AWSS3.S3Client;
   protected logger = new LambdaLogger();
 
   protected DEFAULT_DOWNLOAD_BUCKET_PREFIX = 'common';
@@ -18,7 +18,7 @@ export class S3 {
   protected DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP = 300;
 
   constructor() {
-    this.s3 = new AWSS3.S3Client();
+    this.client = new AWSS3.S3Client();
   }
 
   /**
@@ -37,7 +37,7 @@ export class S3 {
     options.secToExp = options.secToExp ?? this.DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP;
 
     const params = { Bucket: options.bucket, Key: options.key, Body: data, ContentType: options.contentType };
-    const upload = new Upload({ client: this.s3, params });
+    const upload = new Upload({ client: this.client, params });
     await upload.done();
 
     return this.signedURLGet(options.bucket, options.key, { secToExp: options.secToExp, filename: options.filename });
@@ -51,7 +51,7 @@ export class S3 {
     if (options.filename) putParams.ContentDisposition = `attachment; filename ="${cleanFilename(options.filename)}"`;
     const expiresIn = options.secToExp ?? this.DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP;
 
-    const url = await getSignedUrl(this.s3, new AWSS3.PutObjectCommand(putParams), { expiresIn });
+    const url = await getSignedUrl(this.client, new AWSS3.PutObjectCommand(putParams), { expiresIn });
     return new SignedURL({ url });
   }
 
@@ -64,7 +64,7 @@ export class S3 {
       getParams.ResponseContentDisposition = `attachment; filename ="${cleanFilename(options.filename)}"`;
     const expiresIn = options.secToExp ?? this.DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP;
 
-    const url = await getSignedUrl(this.s3, new AWSS3.GetObjectCommand(getParams), { expiresIn });
+    const url = await getSignedUrl(this.client, new AWSS3.GetObjectCommand(getParams), { expiresIn });
     return new SignedURL({ url });
   }
 
@@ -78,7 +78,7 @@ export class S3 {
       Bucket: options.bucket,
       Key: options.key
     });
-    await this.s3.send(command);
+    await this.client.send(command);
   }
 
   /**
@@ -92,7 +92,7 @@ export class S3 {
       params.ResponseContentDisposition = `attachment; filename ="${cleanFilename(options.filename)}"`;
 
     const command = new AWSS3.GetObjectCommand(params);
-    return await this.s3.send(command);
+    return await this.client.send(command);
   }
   /**
    * Get an object from a S3 bucket and parse the content as a JSON object.
@@ -120,7 +120,7 @@ export class S3 {
     if (options.filename) params.ContentDisposition = `attachment; filename ="${cleanFilename(options.filename)}"`;
 
     this.logger.trace(`S3 put object: ${options.key}`);
-    return await this.s3.send(new AWSS3.PutObjectCommand(params));
+    return await this.client.send(new AWSS3.PutObjectCommand(params));
   }
 
   /**
@@ -129,7 +129,7 @@ export class S3 {
   async deleteObject(options: DeleteObjectOptions): Promise<AWSS3.PutObjectOutput> {
     this.logger.trace(`S3 delete object: ${options.key}`);
     const deleteCommand = new AWSS3.DeleteObjectCommand({ Bucket: options.bucket, Key: options.key });
-    return await this.s3.send(deleteCommand);
+    return await this.client.send(deleteCommand);
   }
 
   /**
@@ -138,7 +138,7 @@ export class S3 {
   async listObjects(options: ListObjectsOptions): Promise<AWSS3.ListObjectsOutput> {
     this.logger.trace(`S3 list object: ${options.prefix}`);
     const command = new AWSS3.ListObjectsCommand({ Bucket: options.bucket, Prefix: options.prefix });
-    return await this.s3.send(command);
+    return await this.client.send(command);
   }
 
   /**
@@ -155,7 +155,7 @@ export class S3 {
   async doesObjectExist(options: HeadObjectOptions): Promise<boolean> {
     try {
       const command = new AWSS3.HeadObjectCommand({ Bucket: options.bucket, Key: options.key });
-      const { ContentLength } = await this.s3.send(command);
+      const { ContentLength } = await this.client.send(command);
       if (options.emptyMeansNotFound) return ContentLength > 0;
       else return true;
     } catch (err) {

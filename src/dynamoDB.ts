@@ -10,11 +10,11 @@ import { LambdaLogger } from './lambdaLogger';
  * A wrapper for AWS DynamoDB.
  */
 export class DynamoDB {
-  protected dynamo: DDB.DynamoDBDocument;
+  client: DDB.DynamoDBDocument;
   protected logger = new LambdaLogger();
 
   constructor() {
-    this.dynamo = DDB.DynamoDBDocument.from(new DDBClient(), {
+    this.client = DDB.DynamoDBDocument.from(new DDBClient(), {
       marshallOptions: { convertEmptyValues: true, removeUndefinedValues: true, convertClassInstanceToMap: true }
     });
   }
@@ -86,7 +86,7 @@ export class DynamoDB {
    */
   async get(params: DDB.GetCommandInput): Promise<any> {
     this.logger.trace(`Get ${params.TableName}`);
-    const { Item } = await this.dynamo.get(params);
+    const { Item } = await this.client.get(params);
 
     if (!Item) throw new Error('Not found');
     return Item;
@@ -98,7 +98,7 @@ export class DynamoDB {
    */
   async put(params: DDB.PutCommandInput): Promise<DDB.PutCommandOutput> {
     this.logger.trace(`Put ${params.TableName}`);
-    return await this.dynamo.put(params);
+    return await this.client.put(params);
   }
 
   /**
@@ -107,7 +107,7 @@ export class DynamoDB {
    */
   async update(params: DDB.UpdateCommandInput): Promise<DDB.UpdateCommandOutput> {
     this.logger.trace(`Update ${params.TableName}`);
-    return await this.dynamo.update(params);
+    return await this.client.update(params);
   }
 
   /**
@@ -116,7 +116,7 @@ export class DynamoDB {
    */
   async delete(params: DDB.DeleteCommandInput): Promise<DDB.DeleteCommandOutput> {
     this.logger.trace(`Delete ${params.TableName}`);
-    return await this.dynamo.delete(params);
+    return await this.client.delete(params);
   }
 
   /**
@@ -151,7 +151,7 @@ export class DynamoDB {
 
     let result: DDB.BatchGetCommandOutput;
     try {
-      result = await this.dynamo.batchGet(batch);
+      result = await this.client.batchGet(batch);
     } catch (err) {
       if (!ignoreErr) throw err;
     }
@@ -217,7 +217,7 @@ export class DynamoDB {
 
     let attempts = 0;
     do {
-      const response = await this.dynamo.batchWrite(params);
+      const response = await this.client.batchWrite(params);
 
       if (
         response.UnprocessedItems &&
@@ -264,8 +264,8 @@ export class DynamoDB {
     isQuery: boolean
   ): Promise<Record<string, any>[]> {
     let result;
-    if (isQuery) result = await this.dynamo.query(params);
-    else result = await this.dynamo.scan(params);
+    if (isQuery) result = await this.client.query(params);
+    else result = await this.client.scan(params);
 
     items = items.concat(result.Items);
 
@@ -281,7 +281,7 @@ export class DynamoDB {
    */
   async queryClassic(params: DDB.QueryCommandInput): Promise<DDB.QueryCommandOutput> {
     this.logger.trace(`Query classic ${params.TableName}`);
-    const result = await this.dynamo.query(params);
+    const result = await this.client.query(params);
 
     this.logger.trace(`Results query classic ${params.TableName}: ${result.Items.length ?? 0}`);
     return result;
@@ -292,7 +292,7 @@ export class DynamoDB {
    */
   async scanClassic(params: DDB.ScanCommandInput): Promise<DDB.ScanCommandOutput> {
     this.logger.trace(`Scan classic ${params.TableName}`);
-    const result = await this.dynamo.scan(params);
+    const result = await this.client.scan(params);
 
     this.logger.trace(`Results scan classic ${params.TableName}: ${result.Items.length ?? 0}`);
     return result;
@@ -306,6 +306,6 @@ export class DynamoDB {
     if (!ops.length) return this.logger.trace('Transaction writes: no elements to write');
 
     this.logger.trace('Transaction writes');
-    await this.dynamo.transactWrite({ TransactItems: ops });
+    await this.client.transactWrite({ TransactItems: ops });
   }
 }
