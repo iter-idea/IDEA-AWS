@@ -1,12 +1,17 @@
 import { existsSync, readFileSync } from 'fs';
 import * as Lambda from '@aws-sdk/client-lambda';
 import * as EventBridge from '@aws-sdk/client-eventbridge';
+import { Tracer } from '@aws-lambda-powertools/tracer';
 import { APIGatewayProxyEventV2, APIGatewayProxyEvent, Callback } from 'aws-lambda';
 import { APIRequestLog, CognitoUser, Auth0User } from 'idea-toolbox';
 
 import { CloudWatchMetrics } from './metrics';
 import { GenericController, HandledError, UnhandledError } from './genericController';
 import { DynamoDB } from './dynamoDB';
+
+const ENV = process?.env ?? {};
+const { PROJECT, STAGE, RESOURCE } = ENV;
+ENV.POWERTOOLS_SERVICE_NAME = [PROJECT, STAGE, RESOURCE].filter(x => x).join('_');
 
 /**
  * An abstract class to inherit to manage API requests (AWS API Gateway) in an AWS Lambda function.
@@ -23,15 +28,15 @@ export abstract class ResourceController extends GenericController {
   protected cognitoUser: CognitoUser;
   protected auth0User: Auth0User;
 
-  protected project = process?.env?.PROJECT;
-  protected stage = process?.env?.STAGE;
+  protected project = PROJECT;
+  protected stage = STAGE;
   protected httpMethod: string;
   protected body: any;
   protected queryParams: any;
   protected resourcePath: string;
   protected path: string;
   protected pathParameters: any;
-  protected resource = process?.env?.RESOURCE;
+  protected resource = RESOURCE;
   protected resourceId: string;
 
   protected clientVersion = '?';
@@ -43,6 +48,8 @@ export abstract class ResourceController extends GenericController {
   protected logRequestsWithKey: string;
 
   protected metrics: CloudWatchMetrics;
+
+  protected tracer: Tracer;
 
   protected currentLang: string;
   protected defaultLang: string;
@@ -65,6 +72,8 @@ export abstract class ResourceController extends GenericController {
       else this.initFromEventV1(event as APIGatewayProxyEvent, options);
 
       this.logRequestsWithKey = options.logRequestsWithKey;
+
+      this.tracer = options.tracer;
 
       // acquire some info about the client, if available
       if (this.queryParams['_v']) {
@@ -158,9 +167,22 @@ export abstract class ResourceController extends GenericController {
   ///
 
   handleRequest = async (): Promise<void> => {
+    if (this.initError) return;
+
     this.logger.info('START', { event: this.getEventSummary() });
 
-    if (this.initError) return;
+    let lambdaSegment, rcSegment;
+    if (this.tracer) {
+      lambdaSegment = this.tracer.getSegment();
+      if (lambdaSegment) {
+        rcSegment = lambdaSegment.addNewSubsegment('RC');
+        this.tracer.setSegment(rcSegment);
+      }
+      this.tracer.annotateColdStart();
+      this.tracer.addServiceNameAnnotation();
+      this.tracer.putMetadata('START', { event: this.getEventSummary() });
+    }
+
     try {
       await this.checkAuthBeforeRequest();
 
@@ -222,6 +244,11 @@ export abstract class ResourceController extends GenericController {
       }
     } catch (err) {
       this.done(this.handleControllerError(err, 'AUTH-CHECK-ERROR', 'Forbidden'));
+    } finally {
+      if (this.tracer && lambdaSegment && rcSegment) {
+        rcSegment.close();
+        this.tracer.setSegment(lambdaSegment);
+      }
     }
   };
   protected done(
@@ -231,11 +258,15 @@ export abstract class ResourceController extends GenericController {
   ): void {
     const result = error ? { message: error.message } : rawResult ?? {};
 
-    this.logger.debug('END-DETAIL', { result: Array.isArray(result) ? { array: result.length } : result });
+    const responseTrace = { result: Array.isArray(result) ? { array: result.length } : result };
+    this.logger.debug('END-DETAIL', responseTrace);
+    if (this.tracer) this.tracer.addResponseAsMetadata(responseTrace, 'END-DETAIL');
+
     const finalLogContent = { statusCode, event: this.getEventSummary() };
     if (error) {
       if ((error as UnhandledError).unhandled) this.logger.error('END-FAILED', error, finalLogContent);
       else this.logger.warn('END-FAILED', error, finalLogContent);
+      if (this.tracer) this.tracer.addErrorAsMetadata(error);
     } else this.logger.info('END-SUCCESS', finalLogContent);
 
     if (this.logRequestsWithKey) this.storeLog(!error);
@@ -562,6 +593,10 @@ export interface ResourceControllerOptions {
    * Whether to automatically store usage metrics on CloudWatch.
    */
   useMetrics?: boolean;
+  /**
+   * The instance of the tracer to use in case of advanced monitoring.
+   */
+  tracer?: Tracer;
 }
 
 /**

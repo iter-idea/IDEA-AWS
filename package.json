@@ -37,7 +37,8 @@
   },
   "homepage": "https://iter-idea.github.io/IDEA-AWS",
   "dependencies": {
-    "@aws-lambda-powertools/metrics": "^1.17.0",
+    "@aws-lambda-powertools/metrics": "^1.18.0",
+    "@aws-lambda-powertools/tracer": "^1.18.0",
     "idea-toolbox": "^7.0.2",
     "nanoid": "^3.3.7",
     "nodemailer": "^6.9.8",
