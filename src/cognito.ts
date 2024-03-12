@@ -78,6 +78,15 @@ export class Cognito {
   }
 
   /**
+   * Get the list of groups of a user by its email address.
+   */
+  async getUserGroupsByEmail(email: string, userPoolId: string): Promise<string[]> {
+    const command = new CognitoIP.AdminListGroupsForUserCommand({ UserPoolId: userPoolId, Username: email });
+    const { Groups } = await this.client.send(command);
+    return Groups.map(x => x.GroupName);
+  }
+
+  /**
    * List all the users of the pool.
    */
   async listUsers(
