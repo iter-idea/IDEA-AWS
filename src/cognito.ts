@@ -105,23 +105,20 @@ export class Cognito {
   }
   /**
    * List all the users of the pool, including the information about the groups they're in.
-   * Note: it's slower than the alternative `getAllUsers`: use it only when needed.
+   * Note: it's slower than the alternative `listUsers`: use it only when needed.
    */
   async listUsersWithGroupsDetail(cognitoUserPoolId: string): Promise<CognitoUser[]> {
-    const groups = await this.listGroups(cognitoUserPoolId);
+    const [users, groups] = await Promise.all([this.listUsers(cognitoUserPoolId), this.listGroups(cognitoUserPoolId)]);
 
-    const users: CognitoUser[] = [];
-    for (const group of groups) {
-      const usersOfGroup = await this.listUsersInGroup(group.name, cognitoUserPoolId);
-      usersOfGroup.forEach(userInGroup => {
-        const userAlreadyInOutputList = users.find(u => u.userId === userInGroup.userId);
-        if (userAlreadyInOutputList) userAlreadyInOutputList.groups.push(group.name);
-        else {
-          userInGroup.groups.push(group.name);
-          users.push(userInGroup);
-        }
-      });
-    }
+    await Promise.all(
+      groups.map(async group => {
+        const usersOfGroup = await this.listUsersInGroup(group.name, cognitoUserPoolId);
+        usersOfGroup.forEach(userInGroup => {
+          const userAlreadyInOutputList = users.find(u => u.userId === userInGroup.userId);
+          if (userAlreadyInOutputList) userAlreadyInOutputList.groups.push(group.name);
+        });
+      })
+    );
 
     return users;
   }
