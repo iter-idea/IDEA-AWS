@@ -2,6 +2,7 @@
   "name": "idea-aws",
   "version": "4.4.9",
   "description": "AWS wrappers to use in IDEA's back-ends",
+  "license": "MPL-2.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -31,7 +32,6 @@
     "ssm"
   ],
   "author": "ITER IDEA <info@iter-idea.com> (https://iter-idea.com)",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/iter-idea/IDEA-AWS/issues"
   },
@@ -39,7 +39,7 @@
   "dependencies": {
     "@aws-lambda-powertools/metrics": "^1.17.0",
     "@aws-lambda-powertools/tracer": "^1.18.0",
-    "idea-toolbox": "^7.0.3",
+    "idea-toolbox": "^7.0.6",
     "nanoid": "^3.3.7",
     "nodemailer": "^6.9.8",
     "source-map-support": "^0.5.21"
