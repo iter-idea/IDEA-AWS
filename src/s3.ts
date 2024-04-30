@@ -146,7 +146,7 @@ export class S3 {
    */
   async listObjectsKeys(options: ListObjectsOptions): Promise<string[]> {
     const result = await this.listObjects(options);
-    return result.Contents.map(obj => obj.Key);
+    return result.Contents ? result.Contents.map(obj => obj.Key) : [];
   }
 
   /**
