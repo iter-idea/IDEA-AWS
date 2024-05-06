@@ -163,6 +163,12 @@ export abstract class ResourceController extends GenericController {
     else if (Array.isArray(this.queryParams[paramName])) return this.queryParams[paramName];
     else return String(this.queryParams[paramName]).split(',');
   }
+  /**
+   * Force the parsing of a query parameter as a boolean.
+   */
+  protected getQueryParamAsBoolean(paramName: string): boolean {
+    return this.queryParams[paramName] && this.queryParams[paramName].toLowerCase() !== 'false';
+  }
 
   ///
   /// REQUEST HANDLERS
