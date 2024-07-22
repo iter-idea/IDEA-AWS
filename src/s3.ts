@@ -115,7 +115,7 @@ export class S3 {
   async putObject(options: PutObjectOptions): Promise<AWSS3.PutObjectOutput> {
     const params: AWSS3.PutObjectCommandInput = { Bucket: options.bucket, Key: options.key, Body: options.body };
     if (options.contentType) params.ContentType = options.contentType;
-    if (options.acl) params.ACL = options.acl;
+    if (options.acl) params.ACL = options.acl as AWSS3.ObjectCannedACL;
     if (options.metadata) params.Metadata = options.metadata;
     if (options.filename) params.ContentDisposition = `attachment; filename ="${cleanFilename(options.filename)}"`;
 
@@ -288,7 +288,7 @@ export interface PutObjectOptions {
   /**
    * Access-control list (e.g. public-read).
    */
-  acl?: string;
+  acl?: AWSS3.ObjectCannedACL | string;
   /**
    * A set of metadata as attributes
    */

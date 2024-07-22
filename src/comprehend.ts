@@ -17,7 +17,10 @@ export class Comprehend {
   async detectSentiment(params: DetectSentimentParameters): Promise<Sentiment> {
     if (!params.language || !params.text) throw new Error('Missing some parameters');
 
-    const command = new AmazonComprehend.DetectSentimentCommand({ LanguageCode: params.language, Text: params.text });
+    const command = new AmazonComprehend.DetectSentimentCommand({
+      LanguageCode: params.language as AmazonComprehend.LanguageCode,
+      Text: params.text
+    });
     const { Sentiment } = await this.client.send(command);
 
     return Sentiment as Sentiment;
@@ -43,7 +46,7 @@ export interface DetectSentimentParameters {
    * All contents must be in the same language. Required.
    * Valid Values: en | es | fr | de | it | pt | ar | hi | ja | ko | zh | zh-TW
    */
-  language: string;
+  language: AmazonComprehend.LanguageCode | string;
   /**
    * The text to analyze. Required.
    * A UTF-8 text string. Each string must contain fewer that 5,000 bytes of UTF-8 encoded characters.

@@ -21,8 +21,8 @@ export class DynamoDB {
 
   /**
    * Convert a JSON object from DynamoDB format to simple JSON.
-   * @data the data in DynamoDB's original format to convert in plain objects
-   * @options the options to use to convert the data
+   * @param data the data in DynamoDB's original format to convert in plain objects
+   * @param options the options to use to convert the data
    */
   unmarshall(data: Record<string, any>, options?: DDBUtils.unmarshallOptions): Record<string, any> {
     return DDBUtils.unmarshall(data, options);
