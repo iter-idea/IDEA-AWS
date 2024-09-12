@@ -142,13 +142,13 @@ export abstract class ResourceController extends GenericController {
       throw new HandledError('Malformed body');
     }
   }
-  protected getEventSummary(): Record<string, any> {
+  protected getEventSummary(limitBodyArrayDisplay = false): Record<string, any> {
     return {
       httpMethod: this.httpMethod,
       path: this.path,
       principalId: this.principalId,
       queryParams: this.queryParams,
-      body: this.body,
+      body: limitBodyArrayDisplay && Array.isArray(this.body) ? { array: this.body.length } : this.body,
       version: this.clientVersion,
       platform: this.clientPlatform,
       bundle: this.clientBundle
@@ -187,7 +187,7 @@ export abstract class ResourceController extends GenericController {
       }
       this.tracer.annotateColdStart();
       this.tracer.addServiceNameAnnotation();
-      this.tracer.putMetadata('START', { event: this.getEventSummary() });
+      this.tracer.putMetadata('START', { event: this.getEventSummary(true) });
     }
 
     try {
