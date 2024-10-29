@@ -29,7 +29,7 @@ export class DynamoDB {
   }
 
   /**
-   * Returns an IUNID: IDEA's Unique Nano IDentifier, which is an id unique through an IDEA's AWS account and region.
+   * Returns an IUNID: IDEA's Unique Nano IDentifier, which is an id unique through an AWS region inside an account.
    * Note: no need of an auth check for external uses: the permissions depend from the context in which it's executed.
    * @param project project code
    * @return the IUNID
