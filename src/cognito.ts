@@ -98,7 +98,9 @@ export class Cognito {
 
     const { Users, PaginationToken: pagination } = await this.client.send(new CognitoIP.ListUsersCommand(params));
 
-    const users = options.users.concat(Users.map(u => new CognitoUser(this.mapCognitoUserAttributesAsPlainObject(u))));
+    const users = options.users.concat(
+      Users.map(u => new CognitoUser({ ...this.mapCognitoUserAttributesAsPlainObject(u), enabled: u.Enabled }))
+    );
 
     if (pagination) return await this.listUsers(userPoolId, { pagination, users });
     else return users;
