@@ -368,6 +368,13 @@ export class Cognito {
     const command = new CognitoIP.AdminDisableUserCommand({ UserPoolId: userPoolId, Username: email });
     await this.client.send(command);
   }
+  /**
+   * Enable a cognito user.
+   */
+  async enableUser(email: string, userPoolId: string): Promise<void> {
+    const command = new CognitoIP.AdminEnableUserCommand({ UserPoolId: userPoolId, Username: email });
+    await this.client.send(command);
+  }
 
   /**
    * Sign out the user from all devices.
