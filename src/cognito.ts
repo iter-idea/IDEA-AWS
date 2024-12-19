@@ -69,12 +69,12 @@ export class Cognito {
   /**
    * Identify a user by its userId (sub), returning its attributes.
    */
-  async getUserBySub(sub: string, userPoolId: string): Promise<CognitoUserGeneric> {
+  async getUserBySub(sub: string, userPoolId: string): Promise<CognitoUser> {
     // as of today, there is no a direct way to find a user by its sub: we need to run a query against the users base
     const command = new CognitoIP.ListUsersCommand({ UserPoolId: userPoolId, Filter: `sub = "${sub}"`, Limit: 1 });
     const { Users } = await this.client.send(command);
     if (Users.length < 1) throw new Error('User not found');
-    return this.mapCognitoUserAttributesAsPlainObject(Users[0]);
+    return new CognitoUser({ ...this.mapCognitoUserAttributesAsPlainObject(Users[0]), enabled: Users[0].Enabled });
   }
 
   /**
