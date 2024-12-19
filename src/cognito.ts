@@ -360,6 +360,14 @@ export class Cognito {
   }
 
   /**
+   * Disable a cognito user.
+   */
+  async disableUser(email: string, userPoolId: string): Promise<void> {
+    const command = new CognitoIP.AdminDisableUserCommand({ UserPoolId: userPoolId, Username: email });
+    await this.client.send(command);
+  }
+
+  /**
    * Sign out the user from all devices.
    */
   async globalSignOut(email: string, userPoolId: string): Promise<void> {
