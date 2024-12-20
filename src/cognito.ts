@@ -45,6 +45,7 @@ export class Cognito {
     (user.Attributes ?? user.UserAttributes ?? []).forEach((a: any): void => (userAttributes[a.Name] = a.Value));
 
     if (!userAttributes.userId) userAttributes.userId = userAttributes.sub;
+    userAttributes.disabled = !user.Enabled;
     return userAttributes as CognitoUserGeneric;
   }
 
@@ -69,12 +70,12 @@ export class Cognito {
   /**
    * Identify a user by its userId (sub), returning its attributes.
    */
-  async getUserBySub(sub: string, userPoolId: string): Promise<CognitoUser> {
+  async getUserBySub(sub: string, userPoolId: string): Promise<CognitoUserGeneric> {
     // as of today, there is no a direct way to find a user by its sub: we need to run a query against the users base
     const command = new CognitoIP.ListUsersCommand({ UserPoolId: userPoolId, Filter: `sub = "${sub}"`, Limit: 1 });
     const { Users } = await this.client.send(command);
     if (Users.length < 1) throw new Error('User not found');
-    return new CognitoUser({ ...this.mapCognitoUserAttributesAsPlainObject(Users[0]), enabled: Users[0].Enabled });
+    return this.mapCognitoUserAttributesAsPlainObject(Users[0]);
   }
 
   /**
@@ -98,9 +99,7 @@ export class Cognito {
 
     const { Users, PaginationToken: pagination } = await this.client.send(new CognitoIP.ListUsersCommand(params));
 
-    const users = options.users.concat(
-      Users.map(u => new CognitoUser({ ...this.mapCognitoUserAttributesAsPlainObject(u), enabled: u.Enabled }))
-    );
+    const users = options.users.concat(Users.map(u => new CognitoUser(this.mapCognitoUserAttributesAsPlainObject(u))));
 
     if (pagination) return await this.listUsers(userPoolId, { pagination, users });
     else return users;
@@ -166,7 +165,7 @@ export class Cognito {
     const userId = this.mapCognitoUserAttributesAsPlainObject(User).sub;
 
     if (!userId) throw new Error('Creation failed');
-    return userId;
+    return userId as string;
   }
 
   /**
@@ -500,9 +499,13 @@ export interface CognitoUserGeneric {
    */
   email: string;
   /**
+   * Whether the user has been disabled.
+   */
+  disabled: boolean;
+  /**
    * Cognito can have custom attributes.
    */
-  [attribute: string]: string;
+  [attribute: string]: string | number | boolean;
 }
 
 /**
