@@ -45,6 +45,7 @@ export class Cognito {
     (user.Attributes ?? user.UserAttributes ?? []).forEach((a: any): void => (userAttributes[a.Name] = a.Value));
 
     if (!userAttributes.userId) userAttributes.userId = userAttributes.sub;
+    userAttributes.disabled = !user.Enabled;
     return userAttributes as CognitoUserGeneric;
   }
 
@@ -164,7 +165,7 @@ export class Cognito {
     const userId = this.mapCognitoUserAttributesAsPlainObject(User).sub;
 
     if (!userId) throw new Error('Creation failed');
-    return userId;
+    return userId as string;
   }
 
   /**
@@ -360,6 +361,21 @@ export class Cognito {
   }
 
   /**
+   * Disable a cognito user.
+   */
+  async disableUser(email: string, userPoolId: string): Promise<void> {
+    const command = new CognitoIP.AdminDisableUserCommand({ UserPoolId: userPoolId, Username: email });
+    await this.client.send(command);
+  }
+  /**
+   * Enable a cognito user.
+   */
+  async enableUser(email: string, userPoolId: string): Promise<void> {
+    const command = new CognitoIP.AdminEnableUserCommand({ UserPoolId: userPoolId, Username: email });
+    await this.client.send(command);
+  }
+
+  /**
    * Sign out the user from all devices.
    */
   async globalSignOut(email: string, userPoolId: string): Promise<void> {
@@ -483,9 +499,13 @@ export interface CognitoUserGeneric {
    */
   email: string;
   /**
+   * Whether the user has been disabled.
+   */
+  disabled: boolean;
+  /**
    * Cognito can have custom attributes.
    */
-  [attribute: string]: string;
+  [attribute: string]: string | number | boolean;
 }
 
 /**
