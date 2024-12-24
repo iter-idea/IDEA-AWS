@@ -19,7 +19,7 @@ export class Attachments {
   /**
    * The default prefix for attachment IDs.
    */
-  prefix = process.env.PROJECT ? process.env.PROJECT.concat('_ATT') : 'ATT';
+  prefix = process.env.PROJECT ? process.env.PROJECT.concat('-attachment') : 'attachment';
 
   constructor(protected ddb: DynamoDB, protected s3: S3, options: AttachmentsInitOptions = {}) {
     if (options.compatibility === 'v1') {
