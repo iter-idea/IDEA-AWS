@@ -287,6 +287,17 @@ export class Cognito {
     // sign out the user from all its devices and resolve
     await this.globalSignOut(newEmail, userPoolId);
   }
+  /**
+   * Verify the email address (== username) associated to a user.
+   */
+  async verifyEmail(email: string, userPoolId: string, unverify = false): Promise<void> {
+    const command = new CognitoIP.AdminUpdateUserAttributesCommand({
+      UserPoolId: userPoolId,
+      Username: email,
+      UserAttributes: [{ Name: 'email_verified', Value: unverify ? 'false' : 'true' }]
+    });
+    await this.client.send(command);
+  }
 
   /**
    * Change the password to sign in for a user.
