@@ -271,7 +271,7 @@ export class Cognito {
   /**
    * Change the email address (== username) associated to a user.
    */
-  async updateEmail(email: string, newEmail: string, userPoolId: string): Promise<void> {
+  async updateEmail(email: string, newEmail: string, userPoolId: string, globalSignOut = false): Promise<void> {
     if (isEmpty(newEmail, 'email')) throw new Error('Invalid new email');
 
     const command = new CognitoIP.AdminUpdateUserAttributesCommand({
@@ -284,8 +284,8 @@ export class Cognito {
     });
     await this.client.send(command);
 
-    // sign out the user from all its devices and resolve
-    await this.globalSignOut(newEmail, userPoolId);
+    // sign out the user from all its devices
+    if (globalSignOut) await this.globalSignOut(newEmail, userPoolId);
   }
   /**
    * Verify the email address (== username) associated to a user.
