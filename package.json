@@ -39,7 +39,7 @@
   "dependencies": {
     "@aws-lambda-powertools/metrics": "^1.18.1",
     "@aws-lambda-powertools/tracer": "^1.18.1",
-    "idea-toolbox": "^7.1.0",
+    "idea-toolbox": "^7.1.1",
     "nanoid": "^3.3.7",
     "nodemailer": "^6.9.14",
     "source-map-support": "^0.5.21"
