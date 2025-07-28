@@ -7,38 +7,37 @@ import { LambdaLogger } from './lambdaLogger';
  */
 export abstract class GenericController {
   protected event: any;
-  protected callback: any;
 
   protected logger = new LambdaLogger();
 
   /**
    * Initialize a new GenericController helper object.
    * @param event the event that invoked the AWS lambda function
-   * @param callback the callback to resolve or reject the execution
    */
-  constructor(event: any, callback: any) {
+  constructor(event: any) {
     this.event = event;
-    this.callback = callback;
   }
 
   /**
    * The main function (to override), that handles the request and must terminate invoking the method `done`.
    */
-  async handleRequest(): Promise<void> {
+  async handleRequest(): Promise<any> {
     this.logger.info('START');
-    this.done();
+    return this.done();
   }
 
   /**
-   * Default callback for the Lambda.
+   * Default ending function for the Lambda.
    */
-  protected done(error: Error | any = null, res?: any): void {
+  protected done(error: Error | any = null, res?: any): any {
     if (error) {
       if ((error as UnhandledError).unhandled) this.logger.error('END-FAILED', error);
       else this.logger.warn('END-FAILED', error);
-    } else this.logger.info('END-SUCCESS');
-
-    this.callback(error, res);
+      throw error;
+    } else {
+      this.logger.info('END-SUCCESS');
+      return res;
+    }
   }
 
   /**

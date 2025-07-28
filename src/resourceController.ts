@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'fs';
 import * as Lambda from '@aws-sdk/client-lambda';
 import * as EventBridge from '@aws-sdk/client-eventbridge';
 import { Tracer } from '@aws-lambda-powertools/tracer';
-import { APIGatewayProxyEventV2, APIGatewayProxyEvent, Callback } from 'aws-lambda';
+import { APIGatewayProxyEventV2, APIGatewayProxyEvent } from 'aws-lambda';
 import { APIRequestLog, CognitoUser, Auth0User } from 'idea-toolbox';
 
 import { CloudWatchMetrics } from './metrics';
@@ -18,9 +18,8 @@ ENV.POWERTOOLS_SERVICE_NAME = [PROJECT, STAGE, RESOURCE].filter(x => x).join('_'
  */
 export abstract class ResourceController extends GenericController {
   protected event: APIGatewayProxyEventV2 | APIGatewayProxyEvent;
-  protected callback: Callback;
 
-  protected initError = false;
+  protected initError?: Error;
 
   protected authorization: string;
   protected claims: any;
@@ -43,6 +42,10 @@ export abstract class ResourceController extends GenericController {
   protected clientPlatform = '?';
   protected clientBundle: string = null;
 
+  protected returnHeaders: Record<string, string> = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+  };
   protected returnStatusCode?: number;
 
   protected logRequestsWithKey: string;
@@ -58,15 +61,9 @@ export abstract class ResourceController extends GenericController {
   protected translations: any;
   protected templateMatcher = /{{\s?([^{}\s]*)\s?}}/g;
 
-  constructor(
-    event: APIGatewayProxyEventV2 | APIGatewayProxyEvent,
-    callback: Callback,
-    options: ResourceControllerOptions = {}
-  ) {
-    super(event, callback);
-
+  constructor(event: APIGatewayProxyEventV2 | APIGatewayProxyEvent, options: ResourceControllerOptions = {}) {
+    super(event);
     this.event = event;
-    this.callback = callback;
 
     try {
       if ((event as APIGatewayProxyEventV2).version === '2.0')
@@ -92,9 +89,8 @@ export abstract class ResourceController extends GenericController {
       }
 
       if (options.useMetrics) this.prepareMetrics();
-    } catch (err) {
-      this.initError = true;
-      this.done(this.handleControllerError(err, 'INIT-ERROR', 'Malformed request'));
+    } catch (error) {
+      this.initError = error as Error;
     }
   }
   private initFromEventV2(event: APIGatewayProxyEventV2, options: ResourceControllerOptions): void {
@@ -174,8 +170,8 @@ export abstract class ResourceController extends GenericController {
   /// REQUEST HANDLERS
   ///
 
-  handleRequest = async (): Promise<void> => {
-    if (this.initError) return;
+  handleRequest = async (): Promise<ResourceControllerResult> => {
+    if (this.initError) return this.done(this.handleControllerError(this.initError, 'INIT-ERROR', 'Malformed request'));
 
     this.logger.info('START', { event: this.getEventSummary() });
 
@@ -217,7 +213,7 @@ export abstract class ResourceController extends GenericController {
               response = await this.headResource();
               break;
             default:
-              this.done(new HandledError('Unsupported method'));
+              return this.done(new HandledError('Unsupported method'));
           }
         } else {
           switch (this.httpMethod) {
@@ -241,23 +237,23 @@ export abstract class ResourceController extends GenericController {
               response = await this.headResources();
               break;
             default:
-              this.done(new HandledError('Unsupported method'));
+              return this.done(new HandledError('Unsupported method'));
           }
         }
-
-        this.done(null, response);
+        return this.done(null, response);
       } catch (err) {
-        this.done(this.handleControllerError(err, 'HANDLER-ERROR', 'Operation failed'));
+        return this.done(this.handleControllerError(err, 'HANDLER-ERROR', 'Operation failed'));
       }
     } catch (err) {
-      this.done(this.handleControllerError(err, 'AUTH-CHECK-ERROR', 'Forbidden'));
+      return this.done(this.handleControllerError(err, 'AUTH-CHECK-ERROR', 'Forbidden'));
     }
   };
   protected done(
     error?: Error | any,
     rawResult?: any,
-    statusCode = this.returnStatusCode ?? (error ? 400 : 200)
-  ): void {
+    statusCode = this.returnStatusCode ?? (error ? 400 : 200),
+    headers = this.returnHeaders
+  ): ResourceControllerResult {
     const result = error ? { message: error.message } : rawResult ?? {};
 
     const responseTrace = { result: Array.isArray(result) ? { array: result.length } : result };
@@ -280,11 +276,7 @@ export abstract class ResourceController extends GenericController {
 
     if (this.metrics) this.publishMetrics(statusCode, error);
 
-    this.callback(null, {
-      statusCode: String(statusCode),
-      body: JSON.stringify(result),
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
-    });
+    return { statusCode, body: JSON.stringify(result), headers };
   }
 
   /**
@@ -604,6 +596,15 @@ export interface ResourceControllerOptions {
    * The instance of the tracer to use in case of advanced monitoring.
    */
   tracer?: Tracer;
+}
+
+/**
+ * The result of a Resource Controller's execution.
+ */
+export interface ResourceControllerResult {
+  statusCode: number;
+  body: string;
+  headers: Record<string, string>;
 }
 
 /**

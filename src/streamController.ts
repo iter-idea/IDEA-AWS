@@ -8,8 +8,8 @@ import { GenericController } from './genericController';
 export abstract class StreamController extends GenericController {
   records: any[];
 
-  constructor(event: any, callback: any) {
-    super(event, callback);
+  constructor(event: any) {
+    super(event);
     this.records = event.Records ?? [];
   }
 
@@ -17,9 +17,11 @@ export abstract class StreamController extends GenericController {
 
   async handleRequest(): Promise<void> {
     this.logger.info('START', { streamOfRecords: this.records.length ?? 0 });
-
-    await Promise.all(this.records.map(record => this.handleRecord(record)))
-      .then((): void => this.done())
-      .catch((err: Error): void => this.done(this.handleControllerError(err, 'STREAM-ERROR', 'Operation failed')));
+    try {
+      await Promise.all(this.records.map(record => this.handleRecord(record)));
+      return this.done();
+    } catch (err) {
+      return this.done(this.handleControllerError(err, 'STREAM-ERROR', 'Operation failed'));
+    }
   }
 }
