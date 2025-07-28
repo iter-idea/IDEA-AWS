@@ -35,7 +35,7 @@ export class SES {
     try {
       const command = new AWSSES.GetEmailTemplateCommand({ TemplateName: templateName });
       await this.client.send(command);
-    } catch (notFound) {
+    } catch (_) {
       isNew = true;
     }
 
@@ -119,7 +119,7 @@ export class SES {
     if (!teamId) return null;
     try {
       return (await new DynamoDB().get({ TableName: 'idea_teamsSES', Key: { teamId } })) as SESParams;
-    } catch (err) {
+    } catch (_) {
       return null;
     }
   }

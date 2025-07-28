@@ -55,7 +55,7 @@ export class DynamoDB {
       });
 
       return result;
-    } catch (err) {
+    } catch (_) {
       // ID exists, try again
       await this.IUNIDHelper(project, attempt + 1, maxAttempts);
     }

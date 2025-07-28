@@ -1,4 +1,4 @@
-import { Metrics, MetricUnits } from '@aws-lambda-powertools/metrics';
+import { Metrics, MetricUnit } from '@aws-lambda-powertools/metrics';
 
 /**
  * A wrapper for simple uses of CloudWatch Metrics.
@@ -20,7 +20,7 @@ export class CloudWatchMetrics {
   /**
    * Add an entry for the metrics.
    */
-  addMetric(metricName: string, value = 1, unit: MetricUnits = MetricUnits.Count): void {
+  addMetric(metricName: string, value = 1, unit = MetricUnit.Count): void {
     this.metrics.addMetric(metricName, unit, value);
   }
   /**

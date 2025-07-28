@@ -158,7 +158,7 @@ export class S3 {
       const { ContentLength } = await this.client.send(command);
       if (options.emptyMeansNotFound) return ContentLength > 0;
       else return true;
-    } catch (err) {
+    } catch (_) {
       return false;
     }
   }

@@ -116,7 +116,7 @@ export abstract class ResourceController extends GenericController {
     this.queryParams = event.queryStringParameters || {};
     try {
       this.body = (event.body ? JSON.parse(event.body) : {}) || {};
-    } catch (error) {
+    } catch (_) {
       throw new HandledError('Malformed body');
     }
   }
@@ -138,7 +138,7 @@ export abstract class ResourceController extends GenericController {
     this.queryParams = event.queryStringParameters || {};
     try {
       this.body = (event.body ? JSON.parse(event.body) : {}) || {};
-    } catch (error) {
+    } catch (_) {
       throw new HandledError('Malformed body');
     }
   }
@@ -389,7 +389,7 @@ export abstract class ResourceController extends GenericController {
 
     try {
       await new DynamoDB().put({ TableName: 'idea_logs', Item: log });
-    } catch (error) {
+    } catch (_) {
       // ignore
     }
   }
