@@ -63,7 +63,7 @@
     "@aws-sdk/util-dynamodb": "^3.848.0"
   },
   "devDependencies": {
-    "@tsconfig/node20": "^20.1.6",
+    "@tsconfig/node22": "^22.0.2",
     "@types/aws-lambda": "^8.10.152",
     "@types/node": "^22.16.5",
     "@types/nodemailer": "^6.4.17",
