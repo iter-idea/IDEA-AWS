@@ -52,7 +52,6 @@
     "@aws-sdk/client-lambda": "^3.851.0",
     "@aws-sdk/client-s3": "^3.850.0",
     "@aws-sdk/client-secrets-manager": "^3.848.0",
-    "@aws-sdk/client-ses": "^3.848.0",
     "@aws-sdk/client-sesv2": "^3.849.0",
     "@aws-sdk/client-sns": "^3.848.0",
     "@aws-sdk/client-ssm": "^3.849.0",
