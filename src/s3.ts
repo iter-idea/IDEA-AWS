@@ -1,3 +1,5 @@
+import { gzip as gzipCb, gunzip as gunzipCb } from 'node:zlib';
+import { promisify } from 'node:util';
 import * as AWSS3 from '@aws-sdk/client-s3';
 import { Upload, BodyDataTypes } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
@@ -36,7 +38,22 @@ export class S3 {
     options.bucket = options.bucket ?? this.DEFAULT_DOWNLOAD_BUCKET;
     options.secToExp = options.secToExp ?? this.DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP;
 
-    const params = { Bucket: options.bucket, Key: options.key, Body: data, ContentType: options.contentType };
+    let body: BodyDataTypes = data;
+    let contentEncoding = options.contentEncoding;
+    if (options.compress && (typeof data === 'string' || data instanceof Uint8Array)) {
+      const gzip = promisify(gzipCb);
+      body = await gzip(data);
+      contentEncoding = 'gzip';
+    }
+
+    const params: AWSS3.PutObjectCommandInput = {
+      Bucket: options.bucket,
+      Key: options.key,
+      Body: body,
+      ContentType: options.contentType
+    };
+    if (contentEncoding) params.ContentEncoding = contentEncoding;
+
     const upload = new Upload({ client: this.client, params });
     await upload.done();
 
@@ -103,9 +120,15 @@ export class S3 {
   }
   /**
    * Get an object from a S3 bucket and convert the content to string.
+   * If the object was stored with `Content-Encoding: gzip`, it is decompressed transparently.
    */
   async getObjectAsText(options: GetObjectOptions): Promise<string> {
     const result = await this.getObject(options);
+    if (result.ContentEncoding === 'gzip') {
+      const gunzip = promisify(gunzipCb);
+      const compressed = await result.Body.transformToByteArray();
+      return (await gunzip(Buffer.from(compressed))).toString('utf-8');
+    }
     return await result.Body.transformToString('utf-8');
   }
 
@@ -115,6 +138,7 @@ export class S3 {
   async putObject(options: PutObjectOptions): Promise<AWSS3.PutObjectOutput> {
     const params: AWSS3.PutObjectCommandInput = { Bucket: options.bucket, Key: options.key, Body: options.body };
     if (options.contentType) params.ContentType = options.contentType;
+    if (options.contentEncoding) params.ContentEncoding = options.contentEncoding;
     if (options.acl) params.ACL = options.acl as AWSS3.ObjectCannedACL;
     if (options.metadata) params.Metadata = options.metadata;
     if (options.filename) params.ContentDisposition = `attachment; filename ="${cleanFilename(options.filename)}"`;
@@ -184,6 +208,17 @@ export interface CreateDownloadURLFromDataOptions {
    * Content type, e.g. application/json; default: _guessed_.
    */
   contentType?: string;
+  /**
+   * If true, the body is gzipped with `Content-Encoding: gzip`. Browsers and `fetch` decompress transparently.
+   * Recommended for text/JSON payloads over ~50 KB; for already-compressed binaries (images, zip, etc.) leave it off.
+   * Only applied when `data` is a `string`, `Buffer`, or `Uint8Array`; silently ignored for other body types.
+   */
+  compress?: boolean;
+  /**
+   * Explicit `Content-Encoding` to store on the object (e.g., `'gzip'`, `'br'`).
+   * Use this when the body is already compressed. Ignored when `compress: true` (in that case `'gzip'` is forced).
+   */
+  contentEncoding?: string;
   /**
    * Seconds to URL expiration; default: `180`.
    */
@@ -285,6 +320,11 @@ export interface PutObjectOptions {
    * Content type (e.g. image/png).
    */
   contentType?: string;
+  /**
+   * `Content-Encoding` header to store on the object (e.g., `'gzip'`).
+   * The body is uploaded as-is; the caller is responsible for pre-compressing it.
+   */
+  contentEncoding?: string;
   /**
    * Access-control list (e.g. public-read).
    */
