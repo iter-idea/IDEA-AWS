@@ -1,7 +1,7 @@
 import { gzip as gzipCb, gunzip as gunzipCb } from 'node:zlib';
 import { promisify } from 'node:util';
 import * as AWSS3 from '@aws-sdk/client-s3';
-import { Upload, BodyDataTypes } from '@aws-sdk/lib-storage';
+import { BodyDataTypes } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { SignedURL } from 'idea-toolbox';
 
@@ -54,8 +54,7 @@ export class S3 {
     };
     if (contentEncoding) params.ContentEncoding = contentEncoding;
 
-    const upload = new Upload({ client: this.client, params });
-    await upload.done();
+    await this.client.send(new AWSS3.PutObjectCommand(params));
 
     return this.signedURLGet(options.bucket, options.key, { secToExp: options.secToExp, filename: options.filename });
   }
