@@ -44,7 +44,7 @@
     "@aws-lambda-powertools/tracer": "^2.24.0",
     "idea-toolbox": "^7.3.0",
     "nanoid": "^3.3.7",
-    "nodemailer": "^7.0.5",
+    "nodemailer": "^8.0.11",
     "source-map-support": "^0.5.21"
   },
   "peerDependencies": {
