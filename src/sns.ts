@@ -50,22 +50,24 @@ export class SNS {
   async publish(options: SNSPublishParams): Promise<AWSSNS.PublishCommandOutput> {
     let structuredMessage;
     if (options.json) structuredMessage = { default: JSON.stringify(options.json) };
-    else
+    else {
+      const data = options.data;
       switch (options.platform) {
         case PushNotificationsPlatforms.APNS:
-          structuredMessage = { APNS: JSON.stringify({ aps: { alert: options.message } }) };
+          structuredMessage = { APNS: JSON.stringify({ aps: { alert: options.message }, ...data }) };
           break;
         case PushNotificationsPlatforms.APNS_SANDBOX:
-          structuredMessage = { APNS_SANDBOX: JSON.stringify({ aps: { alert: options.message } }) };
+          structuredMessage = { APNS_SANDBOX: JSON.stringify({ aps: { alert: options.message }, ...data }) };
           break;
         case PushNotificationsPlatforms.FCM:
           structuredMessage = {
-            GCM: JSON.stringify({ notification: { body: options.message, title: options.message } })
+            GCM: JSON.stringify({ notification: { body: options.message, title: options.message }, data })
           };
           break;
         default:
           throw new Error('Unsupported platform');
       }
+    }
 
     this.logger.trace('SNS publish in topic');
     const command = new AWSSNS.PublishCommand({
@@ -115,4 +117,10 @@ export interface SNSPublishParams {
    * If set, message and platform will be ignored and the content of this attribute will be preferred.
    */
   json?: any;
+  /**
+   * Application data delivered together with the message, for the receiving app to know what the notification
+   * refers to; it doesn't change what the device shows. The values must be strings: FCM refuses anything else
+   * inside its `data` block. Ignored when `json` is set.
+   */
+  data?: Record<string, string>;
 }
