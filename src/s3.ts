@@ -1,7 +1,6 @@
 import { gzip as gzipCb, gunzip as gunzipCb } from 'node:zlib';
 import { promisify } from 'node:util';
 import * as AWSS3 from '@aws-sdk/client-s3';
-import { BodyDataTypes } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { SignedURL } from 'idea-toolbox';
 
@@ -26,9 +25,11 @@ export class S3 {
   /**
    * Create a download link of a piece of data (through S3).
    * *Practically*, it uploads the file on an S3 bucket, generating and returning a url to it.
+   * The data must be entirely in memory (a string or bytes): the upload is a single PutObject, which needs the
+   * content length up front, so streams aren't supported.
    */
   async createDownloadURLFromData(
-    data: BodyDataTypes,
+    data: string | Uint8Array,
     options: CreateDownloadURLFromDataOptions = {}
   ): Promise<SignedURL> {
     // if needed, randomly generates the key
@@ -38,9 +39,9 @@ export class S3 {
     options.bucket = options.bucket ?? this.DEFAULT_DOWNLOAD_BUCKET;
     options.secToExp = options.secToExp ?? this.DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP;
 
-    let body: BodyDataTypes = data;
+    let body: string | Uint8Array = data;
     let contentEncoding = options.contentEncoding;
-    if (options.compress && (typeof data === 'string' || data instanceof Uint8Array)) {
+    if (options.compress) {
       const gzip = promisify(gzipCb);
       body = await gzip(data);
       contentEncoding = 'gzip';
@@ -210,7 +211,6 @@ export interface CreateDownloadURLFromDataOptions {
   /**
    * If true, the body is gzipped with `Content-Encoding: gzip`. Browsers and `fetch` decompress transparently.
    * Recommended for text/JSON payloads over ~50 KB; for already-compressed binaries (images, zip, etc.) leave it off.
-   * Only applied when `data` is a `string`, `Buffer`, or `Uint8Array`; silently ignored for other body types.
    */
   compress?: boolean;
   /**
