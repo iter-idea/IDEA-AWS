@@ -46,6 +46,7 @@ export class Cognito {
 
     if (!userAttributes.userId) userAttributes.userId = userAttributes.sub;
     userAttributes.disabled = !user.Enabled;
+    userAttributes.status = user.UserStatus;
     return userAttributes as CognitoUserGeneric;
   }
 
@@ -513,6 +514,11 @@ export interface CognitoUserGeneric {
    * Whether the user has been disabled.
    */
   disabled: boolean;
+  /**
+   * The status of the account: e.g. `FORCE_CHANGE_PASSWORD` until the first sign-in replaces the temporary password.
+   * Not available when the user comes from the authorizer claims.
+   */
+  status?: CognitoIP.UserStatusType;
   /**
    * Cognito can have custom attributes.
    */
