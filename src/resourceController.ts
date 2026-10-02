@@ -280,6 +280,8 @@ export abstract class ResourceController extends GenericController {
    * `assets/status.json` of the front-end's bucket); while it is, every request is answered 503, which a front-end on
    * `@idea-ionic/common` >= 8.13.10 meets by reading its status again. Opt-in: without the variable, the API is never
    * in maintenance. A file that can't be read leaves the last value known, or an open API the first time.
+   * Not for an app that reads its status through the API (`viaApi`): that request would be refused too, and the app
+   * would never show its maintenance page.
    */
   protected async isInMaintenance(): Promise<boolean> {
     const url = ENV.APP_STATUS_URL;
