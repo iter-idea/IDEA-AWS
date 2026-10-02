@@ -31,12 +31,12 @@ const appStatusCache: { readAt?: number; inMaintenance?: boolean } = {};
 export abstract class ResourceController extends GenericController {
   protected event: APIGatewayProxyEventV2 | APIGatewayProxyEvent;
   /**
-   * The id API Gateway gives to the request: the same value of the `apigw-requestid` (HTTP API) or `x-amzn-RequestId`
-   * (REST API) header of its response. It's logged with the request (`START`, `END-*`) and it's added to the body of an
-   * unhandled error (`{ message, requestId }`), whose message is generic: the requester can report it, and it leads to
-   * the log line with the real cause — e.g. in CloudWatch Logs Insights, `filter @message like "<requestId>"`.
-   * Note: there `@requestId` is the id of the Lambda invocation, another value; from the lines found, it gives the rest
-   * of the invocation's lines.
+   * The id API Gateway assigned to the request: the same value as the `apigw-requestid` (HTTP API) or
+   * `x-amzn-RequestId` (REST API) header of its response. It's logged in the request's `START` and `END-*` lines and
+   * added to the body of an unhandled error (`{ message, requestId }`), whose message is generic: the requester can
+   * report it, and it leads to the log line with the real cause — e.g. in CloudWatch Logs Insights,
+   * `filter @message like "<requestId>"`. Note: there `@requestId` is a different value, the id of the Lambda
+   * invocation; read it from the lines found to get every other line of the same invocation.
    */
   protected requestId: string;
 
