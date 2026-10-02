@@ -15,8 +15,8 @@ ENV.POWERTOOLS_SERVICE_NAME = [PROJECT, STAGE, RESOURCE].filter(x => x).join('_'
 
 /**
  * The maintenance flag of the app status file (`APP_STATUS_URL`) is kept for a while by each Lambda container: reading
- * it at every request would add a network call to all of them. The price is that switching it reaches the API within
- * this time, not at once.
+ * it at every request would add a network call to all of them. The price is that a maintenance switched on reaches
+ * the API within this time, not at once.
  */
 const APP_STATUS_CACHE_MS = 30 * 1000;
 /**
@@ -210,6 +210,7 @@ export abstract class ResourceController extends GenericController {
       this.tracer.putMetadata('START', { event: this.getEventSummary(true) });
     }
 
+    // before the auth check on purpose: it often reads the data a maintenance works on, and nobody is let through
     if (await this.isInMaintenance()) return this.done(new HandledError('Maintenance'), null, 503);
 
     try {
@@ -275,23 +276,25 @@ export abstract class ResourceController extends GenericController {
     }
   };
   /**
-   * Whether the app is in maintenance, according to the same status file its front-ends read (`APP_STATUS_URL`, e.g.
-   * the `assets/status.json` of the front-end's bucket): then the API is closed too, so that nobody writes data in the
-   * meantime — not a session already open, nor an old app, nor an external service. A front-end on
-   * `@idea-ionic/common` >= 8.13.10 meets the 503 by reading its status again, and shows its maintenance page.
-   *
-   * Opt-in: without `APP_STATUS_URL` the API is never in maintenance. A file that can't be read leaves the last value
-   * known, or an open API the first time: an unreachable file must not close the API.
+   * Whether the app is in maintenance, according to the status file its front-ends read (`APP_STATUS_URL`, e.g. the
+   * `assets/status.json` of the front-end's bucket); while it is, every request is answered 503, which a front-end on
+   * `@idea-ionic/common` >= 8.13.10 meets by reading its status again. Opt-in: without the variable, the API is never
+   * in maintenance. A file that can't be read leaves the last value known, or an open API the first time.
    */
   protected async isInMaintenance(): Promise<boolean> {
     const url = ENV.APP_STATUS_URL;
     if (!url) return false;
-    if (Date.now() - (appStatusCache.readAt ?? 0) < APP_STATUS_CACHE_MS) return appStatusCache.inMaintenance;
+    // a `true` is never served from the cache: the front-ends let the users back in as soon as the file says so
+    if (!appStatusCache.inMaintenance && Date.now() - (appStatusCache.readAt ?? 0) < APP_STATUS_CACHE_MS) return false;
 
     try {
-      const res = await fetch(url, { signal: AbortSignal.timeout(APP_STATUS_TIMEOUT_MS) });
+      const res = await fetch(url, {
+        signal: AbortSignal.timeout(APP_STATUS_TIMEOUT_MS),
+        // no connection reuse: a container frozen since the last read would find it closed, and the read would fail
+        headers: { connection: 'close' }
+      });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      // only a real `true` counts, as for the front-ends: a malformed file must not close the API
+      // strict on purpose, as in the front-ends: a plain cast would read "maintenance": "false" as true
       appStatusCache.inMaintenance = ((await res.json()) as { maintenance?: unknown })?.maintenance === true;
     } catch (error) {
       this.logger.warn('APP-STATUS-UNREADABLE', error, { url });
