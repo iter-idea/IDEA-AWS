@@ -30,6 +30,15 @@ const appStatusCache: { readAt?: number; inMaintenance?: boolean } = {};
  */
 export abstract class ResourceController extends GenericController {
   protected event: APIGatewayProxyEventV2 | APIGatewayProxyEvent;
+  /**
+   * The id API Gateway gives to the request: the same value of the `apigw-requestid` (HTTP API) or `x-amzn-RequestId`
+   * (REST API) header of its response. It's logged with the request (`START`, `END-*`) and it's added to the body of an
+   * unhandled error (`{ message, requestId }`), whose message is generic: the requester can report it, and it leads to
+   * the log line with the real cause — e.g. in CloudWatch Logs Insights, `filter @message like "<requestId>"`.
+   * Note: there `@requestId` is the id of the Lambda invocation, another value; from the lines found, it gives the rest
+   * of the invocation's lines.
+   */
+  protected requestId: string;
 
   protected initError?: Error;
 
@@ -76,6 +85,8 @@ export abstract class ResourceController extends GenericController {
   constructor(event: APIGatewayProxyEventV2 | APIGatewayProxyEvent, options: ResourceControllerOptions = {}) {
     super(event);
     this.event = event;
+    // outside the init, so that a request failing there can be traced too
+    this.requestId = event?.requestContext?.requestId;
 
     try {
       if ((event as APIGatewayProxyEventV2).version === '2.0')
@@ -152,6 +163,7 @@ export abstract class ResourceController extends GenericController {
   }
   protected getEventSummary(limitBodyArrayDisplay = false): Record<string, any> {
     return {
+      requestId: this.requestId,
       httpMethod: this.httpMethod,
       path: this.path,
       principalId: this.principalId,
@@ -295,7 +307,11 @@ export abstract class ResourceController extends GenericController {
     statusCode = this.returnStatusCode ?? (error ? 400 : 200),
     headers = this.returnHeaders
   ): ResourceControllerResult {
-    const result = error ? { message: error.message } : (rawResult ?? {});
+    let result = rawResult ?? {};
+    if (error) {
+      result = { message: error.message };
+      if ((error as UnhandledError).unhandled && this.requestId) result.requestId = this.requestId;
+    }
 
     const responseTrace = { result: Array.isArray(result) ? { array: result.length } : result };
     this.logger.debug('END-DETAIL', responseTrace);
