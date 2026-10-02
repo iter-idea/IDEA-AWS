@@ -63,9 +63,10 @@ export class S3 {
   /**
    * Get a signed URL to put a file on a S3 bucket.
    */
-  async signedURLPut(bucket: string, key: string, options: SignedURLOptions = {}): Promise<SignedURL> {
+  async signedURLPut(bucket: string, key: string, options: SignedURLPutOptions = {}): Promise<SignedURL> {
     const putParams: AWSS3.PutObjectCommandInput = { Bucket: bucket, Key: key };
     if (options.filename) putParams.ContentDisposition = `attachment; filename ="${cleanFilename(options.filename)}"`;
+    if (options.metadata) putParams.Metadata = options.metadata;
     const expiresIn = options.secToExp ?? this.DEFAULT_UPLOAD_BUCKET_SEC_TO_EXP;
 
     const url = await getSignedUrl(this.client, new AWSS3.PutObjectCommand(putParams), { expiresIn });
@@ -242,6 +243,21 @@ export interface SignedURLOptions {
    * Note: the string is cleaned to ensure maximum compatibility with every OS.
    */
   filename?: string;
+}
+
+/**
+ * Options for generating a signed URL to put a file.
+ */
+export interface SignedURLPutOptions extends SignedURLOptions {
+  /**
+   * A set of metadata to store, as attributes, with the uploaded file.
+   * They travel in the signed URL: the client sends no extra header and can't alter them. S3 constraints:
+   * - keys are stored lowercase (`templateId` is read back as `templateid`): use lowercase keys;
+   * - prefer ASCII values (e.g. IDs): non-ASCII ones are returned RFC 2047-encoded;
+   * - keys and values take at most 2 KB altogether: beyond, the client's upload fails (not the URL's generation);
+   * - the values are readable in the URL: no sensitive data.
+   */
+  metadata?: Record<string, string>;
 }
 
 /**
