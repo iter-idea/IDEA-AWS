@@ -14,6 +14,18 @@ const { PROJECT, STAGE, RESOURCE } = ENV;
 ENV.POWERTOOLS_SERVICE_NAME = [PROJECT, STAGE, RESOURCE].filter(x => x).join('_');
 
 /**
+ * The maintenance flag of the app status file (`APP_STATUS_URL`) is kept for a while by each Lambda container: reading
+ * it at every request would add a network call to all of them. The price is that switching it reaches the API within
+ * this time, not at once.
+ */
+const APP_STATUS_CACHE_MS = 30 * 1000;
+/**
+ * A status file slow to answer mustn't slow down the API: past this time it counts as unreachable.
+ */
+const APP_STATUS_TIMEOUT_MS = 1500;
+const appStatusCache: { readAt?: number; inMaintenance?: boolean } = {};
+
+/**
  * An abstract class to inherit to manage API requests (AWS API Gateway) in an AWS Lambda function.
  */
 export abstract class ResourceController extends GenericController {
@@ -186,6 +198,8 @@ export abstract class ResourceController extends GenericController {
       this.tracer.putMetadata('START', { event: this.getEventSummary(true) });
     }
 
+    if (await this.isInMaintenance()) return this.done(new HandledError('Maintenance'), null, 503);
+
     try {
       await this.checkAuthBeforeRequest();
 
@@ -248,13 +262,40 @@ export abstract class ResourceController extends GenericController {
       return this.done(this.handleControllerError(err, 'AUTH-CHECK-ERROR', 'Forbidden'));
     }
   };
+  /**
+   * Whether the app is in maintenance, according to the same status file its front-ends read (`APP_STATUS_URL`, e.g.
+   * the `assets/status.json` of the front-end's bucket): then the API is closed too, so that nobody writes data in the
+   * meantime — not a session already open, nor an old app, nor an external service. A front-end on
+   * `@idea-ionic/common` >= 8.13.10 meets the 503 by reading its status again, and shows its maintenance page.
+   *
+   * Opt-in: without `APP_STATUS_URL` the API is never in maintenance. A file that can't be read leaves the last value
+   * known, or an open API the first time: an unreachable file must not close the API.
+   */
+  protected async isInMaintenance(): Promise<boolean> {
+    const url = ENV.APP_STATUS_URL;
+    if (!url) return false;
+    if (Date.now() - (appStatusCache.readAt ?? 0) < APP_STATUS_CACHE_MS) return appStatusCache.inMaintenance;
+
+    try {
+      const res = await fetch(url, { signal: AbortSignal.timeout(APP_STATUS_TIMEOUT_MS) });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      // only a real `true` counts, as for the front-ends: a malformed file must not close the API
+      appStatusCache.inMaintenance = ((await res.json()) as { maintenance?: unknown })?.maintenance === true;
+    } catch (error) {
+      this.logger.warn('APP-STATUS-UNREADABLE', error, { url });
+      appStatusCache.inMaintenance ??= false;
+    }
+    appStatusCache.readAt = Date.now();
+    return appStatusCache.inMaintenance;
+  }
+
   protected done(
     error?: Error | any,
     rawResult?: any,
     statusCode = this.returnStatusCode ?? (error ? 400 : 200),
     headers = this.returnHeaders
   ): ResourceControllerResult {
-    const result = error ? { message: error.message } : rawResult ?? {};
+    const result = error ? { message: error.message } : (rawResult ?? {});
 
     const responseTrace = { result: Array.isArray(result) ? { array: result.length } : result };
     this.logger.debug('END-DETAIL', responseTrace);
