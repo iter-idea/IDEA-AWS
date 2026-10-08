@@ -76,10 +76,14 @@ export class S3 {
   /**
    * Get a signed URL to get a file on a S3 bucket.
    */
-  async signedURLGet(bucket: string, key: string, options: SignedURLOptions = {}): Promise<SignedURL> {
+  async signedURLGet(bucket: string, key: string, options: SignedURLGetOptions = {}): Promise<SignedURL> {
     const getParams: AWSS3.GetObjectCommandInput = { Bucket: bucket, Key: key };
+    if (options.versionId) getParams.VersionId = options.versionId;
+    const disposition = options.inline ? 'inline' : 'attachment';
     if (options.filename)
-      getParams.ResponseContentDisposition = `attachment; filename ="${cleanFilename(options.filename)}"`;
+      getParams.ResponseContentDisposition = `${disposition}; filename ="${cleanFilename(options.filename)}"`;
+    else if (options.inline) getParams.ResponseContentDisposition = disposition;
+    if (options.contentType) getParams.ResponseContentType = options.contentType;
     const expiresIn = options.secToExp ?? this.DEFAULT_DOWNLOAD_BUCKET_SEC_TO_EXP;
 
     const url = await getSignedUrl(this.client, new AWSS3.GetObjectCommand(getParams), { expiresIn });
@@ -87,16 +91,21 @@ export class S3 {
   }
 
   /**
-   * Make a copy of an object of the bucket.
+   * Make a copy of an object of the bucket. In a versioned bucket, the output carries the version the copy created.
    */
-  async copyObject(options: CopyObjectOptions): Promise<void> {
+  async copyObject(options: CopyObjectOptions): Promise<AWSS3.CopyObjectCommandOutput> {
     this.logger.trace(`S3 copy object: ${options.key}`);
-    const command = new AWSS3.CopyObjectCommand({
+    const params: AWSS3.CopyObjectCommandInput = {
       CopySource: options.copySource,
       Bucket: options.bucket,
       Key: options.key
-    });
-    await this.client.send(command);
+    };
+    if (options.contentType || options.metadata) {
+      params.MetadataDirective = 'REPLACE';
+      if (options.contentType) params.ContentType = options.contentType;
+      if (options.metadata) params.Metadata = options.metadata;
+    }
+    return await this.client.send(new AWSS3.CopyObjectCommand(params));
   }
 
   /**
@@ -106,6 +115,8 @@ export class S3 {
     this.logger.trace(`S3 get object: ${options.key}`);
 
     const params: AWSS3.GetObjectCommandInput = { Bucket: options.bucket, Key: options.key };
+    if (options.versionId) params.VersionId = options.versionId;
+    if (options.range) params.Range = `bytes=${options.range.start}-${options.range.end}`;
     if (options.filename)
       params.ResponseContentDisposition = `attachment; filename ="${cleanFilename(options.filename)}"`;
 
@@ -175,12 +186,44 @@ export class S3 {
   }
 
   /**
+   * List every version of the objects of a versioned S3 bucket (or of a prefix of it), and the delete markers left by
+   * the deletions: all of them, page after page.
+   */
+  async listObjectVersions(options: ListObjectsOptions): Promise<ObjectVersions> {
+    this.logger.trace(`S3 list object versions: ${options.prefix}`);
+    const result: ObjectVersions = { versions: [], deleteMarkers: [] };
+    let page: AWSS3.ListObjectVersionsCommandOutput;
+    do {
+      const command = new AWSS3.ListObjectVersionsCommand({
+        Bucket: options.bucket,
+        Prefix: options.prefix,
+        KeyMarker: page?.NextKeyMarker,
+        VersionIdMarker: page?.NextVersionIdMarker
+      });
+      page = await this.client.send(command);
+      result.versions.push(...(page.Versions ?? []));
+      result.deleteMarkers.push(...(page.DeleteMarkers ?? []));
+    } while (page.IsTruncated);
+    return result;
+  }
+
+  /**
+   * Get the head of an object of an S3 bucket (its size, type and metadata, without the content).
+   * It fails when the object doesn't exist.
+   */
+  async headObject(options: HeadObjectOptions): Promise<AWSS3.HeadObjectCommandOutput> {
+    this.logger.trace(`S3 head object: ${options.key}`);
+    const params: AWSS3.HeadObjectCommandInput = { Bucket: options.bucket, Key: options.key };
+    if (options.versionId) params.VersionId = options.versionId;
+    return await this.client.send(new AWSS3.HeadObjectCommand(params));
+  }
+
+  /**
    * Check whether an object exists in an S3 bucket.
    */
   async doesObjectExist(options: HeadObjectOptions): Promise<boolean> {
     try {
-      const command = new AWSS3.HeadObjectCommand({ Bucket: options.bucket, Key: options.key });
-      const { ContentLength } = await this.client.send(command);
+      const { ContentLength } = await this.headObject(options);
       if (options.emptyMeansNotFound) return ContentLength > 0;
       else return true;
     } catch (_) {
@@ -246,6 +289,24 @@ export interface SignedURLOptions {
 }
 
 /**
+ * Options for generating a signed URL to get a file.
+ */
+export interface SignedURLGetOptions extends SignedURLOptions {
+  /**
+   * A version of the object, in a versioned bucket; default: the current one.
+   */
+  versionId?: string;
+  /**
+   * If true, the browser shows the file (e.g. a PDF in its viewer) instead of downloading it.
+   */
+  inline?: boolean;
+  /**
+   * The content type the file is served with, whatever the one it was stored with.
+   */
+  contentType?: string;
+}
+
+/**
  * Options for generating a signed URL to put a file.
  */
 export interface SignedURLPutOptions extends SignedURLOptions {
@@ -276,6 +337,17 @@ export interface CopyObjectOptions {
    * The complete filepath of the bucket in which to copy the file.
    */
   key: string;
+  /**
+   * The content type of the copy, in place of the source's.
+   * With this or `metadata`, the copy takes only what's given here: what isn't given is reset (the content type to
+   * `binary/octet-stream`), instead of being copied from the source.
+   */
+  contentType?: string;
+  /**
+   * The metadata of the copy, in place of the source's (see `contentType`). The S3 constraints of `SignedURLPutOptions`
+   * apply.
+   */
+  metadata?: Record<string, string>;
 }
 
 /**
@@ -290,6 +362,15 @@ export interface GetObjectOptions {
    * The complete filepath (within the bucket) from which to acquire the file.
    */
   key: string;
+  /**
+   * A version of the object, in a versioned bucket; default: the current one.
+   */
+  versionId?: string;
+  /**
+   * A part of the object, from its byte `start` to its byte `end` (both included), instead of the whole of it: e.g.
+   * the first bytes, to check what kind of file it is without downloading it.
+   */
+  range?: { start: number; end: number };
   /**
    * The suggested name for the file once it's downloaded/saved.
    * Note: the string is cleaned to ensure maximum compatibility with every OS.
@@ -309,6 +390,10 @@ export interface HeadObjectOptions {
    * The complete filepath (within the bucket) from which to acquire the file.
    */
   key: string;
+  /**
+   * A version of the object, in a versioned bucket; default: the current one.
+   */
+  versionId?: string;
   /**
    * If set, the request will fail in case the object is empty (`ContentLength === 0`).
    */
@@ -381,6 +466,20 @@ export interface ListObjectsOptions {
    * The prefix to filter the objects to select, based on the key.
    */
   prefix?: string;
+}
+
+/**
+ * The versions of the objects of a versioned bucket, and its delete markers.
+ */
+export interface ObjectVersions {
+  /**
+   * Every version of every object, the current ones (`IsLatest`) included.
+   */
+  versions: AWSS3.ObjectVersion[];
+  /**
+   * The markers left by the deletions: an object whose latest entry is a marker has no current version.
+   */
+  deleteMarkers: AWSS3.DeleteMarkerEntry[];
 }
 
 /**
