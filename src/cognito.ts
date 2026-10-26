@@ -47,6 +47,8 @@ export class Cognito {
     if (!userAttributes.userId) userAttributes.userId = userAttributes.sub;
     userAttributes.disabled = !user.Enabled;
     userAttributes.status = user.UserStatus;
+    if (user.UserCreateDate) userAttributes.createdAt = new Date(user.UserCreateDate).toISOString();
+    if (user.UserLastModifiedDate) userAttributes.updatedAt = new Date(user.UserLastModifiedDate).toISOString();
     return userAttributes as CognitoUserGeneric;
   }
 
@@ -106,6 +108,22 @@ export class Cognito {
     else return users;
   }
   /**
+   * List all the users of the pool with what Cognito knows of their accounts, besides their attributes: the status
+   * (e.g. `FORCE_CHANGE_PASSWORD` until the first sign-in), whether they're disabled, when they were created and last
+   * changed. `listUsers` gives idea-toolbox's `CognitoUser`, which keeps none of these.
+   */
+  async listUsersWithStatus(userPoolId: string): Promise<CognitoUserGeneric[]> {
+    const users: CognitoUserGeneric[] = [];
+    let pagination: string;
+    do {
+      const params: CognitoIP.ListUsersCommandInput = { UserPoolId: userPoolId, PaginationToken: pagination };
+      const { Users, PaginationToken } = await this.client.send(new CognitoIP.ListUsersCommand(params));
+      users.push(...(Users ?? []).map(u => this.mapCognitoUserAttributesAsPlainObject(u)));
+      pagination = PaginationToken;
+    } while (pagination);
+    return users;
+  }
+  /**
    * List all the users of the pool, including the information about the groups they're in.
    * Note: it's slower than the alternative `listUsers`: use it only when needed.
    */
@@ -160,6 +178,7 @@ export class Cognito {
     const params: CognitoIP.AdminCreateUserCommandInput = { UserPoolId: userPoolId, Username: email, UserAttributes };
     if (options.skipNotification) params.MessageAction = 'SUPPRESS';
     if (options.temporaryPassword) params.TemporaryPassword = options.temporaryPassword;
+    if (options.deliveryMediums) params.DesiredDeliveryMediums = options.deliveryMediums;
 
     const { User } = await this.client.send(new CognitoIP.AdminCreateUserCommand(params));
 
@@ -171,8 +190,13 @@ export class Cognito {
 
   /**
    * Resend the password to a user who never logged in.
+   * @return the user, whose `updatedAt` is the time of the new invitation
    */
-  async resendPassword(email: string, userPoolId: string, options: CreateUserOptions = {}): Promise<void> {
+  async resendPassword(
+    email: string,
+    userPoolId: string,
+    options: CreateUserOptions = {}
+  ): Promise<CognitoUserGeneric> {
     if (isEmpty(email, 'email')) throw new Error('Invalid email');
 
     const params: CognitoIP.AdminCreateUserCommandInput = {
@@ -181,8 +205,10 @@ export class Cognito {
       MessageAction: 'RESEND'
     };
     if (options.temporaryPassword) params.TemporaryPassword = options.temporaryPassword;
+    if (options.deliveryMediums) params.DesiredDeliveryMediums = options.deliveryMediums;
 
-    await this.client.send(new CognitoIP.AdminCreateUserCommand(params));
+    const { User } = await this.client.send(new CognitoIP.AdminCreateUserCommand(params));
+    return this.mapCognitoUserAttributesAsPlainObject(User);
   }
 
   /**
@@ -520,6 +546,15 @@ export interface CognitoUserGeneric {
    */
   status?: CognitoIP.UserStatusType;
   /**
+   * When the account was created (ISO date-time). Not available when the user comes from the authorizer claims.
+   */
+  createdAt?: string;
+  /**
+   * When the account last changed, e.g. its temporary password sent again (ISO date-time). Not available when the
+   * user comes from the authorizer claims.
+   */
+  updatedAt?: string;
+  /**
    * Cognito can have custom attributes.
    */
   [attribute: string]: string | number | boolean;
@@ -537,6 +572,10 @@ export interface CreateUserOptions {
    * If null, randomly generated
    */
   temporaryPassword?: string;
+  /**
+   * How the invitation with the temporary password is sent, e.g. `['EMAIL']`: Cognito's default is a text message.
+   */
+  deliveryMediums?: CognitoIP.DeliveryMediumType[];
 }
 
 /**
