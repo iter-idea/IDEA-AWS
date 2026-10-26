@@ -141,7 +141,7 @@ export class SES {
   private async sendEmailWithNodemailer(
     emailData: EmailData,
     sesParams: SESParams
-  ): Promise<NodemailerSendMailOptions> {
+  ): Promise<NodemailerSentMessageInfo> {
     const mailOptions: NodemailerSendMailOptions = {};
 
     mailOptions.to = emailData.toAddresses.join(',');
