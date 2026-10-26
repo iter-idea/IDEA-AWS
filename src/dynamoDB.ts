@@ -121,6 +121,8 @@ export class DynamoDB {
 
   /**
    * Get group of items based on their keys from DynamoDB table, avoiding the limits of DynamoDB's BatchGetItem.
+   * The keys DynamoDB leaves unprocessed (e.g. throttled) are asked again with a random back-off mechanism until the
+   * timeout, as for the batch writes.
    * @param table the target DynamoDB table
    * @param keys the keys of the objects to retrieve
    * @param ignoreErr if set, ignore the errors and continue the bulk op.
@@ -149,20 +151,37 @@ export class DynamoDB {
 
     this.logger.trace(`Batch get ${table}: ${currentChunk} of ${keys.length}`);
 
-    let result: DDB.BatchGetCommandOutput;
     try {
-      result = await this.client.batchGet(batch);
+      resultElements = resultElements.concat(await this.batchGetChunkWithRetries(table, batch));
     } catch (err) {
       if (!ignoreErr) throw err;
     }
-
-    if (result) resultElements = resultElements.concat(result.Responses[table]);
 
     // if there are still chunks to manage, go on recursively
     if (currentChunk + chunkSize < keys.length)
       return await this.batchGetHelper(table, keys, resultElements, ignoreErr, currentChunk + chunkSize, chunkSize);
     // no more chunks to manage: we're done
     else return resultElements;
+  }
+  protected async batchGetChunkWithRetries(
+    table: string,
+    params: DDB.BatchGetCommandInput
+  ): Promise<Record<string, any>[]> {
+    let elements: Record<string, any>[] = [];
+    let attempts = 0;
+    do {
+      const response = await this.client.batchGet(params);
+      elements = elements.concat(response.Responses?.[table] ?? []);
+
+      if (response.UnprocessedKeys?.[table]?.Keys?.length) {
+        params.RequestItems = response.UnprocessedKeys;
+        attempts++;
+        await this.waitBeforeRetry('Batch get', attempts);
+      } else {
+        params.RequestItems = null;
+      }
+    } while (params.RequestItems);
+    return elements;
   }
 
   /**
@@ -212,9 +231,6 @@ export class DynamoDB {
       await this.batchWriteHelper(table, itemsOrKeys, isPut, currentChunk + chunkSize, chunkSize);
   }
   protected async batchWriteChunkWithRetries(table: string, params: DDB.BatchWriteCommandInput): Promise<void> {
-    const getRandomInt = (max: number): number => Math.floor(Math.random() * max);
-    const wait = (seconds: number): Promise<void> => new Promise(x => setTimeout((): void => x(), seconds * 1000));
-
     let attempts = 0;
     do {
       const response = await this.client.batchWrite(params);
@@ -226,14 +242,19 @@ export class DynamoDB {
       ) {
         params.RequestItems = response.UnprocessedItems;
         attempts++;
-
-        const waitSeconds = getRandomInt(attempts * 5);
-        this.logger.trace(`Batch write throttled: waiting ${waitSeconds} seconds to retry`);
-        await wait(waitSeconds);
+        await this.waitBeforeRetry('Batch write', attempts);
       } else {
         params.RequestItems = null;
       }
     } while (params.RequestItems);
+  }
+  /**
+   * Wait a random time, longer at each attempt, before asking DynamoDB again for what it left unprocessed.
+   */
+  protected async waitBeforeRetry(operation: string, attempts: number): Promise<void> {
+    const waitSeconds = Math.floor(Math.random() * attempts * 5);
+    this.logger.trace(`${operation} throttled: waiting ${waitSeconds} seconds to retry`);
+    await new Promise<void>(resolve => setTimeout(resolve, waitSeconds * 1000));
   }
 
   /**
