@@ -309,7 +309,7 @@ export abstract class ResourceController extends GenericController {
   protected done(
     error?: Error | any,
     rawResult?: any,
-    statusCode = this.returnStatusCode ?? (error ? 400 : 200),
+    statusCode = this.returnStatusCode ?? (error ? ((error as UnhandledError).unhandled ? 500 : 400) : 200),
     headers = this.returnHeaders
   ): ResourceControllerResult {
     let result = rawResult ?? {};
