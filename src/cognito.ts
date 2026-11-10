@@ -240,12 +240,13 @@ export class Cognito {
   }
 
   /**
-   * Delete a user by its email (username), in the pool specified.
+   * Delete a user, in the pool specified, by its email or by another name Cognito knows the account by: the `sub` of a
+   * local account, or the username of a federated one (`<provider>_<id>`), which has no email to be found by.
    */
-  async deleteUser(email: string, userPoolId: string): Promise<void> {
-    if (isEmpty(email, 'email')) throw new Error('Invalid email');
+  async deleteUser(username: string, userPoolId: string): Promise<void> {
+    if (isEmpty(username, 'string')) throw new Error('Invalid username');
 
-    const command = new CognitoIP.AdminDeleteUserCommand({ UserPoolId: userPoolId, Username: email });
+    const command = new CognitoIP.AdminDeleteUserCommand({ UserPoolId: userPoolId, Username: username });
     await this.client.send(command);
   }
 
