@@ -19,7 +19,7 @@
 </div></div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">InternalAPIRequestParams</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#body">body</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">any</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#eventbridge">eventBridge</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">bus</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">target</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#httpmethod">httpMethod</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#lambda">lambda</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#pathparams">pathParams</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-signature-symbol">[</span><span class="tsd-kind-index-signature">index</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#queryparams">queryParams</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-signature-symbol">[</span><span class="tsd-kind-index-signature">index</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#resource">resource</a><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#stage">stage</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/85f9f38d17a3e0b651a67123bc9f7a96e80570b8/src/resourceController.ts#L676">src/resourceController.ts:676</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/resourceController.ts#L676">src/resourceController.ts:676</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -45,7 +45,7 @@
 <div class="tsd-comment tsd-typography"><p>The body of the request.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/85f9f38d17a3e0b651a67123bc9f7a96e80570b8/src/resourceController.ts#L714">src/resourceController.ts:714</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/resourceController.ts#L714">src/resourceController.ts:714</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="eventbridge"><code class="tsd-tag">Optional</code><span class="deprecated">event<wbr/>Bridge</span><a href="#eventbridge" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">eventBridge</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">bus</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">target</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">}</span></div>
@@ -56,14 +56,14 @@ Note: the invocation is always asyncronous.
 Either this attribute or <code>lambda</code> must be set.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/85f9f38d17a3e0b651a67123bc9f7a96e80570b8/src/resourceController.ts#L690">src/resourceController.ts:690</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/resourceController.ts#L690">src/resourceController.ts:690</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="httpmethod"><span class="deprecated">http<wbr/>Method</span><a href="#httpmethod" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">httpMethod</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 <div class="tsd-comment tsd-typography"><p>The http method to use.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/85f9f38d17a3e0b651a67123bc9f7a96e80570b8/src/resourceController.ts#L698">src/resourceController.ts:698</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/resourceController.ts#L698">src/resourceController.ts:698</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="lambda"><code class="tsd-tag">Optional</code><span class="deprecated">lambda</span><a href="#lambda" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">lambda</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span></div>
@@ -72,35 +72,35 @@ Note: the invocation is always syncronous.
 Either this attribute or <code>eventBus</code> must be set.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/85f9f38d17a3e0b651a67123bc9f7a96e80570b8/src/resourceController.ts#L682">src/resourceController.ts:682</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/resourceController.ts#L682">src/resourceController.ts:682</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="pathparams"><code class="tsd-tag">Optional</code><span class="deprecated">path<wbr/>Params</span><a href="#pathparams" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">pathParams</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-signature-symbol">[</span><span class="tsd-kind-index-signature">index</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">}</span></div>
 <div class="tsd-comment tsd-typography"><p>The parameters to substitute in the path.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/85f9f38d17a3e0b651a67123bc9f7a96e80570b8/src/resourceController.ts#L706">src/resourceController.ts:706</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/resourceController.ts#L706">src/resourceController.ts:706</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="queryparams"><code class="tsd-tag">Optional</code><span class="deprecated">query<wbr/>Params</span><a href="#queryparams" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">queryParams</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-symbol">{</span> <span class="tsd-signature-symbol">[</span><span class="tsd-kind-index-signature">index</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">|</span> <span class="tsd-signature-type">number</span> <span class="tsd-signature-symbol">}</span></div>
 <div class="tsd-comment tsd-typography"><p>The parameters to substitute in the path.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/85f9f38d17a3e0b651a67123bc9f7a96e80570b8/src/resourceController.ts#L710">src/resourceController.ts:710</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/resourceController.ts#L710">src/resourceController.ts:710</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="resource"><span class="deprecated">resource</span><a href="#resource" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">resource</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span></div>
 <div class="tsd-comment tsd-typography"><p>The path (in the internal API) to the resource we need; e.g. <code>teams/{teamId}/memberships/{userId}</code>.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/85f9f38d17a3e0b651a67123bc9f7a96e80570b8/src/resourceController.ts#L702">src/resourceController.ts:702</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/resourceController.ts#L702">src/resourceController.ts:702</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="stage"><code class="tsd-tag">Optional</code><span class="deprecated">stage</span><a href="#stage" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">stage</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span></div>
 <div class="tsd-comment tsd-typography"><p>The alias of the lambda function to invoke. Default: the value of the current API stage.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/85f9f38d17a3e0b651a67123bc9f7a96e80570b8/src/resourceController.ts#L694">src/resourceController.ts:694</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/resourceController.ts#L694">src/resourceController.ts:694</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
