@@ -12,9 +12,15 @@
 <h1>Class Cognito</h1></div>
 <section class="tsd-panel tsd-comment">
 <div class="tsd-comment tsd-typography"><p>A wrapper for AWS Cognito.</p>
+<p>IDEA's user pools sign in by email: the methods find a local account by its email, which Cognito accepts in place of
+its own username (a UUID, equal to the <code>sub</code>). A local account linked to an external provider (SAML, OIDC) stays
+local, found by its email. A federated account, born from a sign-in through a provider with no account linked, has
+the email the provider sent, if any, but isn't found by it: it answers only to <code>&lt;provider&gt;_&lt;id&gt;</code>
+(<code>federatedUsername</code>). The methods that take every name Cognito knows an account by (the email of a local one, its
+<code>sub</code>, the <code>federatedUsername</code> of a federated one) call it <code>username</code>.</p>
 </div></section><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L7">src/cognito.ts:7</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L14">src/cognito.ts:14</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -45,8 +51,10 @@
 <a href="#getuserbysub" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>User<wbr/>By<wbr/>Sub</span></a>
 <a href="#getusergroupsbyemail" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>User<wbr/>Groups<wbr/>By<wbr/>Email</span></a>
 <a href="#globalsignout" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>global<wbr/>Sign<wbr/>Out</span></a>
+<a href="#linkproviderforuser" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>link<wbr/>Provider<wbr/>For<wbr/>User</span></a>
 <a href="#listgroups" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list<wbr/>Groups</span></a>
 <a href="#listusers" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list<wbr/>Users</span></a>
+<a href="#listusersbyemail" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list<wbr/>Users<wbr/>By<wbr/>Email</span></a>
 <a href="#listusersingroup" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list<wbr/>Users<wbr/>In<wbr/>Group</span></a>
 <a href="#listuserswithgroupsdetail" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list<wbr/>Users<wbr/>With<wbr/>Groups<wbr/>Detail</span></a>
 <a href="#listuserswithstatus" class="tsd-index-link"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list<wbr/>Users<wbr/>With<wbr/>Status</span></a>
@@ -76,7 +84,7 @@
 <li><span><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">region</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol"> = {}</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <a href="" class="tsd-signature-type tsd-kind-class">Cognito</a></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L10">src/cognito.ts:10</a></li></ul></aside></div></li></ul></section></section></details>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L17">src/cognito.ts:17</a></li></ul></aside></div></li></ul></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="properties-1">Properties<a href="#properties-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -84,7 +92,7 @@
 <h3 class="tsd-anchor-link" id="client"><span>client</span><a href="#client" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">client</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">CognitoIdentityProviderClient</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L8">src/cognito.ts:8</a></li></ul></aside></section></section></details>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L15">src/cognito.ts:15</a></li></ul></aside></section></section></details>
 <details class="tsd-panel-group tsd-member-group tsd-accordion" open><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
 <h2 class="tsd-anchor-link" id="methods-1">Methods<a href="#methods-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2></summary>
 <section>
@@ -104,7 +112,7 @@
 <li><span><span class="tsd-kind-parameter">userPoolId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L503">src/cognito.ts:503</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L588">src/cognito.ts:588</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="confirmforgotpassword"><span>confirm<wbr/>Forgot<wbr/>Password</span><a href="#confirmforgotpassword" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -122,7 +130,7 @@
 <li><span><span class="tsd-kind-parameter">userPoolClientId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L363">src/cognito.ts:363</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L447">src/cognito.ts:447</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="confirmsignup"><span>confirm<wbr/>Sign<wbr/>Up</span><a href="#confirmsignup" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -139,7 +147,7 @@
 <li><span><span class="tsd-kind-parameter">userPoolClientId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L428">src/cognito.ts:428</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L513">src/cognito.ts:513</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="creategroup"><span>create<wbr/>Group</span><a href="#creategroup" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -155,7 +163,7 @@
 <li><span><span class="tsd-kind-parameter">userPoolId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L464">src/cognito.ts:464</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L549">src/cognito.ts:549</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="createuser"><span>create<wbr/>User</span><a href="#createuser" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -173,7 +181,7 @@
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">&gt;</span></h4><p>userId of the new user</p>
 <aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L150">src/cognito.ts:150</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L197">src/cognito.ts:197</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="deletegroup"><span>delete<wbr/>Group</span><a href="#deletegroup" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -189,15 +197,14 @@
 <li><span><span class="tsd-kind-parameter">userPoolId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L471">src/cognito.ts:471</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L556">src/cognito.ts:556</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="deleteuser"><span>delete<wbr/>User</span><a href="#deleteuser" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="deleteuser-1"><span class="tsd-kind-call-signature">deleteUser</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">username</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">userPoolId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#deleteuser-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Delete a user, in the pool specified, by its email or by another name Cognito knows the account by: the <code>sub</code> of a
-local account, or the username of a federated one (<code>&lt;provider&gt;_&lt;id&gt;</code>), which has no email to be found by.</p>
+<div class="tsd-comment tsd-typography"><p>Delete an account: a local one by its email or its <code>sub</code>, a federated one by its <code>federatedUsername</code>.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -206,39 +213,39 @@ local account, or the username of a federated one (<code>&lt;provider&gt;_&lt;id
 <li><span><span class="tsd-kind-parameter">userPoolId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L246">src/cognito.ts:246</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L292">src/cognito.ts:292</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="disableuser"><span>disable<wbr/>User</span><a href="#disableuser" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="disableuser-1"><span class="tsd-kind-call-signature">disableUser</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">email</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">userPoolId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#disableuser-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="disableuser-1"><span class="tsd-kind-call-signature">disableUser</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">username</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">userPoolId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#disableuser-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Disable a cognito user.</p>
+<div class="tsd-comment tsd-typography"><p>Disable an account: a local one by its email or its <code>sub</code>, a federated one by its <code>federatedUsername</code>.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">email</span>: <span class="tsd-signature-type">string</span></span></li>
+<li><span><span class="tsd-kind-parameter">username</span>: <span class="tsd-signature-type">string</span></span></li>
 <li><span><span class="tsd-kind-parameter">userPoolId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L405">src/cognito.ts:405</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L489">src/cognito.ts:489</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="enableuser"><span>enable<wbr/>User</span><a href="#enableuser" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="enableuser-1"><span class="tsd-kind-call-signature">enableUser</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">email</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">userPoolId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#enableuser-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="enableuser-1"><span class="tsd-kind-call-signature">enableUser</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">username</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">userPoolId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#enableuser-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Enable a cognito user.</p>
+<div class="tsd-comment tsd-typography"><p>Enable an account: a local one by its email or its <code>sub</code>, a federated one by its <code>federatedUsername</code>.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">email</span>: <span class="tsd-signature-type">string</span></span></li>
+<li><span><span class="tsd-kind-parameter">username</span>: <span class="tsd-signature-type">string</span></span></li>
 <li><span><span class="tsd-kind-parameter">userPoolId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L412">src/cognito.ts:412</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L496">src/cognito.ts:496</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="forgotpassword"><span>forgot<wbr/>Password</span><a href="#forgotpassword" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -254,7 +261,7 @@ local account, or the username of a federated one (<code>&lt;provider&gt;_&lt;id
 <li><span><span class="tsd-kind-parameter">userPoolClientId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CodeDeliveryDetailsType</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L355">src/cognito.ts:355</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L439">src/cognito.ts:439</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getuserbyclaims"><span class="deprecated">get<wbr/>User<wbr/>By<wbr/>Claims</span><a href="#getuserbyclaims" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -276,14 +283,15 @@ local account, or the username of a federated one (<code>&lt;provider&gt;_&lt;id
 <h4 class="tsd-anchor-link" id="deprecated">Deprecated<a href="#deprecated" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h4><p>use idea-toolbox's CognitoUser instead</p>
 </div></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L29">src/cognito.ts:29</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L36">src/cognito.ts:36</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getuserbyemail"><span>get<wbr/>User<wbr/>By<wbr/>Email</span><a href="#getuserbyemail" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="getuserbyemail-1"><span class="tsd-kind-call-signature">getUserByEmail</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">email</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">userPoolId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/CognitoUserGeneric.html" class="tsd-signature-type tsd-kind-interface">CognitoUserGeneric</a><span class="tsd-signature-symbol">&gt;</span><a href="#getuserbyemail-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Identify a user by its email address, returning its attributes.</p>
+<div class="tsd-comment tsd-typography"><p>The local account that signs in with an email, with its attributes. A federated account with the same email isn't
+found: <code>listUsersByEmail</code> lists it.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -292,7 +300,7 @@ local account, or the username of a federated one (<code>&lt;provider&gt;_&lt;id
 <li><span><span class="tsd-kind-parameter">userPoolId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/CognitoUserGeneric.html" class="tsd-signature-type tsd-kind-interface">CognitoUserGeneric</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L62">src/cognito.ts:62</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L86">src/cognito.ts:86</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getuserbysub"><span>get<wbr/>User<wbr/>By<wbr/>Sub</span><a href="#getuserbysub" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -308,7 +316,7 @@ local account, or the username of a federated one (<code>&lt;provider&gt;_&lt;id
 <li><span><span class="tsd-kind-parameter">userPoolId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/CognitoUserGeneric.html" class="tsd-signature-type tsd-kind-interface">CognitoUserGeneric</a><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L76">src/cognito.ts:76</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L100">src/cognito.ts:100</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="getusergroupsbyemail"><span>get<wbr/>User<wbr/>Groups<wbr/>By<wbr/>Email</span><a href="#getusergroupsbyemail" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -324,23 +332,44 @@ local account, or the username of a federated one (<code>&lt;provider&gt;_&lt;id
 <li><span><span class="tsd-kind-parameter">userPoolId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L87">src/cognito.ts:87</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L134">src/cognito.ts:134</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="globalsignout"><span>global<wbr/>Sign<wbr/>Out</span><a href="#globalsignout" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="globalsignout-1"><span class="tsd-kind-call-signature">globalSignOut</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">email</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">userPoolId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#globalsignout-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="globalsignout-1"><span class="tsd-kind-call-signature">globalSignOut</span><span class="tsd-signature-symbol">(</span><span class="tsd-kind-parameter">username</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span> <span class="tsd-kind-parameter">userPoolId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#globalsignout-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Sign out the user from all devices.</p>
+<div class="tsd-comment tsd-typography"><p>Sign out an account from all devices: a local one by its email or its <code>sub</code>, a federated one by its
+<code>federatedUsername</code>.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">username</span>: <span class="tsd-signature-type">string</span></span></li>
+<li><span><span class="tsd-kind-parameter">userPoolId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L505">src/cognito.ts:505</a></li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="linkproviderforuser"><span>link<wbr/>Provider<wbr/>For<wbr/>User</span><a href="#linkproviderforuser" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="linkproviderforuser-1"><span class="tsd-kind-call-signature">linkProviderForUser</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">email</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">userPoolId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">identity</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/ExternalIdentity.html" class="tsd-signature-type tsd-kind-interface">ExternalIdentity</a><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#linkproviderforuser-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Link the local account that signs in with an email to a person's identity in an external provider of the pool:
+their sign-ins through the provider then sign in that account. Whoever presents that identity gets the account:
+link only on a provider, and on an attribute, that the person can't set by themselves. A federated account that
+holds the identity already must be deleted first.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
 <li><span><span class="tsd-kind-parameter">email</span>: <span class="tsd-signature-type">string</span></span></li>
-<li><span><span class="tsd-kind-parameter">userPoolId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
+<li><span><span class="tsd-kind-parameter">userPoolId</span>: <span class="tsd-signature-type">string</span></span></li>
+<li><span><span class="tsd-kind-parameter">identity</span>: <a href="../interfaces/ExternalIdentity.html" class="tsd-signature-type tsd-kind-interface">ExternalIdentity</a></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L420">src/cognito.ts:420</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L305">src/cognito.ts:305</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="listgroups"><span>list<wbr/>Groups</span><a href="#listgroups" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -356,7 +385,7 @@ local account, or the username of a federated one (<code>&lt;provider&gt;_&lt;id
 <li><span><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">groups</span><span class="tsd-signature-symbol">:</span> <a href="../interfaces/CognitoGroup.html" class="tsd-signature-type tsd-kind-interface">CognitoGroup</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">pagination</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol"> = ...</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/CognitoGroup.html" class="tsd-signature-type tsd-kind-interface">CognitoGroup</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L444">src/cognito.ts:444</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L529">src/cognito.ts:529</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="listusers"><span>list<wbr/>Users</span><a href="#listusers" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -372,7 +401,25 @@ local account, or the username of a federated one (<code>&lt;provider&gt;_&lt;id
 <li><span><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">pagination</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">users</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol"> = ...</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L96">src/cognito.ts:96</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L143">src/cognito.ts:143</a></li></ul></aside></div></li></ul></section>
+<section class="tsd-panel tsd-member">
+<h3 class="tsd-anchor-link" id="listusersbyemail"><span>list<wbr/>Users<wbr/>By<wbr/>Email</span><a href="#listusersbyemail" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<ul class="tsd-signatures">
+<li class="">
+<div class="tsd-signature tsd-anchor-link" id="listusersbyemail-1"><span class="tsd-kind-call-signature">listUsersByEmail</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">email</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">userPoolId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/CognitoUserGeneric.html" class="tsd-signature-type tsd-kind-interface">CognitoUserGeneric</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span><a href="#listusersbyemail-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-description">
+<div class="tsd-comment tsd-typography"><p>Every account with an email: the local one that signs in with it, and the federated ones whose provider sent it.
+The listing is eventually consistent: an account just created may be missing, one just deleted still listed;
+<code>getUserByEmail</code> tells for sure whether the local one exists.</p>
+</div>
+<div class="tsd-parameters">
+<h4 class="tsd-parameters-title">Parameters</h4>
+<ul class="tsd-parameter-list">
+<li><span><span class="tsd-kind-parameter">email</span>: <span class="tsd-signature-type">string</span></span></li>
+<li><span><span class="tsd-kind-parameter">userPoolId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
+<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/CognitoUserGeneric.html" class="tsd-signature-type tsd-kind-interface">CognitoUserGeneric</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
+<ul>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L113">src/cognito.ts:113</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="listusersingroup"><span>list<wbr/>Users<wbr/>In<wbr/>Group</span><a href="#listusersingroup" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -389,7 +436,7 @@ local account, or the username of a federated one (<code>&lt;provider&gt;_&lt;id
 <li><span><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">pagination</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">users</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol">[]</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol"> = ...</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L479">src/cognito.ts:479</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L564">src/cognito.ts:564</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="listuserswithgroupsdetail"><span>list<wbr/>Users<wbr/>With<wbr/>Groups<wbr/>Detail</span><a href="#listuserswithgroupsdetail" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -405,7 +452,7 @@ Note: it's slower than the alternative <code>listUsers</code>: use it only when 
 <li><span><span class="tsd-kind-parameter">cognitoUserPoolId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">CognitoUser</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L130">src/cognito.ts:130</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L177">src/cognito.ts:177</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="listuserswithstatus"><span>list<wbr/>Users<wbr/>With<wbr/>Status</span><a href="#listuserswithstatus" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -422,7 +469,7 @@ changed. <code>listUsers</code> gives idea-toolbox's <code>CognitoUser</code>, w
 <li><span><span class="tsd-kind-parameter">userPoolId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/CognitoUserGeneric.html" class="tsd-signature-type tsd-kind-interface">CognitoUserGeneric</a><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L115">src/cognito.ts:115</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L162">src/cognito.ts:162</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="refreshsession"><span>refresh<wbr/>Session</span><a href="#refreshsession" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -440,7 +487,7 @@ changed. <code>listUsers</code> gives idea-toolbox's <code>CognitoUser</code>, w
 <li><span><span class="tsd-kind-parameter">userPoolClientId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">AuthenticationResultType</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L281">src/cognito.ts:281</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L362">src/cognito.ts:362</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="removeuserfromgroup"><span>remove<wbr/>User<wbr/>From<wbr/>Group</span><a href="#removeuserfromgroup" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -457,7 +504,7 @@ changed. <code>listUsers</code> gives idea-toolbox's <code>CognitoUser</code>, w
 <li><span><span class="tsd-kind-parameter">userPoolId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L516">src/cognito.ts:516</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L601">src/cognito.ts:601</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="resendpassword"><span>resend<wbr/>Password</span><a href="#resendpassword" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -475,7 +522,7 @@ changed. <code>listUsers</code> gives idea-toolbox's <code>CognitoUser</code>, w
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><a href="../interfaces/CognitoUserGeneric.html" class="tsd-signature-type tsd-kind-interface">CognitoUserGeneric</a><span class="tsd-signature-symbol">&gt;</span></h4><p>the user, whose <code>updatedAt</code> is the time of the new invitation</p>
 <aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L195">src/cognito.ts:195</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L242">src/cognito.ts:242</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="setpassword"><span>set<wbr/>Password</span><a href="#setpassword" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -493,7 +540,7 @@ If not specified, the password is generated randomly, and the user must change i
 <li><span><span class="tsd-kind-parameter">options</span>: <span class="tsd-signature-symbol">{</span> <span class="tsd-kind-property">password</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span> <span class="tsd-kind-property">permanent</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span> <span class="tsd-signature-symbol">}</span><span class="tsd-signature-symbol"> = {}</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L218">src/cognito.ts:218</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L265">src/cognito.ts:265</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="setregion"><span>set<wbr/>Region</span><a href="#setregion" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -509,7 +556,7 @@ Default: the runner's (e.g. Lambda function) region.</p>
 <li><span><span class="tsd-kind-parameter">region</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">void</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L18">src/cognito.ts:18</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L25">src/cognito.ts:25</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="signin"><span>sign<wbr/>In</span><a href="#signin" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -527,25 +574,26 @@ Default: the runner's (e.g. Lambda function) region.</p>
 <li><span><span class="tsd-kind-parameter">userPoolClientId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">AuthenticationResultType</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L260">src/cognito.ts:260</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L341">src/cognito.ts:341</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="updateemail"><span>update<wbr/>Email</span><a href="#updateemail" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
-<div class="tsd-signature tsd-anchor-link" id="updateemail-1"><span class="tsd-kind-call-signature">updateEmail</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">email</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">newEmail</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">userPoolId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">globalSignOut</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#updateemail-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
+<div class="tsd-signature tsd-anchor-link" id="updateemail-1"><span class="tsd-kind-call-signature">updateEmail</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">username</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">newEmail</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">userPoolId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">globalSignOut</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#updateemail-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Change the email address (== username) associated to a user.</p>
+<div class="tsd-comment tsd-typography"><p>Change the email of an account, marked as verified: a local one by its email or its <code>sub</code>, a federated one by its
+<code>federatedUsername</code>. With <code>globalSignOut</code>, the account is signed out of every device too.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
 <ul class="tsd-parameter-list">
-<li><span><span class="tsd-kind-parameter">email</span>: <span class="tsd-signature-type">string</span></span></li>
+<li><span><span class="tsd-kind-parameter">username</span>: <span class="tsd-signature-type">string</span></span></li>
 <li><span><span class="tsd-kind-parameter">newEmail</span>: <span class="tsd-signature-type">string</span></span></li>
 <li><span><span class="tsd-kind-parameter">userPoolId</span>: <span class="tsd-signature-type">string</span></span></li>
 <li><span><span class="tsd-kind-parameter">globalSignOut</span>: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L302">src/cognito.ts:302</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L384">src/cognito.ts:384</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="updatepassword"><span>update<wbr/>Password</span><a href="#updatepassword" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -564,7 +612,7 @@ Default: the runner's (e.g. Lambda function) region.</p>
 <li><span><span class="tsd-kind-parameter">userPoolClientId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L333">src/cognito.ts:333</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L417">src/cognito.ts:417</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="updateuser"><span>update<wbr/>User</span><a href="#updateuser" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
@@ -580,14 +628,14 @@ Default: the runner's (e.g. Lambda function) region.</p>
 <li><span><span class="tsd-kind-parameter">userPoolId</span>: <span class="tsd-signature-type">string</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L381">src/cognito.ts:381</a></li></ul></aside></div></li></ul></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L465">src/cognito.ts:465</a></li></ul></aside></div></li></ul></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="verifyemail"><span>verify<wbr/>Email</span><a href="#verifyemail" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <ul class="tsd-signatures">
 <li class="">
 <div class="tsd-signature tsd-anchor-link" id="verifyemail-1"><span class="tsd-kind-call-signature">verifyEmail</span><span class="tsd-signature-symbol">(</span><br/>    <span class="tsd-kind-parameter">email</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">userPoolId</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">,</span><br/>    <span class="tsd-kind-parameter">unverify</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">,</span><br/><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span><a href="#verifyemail-1" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></div>
 <div class="tsd-description">
-<div class="tsd-comment tsd-typography"><p>Verify the email address (== username) associated to a user.</p>
+<div class="tsd-comment tsd-typography"><p>Mark as verified (or not, with <code>unverify</code>) the email of the local account that signs in with it.</p>
 </div>
 <div class="tsd-parameters">
 <h4 class="tsd-parameters-title">Parameters</h4>
@@ -597,7 +645,7 @@ Default: the runner's (e.g. Lambda function) region.</p>
 <li><span><span class="tsd-kind-parameter">unverify</span>: <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol"> = false</span></span></li></ul></div>
 <h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">Promise</span><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">void</span><span class="tsd-signature-symbol">&gt;</span></h4><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/cognito.ts#L321">src/cognito.ts:321</a></li></ul></aside></div></li></ul></section></section></details></div>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/cognito.ts#L405">src/cognito.ts:405</a></li></ul></aside></div></li></ul></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
@@ -618,7 +666,7 @@ Default: the runner's (e.g. Lambda function) region.</p>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Properties"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Properties</summary>
 <div><a href="#client"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Property"><use href="../assets/icons.svg#icon-1024"></use></svg><span>client</span></a></div></details>
 <details open class="tsd-accordion tsd-page-navigation-section"><summary class="tsd-accordion-summary" data-key="section-Methods"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>Methods</summary>
-<div><a href="#addusertogroup"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>add<wbr/>User<wbr/>To<wbr/>Group</span></a><a href="#confirmforgotpassword"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>confirm<wbr/>Forgot<wbr/>Password</span></a><a href="#confirmsignup"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>confirm<wbr/>Sign<wbr/>Up</span></a><a href="#creategroup"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Group</span></a><a href="#createuser"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>User</span></a><a href="#deletegroup"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>delete<wbr/>Group</span></a><a href="#deleteuser"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>delete<wbr/>User</span></a><a href="#disableuser"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>disable<wbr/>User</span></a><a href="#enableuser"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>enable<wbr/>User</span></a><a href="#forgotpassword"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>forgot<wbr/>Password</span></a><a href="#getuserbyclaims"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>User<wbr/>By<wbr/>Claims</span></a><a href="#getuserbyemail"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>User<wbr/>By<wbr/>Email</span></a><a href="#getuserbysub"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>User<wbr/>By<wbr/>Sub</span></a><a href="#getusergroupsbyemail"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>User<wbr/>Groups<wbr/>By<wbr/>Email</span></a><a href="#globalsignout"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>global<wbr/>Sign<wbr/>Out</span></a><a href="#listgroups"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list<wbr/>Groups</span></a><a href="#listusers"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list<wbr/>Users</span></a><a href="#listusersingroup"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list<wbr/>Users<wbr/>In<wbr/>Group</span></a><a href="#listuserswithgroupsdetail"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list<wbr/>Users<wbr/>With<wbr/>Groups<wbr/>Detail</span></a><a href="#listuserswithstatus"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list<wbr/>Users<wbr/>With<wbr/>Status</span></a><a href="#refreshsession"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>refresh<wbr/>Session</span></a><a href="#removeuserfromgroup"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>remove<wbr/>User<wbr/>From<wbr/>Group</span></a><a href="#resendpassword"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>resend<wbr/>Password</span></a><a href="#setpassword"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Password</span></a><a href="#setregion"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Region</span></a><a href="#signin"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>sign<wbr/>In</span></a><a href="#updateemail"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>update<wbr/>Email</span></a><a href="#updatepassword"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>update<wbr/>Password</span></a><a href="#updateuser"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>update<wbr/>User</span></a><a href="#verifyemail"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>verify<wbr/>Email</span></a></div></details></div></details></div>
+<div><a href="#addusertogroup"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>add<wbr/>User<wbr/>To<wbr/>Group</span></a><a href="#confirmforgotpassword"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>confirm<wbr/>Forgot<wbr/>Password</span></a><a href="#confirmsignup"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>confirm<wbr/>Sign<wbr/>Up</span></a><a href="#creategroup"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>Group</span></a><a href="#createuser"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>create<wbr/>User</span></a><a href="#deletegroup"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>delete<wbr/>Group</span></a><a href="#deleteuser"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>delete<wbr/>User</span></a><a href="#disableuser"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>disable<wbr/>User</span></a><a href="#enableuser"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>enable<wbr/>User</span></a><a href="#forgotpassword"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>forgot<wbr/>Password</span></a><a href="#getuserbyclaims"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>User<wbr/>By<wbr/>Claims</span></a><a href="#getuserbyemail"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>User<wbr/>By<wbr/>Email</span></a><a href="#getuserbysub"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>User<wbr/>By<wbr/>Sub</span></a><a href="#getusergroupsbyemail"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>get<wbr/>User<wbr/>Groups<wbr/>By<wbr/>Email</span></a><a href="#globalsignout"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>global<wbr/>Sign<wbr/>Out</span></a><a href="#linkproviderforuser"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>link<wbr/>Provider<wbr/>For<wbr/>User</span></a><a href="#listgroups"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list<wbr/>Groups</span></a><a href="#listusers"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list<wbr/>Users</span></a><a href="#listusersbyemail"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list<wbr/>Users<wbr/>By<wbr/>Email</span></a><a href="#listusersingroup"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list<wbr/>Users<wbr/>In<wbr/>Group</span></a><a href="#listuserswithgroupsdetail"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list<wbr/>Users<wbr/>With<wbr/>Groups<wbr/>Detail</span></a><a href="#listuserswithstatus"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>list<wbr/>Users<wbr/>With<wbr/>Status</span></a><a href="#refreshsession"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>refresh<wbr/>Session</span></a><a href="#removeuserfromgroup"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>remove<wbr/>User<wbr/>From<wbr/>Group</span></a><a href="#resendpassword"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>resend<wbr/>Password</span></a><a href="#setpassword"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Password</span></a><a href="#setregion"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>set<wbr/>Region</span></a><a href="#signin"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>sign<wbr/>In</span></a><a href="#updateemail"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>update<wbr/>Email</span></a><a href="#updatepassword"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>update<wbr/>Password</span></a><a href="#updateuser"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>update<wbr/>User</span></a><a href="#verifyemail"><svg class="tsd-kind-icon" viewBox="0 0 24 24" aria-label="Method"><use href="../assets/icons.svg#icon-2048"></use></svg><span>verify<wbr/>Email</span></a></div></details></div></details></div>
 <div class="site-menu">
 <nav class="tsd-navigation"><a href="../modules.html">idea-aws</a>
 <ul class="tsd-small-nested-navigation" id="tsd-nav-container">

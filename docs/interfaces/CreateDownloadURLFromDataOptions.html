@@ -15,7 +15,7 @@
 </div></section>
 <div class="tsd-signature"><span class="tsd-signature-keyword">interface</span> <span class="tsd-kind-interface">CreateDownloadURLFromDataOptions</span> <span class="tsd-signature-symbol">{</span><br/>    <a class="tsd-kind-property" href="#bucket">bucket</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#compress">compress</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#contentencoding">contentEncoding</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#contenttype">contentType</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#filename">filename</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#key">key</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#prefix">prefix</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">;</span><br/>    <a class="tsd-kind-property" href="#sectoexp">secToExp</a><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span><span class="tsd-signature-symbol">;</span><br/><span class="tsd-signature-symbol">}</span></div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/s3.ts#L238">src/s3.ts:238</a></li></ul></aside>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/s3.ts#L238">src/s3.ts:238</a></li></ul></aside>
 <section class="tsd-panel-group tsd-index-group">
 <section class="tsd-panel tsd-index-panel">
 <details class="tsd-index-content tsd-accordion" open><summary class="tsd-accordion-summary tsd-index-summary"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-chevronDown"></use></svg>
@@ -41,7 +41,7 @@
 <div class="tsd-comment tsd-typography"><p>Downloads bucket; default: <code>idea-downloads</code>.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/s3.ts#L242">src/s3.ts:242</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/s3.ts#L242">src/s3.ts:242</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="compress"><code class="tsd-tag">Optional</code><span>compress</span><a href="#compress" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">compress</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">boolean</span></div>
@@ -49,7 +49,7 @@
 Recommended for text/JSON payloads over ~50 KB; for already-compressed binaries (images, zip, etc.) leave it off.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/s3.ts#L259">src/s3.ts:259</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/s3.ts#L259">src/s3.ts:259</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="contentencoding"><code class="tsd-tag">Optional</code><span>content<wbr/>Encoding</span><a href="#contentencoding" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">contentEncoding</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span></div>
@@ -57,14 +57,14 @@ Recommended for text/JSON payloads over ~50 KB; for already-compressed binaries 
 Use this when the body is already compressed. Ignored when <code>compress: true</code> (in that case <code>'gzip'</code> is forced).</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/s3.ts#L264">src/s3.ts:264</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/s3.ts#L264">src/s3.ts:264</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="contenttype"><code class="tsd-tag">Optional</code><span>content<wbr/>Type</span><a href="#contenttype" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">contentType</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span></div>
 <div class="tsd-comment tsd-typography"><p>Content type, e.g. application/json; default: <em>guessed</em>.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/s3.ts#L254">src/s3.ts:254</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/s3.ts#L254">src/s3.ts:254</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="filename"><code class="tsd-tag">Optional</code><span>filename</span><a href="#filename" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">filename</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span></div>
@@ -72,28 +72,28 @@ Use this when the body is already compressed. Ignored when <code>compress: true<
 Note: the string is cleaned to ensure maximum compatibility with every OS.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/s3.ts#L273">src/s3.ts:273</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/s3.ts#L273">src/s3.ts:273</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="key"><code class="tsd-tag">Optional</code><span>key</span><a href="#key" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">key</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span></div>
 <div class="tsd-comment tsd-typography"><p>The unique filepath in which to store the file; default: <em>random</em>.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/s3.ts#L250">src/s3.ts:250</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/s3.ts#L250">src/s3.ts:250</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="prefix"><code class="tsd-tag">Optional</code><span>prefix</span><a href="#prefix" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">prefix</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">string</span></div>
 <div class="tsd-comment tsd-typography"><p>Folder (e.g. the project name); default: <code>common</code>.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/s3.ts#L246">src/s3.ts:246</a></li></ul></aside></section>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/s3.ts#L246">src/s3.ts:246</a></li></ul></aside></section>
 <section class="tsd-panel tsd-member">
 <h3 class="tsd-anchor-link" id="sectoexp"><code class="tsd-tag">Optional</code><span>sec<wbr/>To<wbr/>Exp</span><a href="#sectoexp" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
 <div class="tsd-signature"><span class="tsd-kind-property">secToExp</span><span class="tsd-signature-symbol">?:</span> <span class="tsd-signature-type">number</span></div>
 <div class="tsd-comment tsd-typography"><p>Seconds to URL expiration; default: <code>180</code>.</p>
 </div><aside class="tsd-sources">
 <ul>
-<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/2f701bc2f12ee6763067a6531d5e7fdca7fa5dcc/src/s3.ts#L268">src/s3.ts:268</a></li></ul></aside></section></section></details></div>
+<li>Defined in <a href="https://github.com/iter-idea/IDEA-AWS/blob/6d507acdba9542792ca6dd189875ddf6e6052365/src/s3.ts#L268">src/s3.ts:268</a></li></ul></aside></section></section></details></div>
 <div class="col-sidebar">
 <div class="page-menu">
 <div class="tsd-navigation settings">
