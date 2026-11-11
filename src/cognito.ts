@@ -3,6 +3,13 @@ import { CognitoUser, isEmpty } from 'idea-toolbox';
 
 /**
  * A wrapper for AWS Cognito.
+ *
+ * IDEA's user pools sign in by email: the methods find a local account by its email, which Cognito accepts in place of
+ * its own username (a UUID, equal to the `sub`). A local account linked to an external provider (SAML, OIDC) stays
+ * local, found by its email. A federated account, born from a sign-in through a provider with no account linked, has
+ * the email the provider sent, if any, but isn't found by it: it answers only to `<provider>_<id>`
+ * (`federatedUsername`). The methods that take every name Cognito knows an account by (the email of a local one, its
+ * `sub`, the `federatedUsername` of a federated one) call it `username`.
  */
 export class Cognito {
   client: CognitoIP.CognitoIdentityProviderClient;
@@ -45,11 +52,27 @@ export class Cognito {
     (user.Attributes ?? user.UserAttributes ?? []).forEach((a: any): void => (userAttributes[a.Name] = a.Value));
 
     if (!userAttributes.userId) userAttributes.userId = userAttributes.sub;
+    if (this.isNamedAfterItsIdentity(user.Username, userAttributes.identities))
+      userAttributes.federatedUsername = user.Username;
     userAttributes.disabled = !user.Enabled;
     userAttributes.status = user.UserStatus;
     if (user.UserCreateDate) userAttributes.createdAt = new Date(user.UserCreateDate).toISOString();
     if (user.UserLastModifiedDate) userAttributes.updatedAt = new Date(user.UserLastModifiedDate).toISOString();
     return userAttributes as CognitoUserGeneric;
+  }
+  /**
+   * Whether an account is named `<provider>_<id>` after one of its identities: a federated account, whatever its status
+   * (e.g. `CONFIRMED` once given a password). A linked local account keeps its own name.
+   */
+  private isNamedAfterItsIdentity(username: string, identities: string): boolean {
+    if (!username || !identities) return false;
+    try {
+      return (JSON.parse(identities) as { providerName: string; userId: string }[]).some(
+        identity => `${identity.providerName}_${identity.userId}`.toLowerCase() === username.toLowerCase()
+      );
+    } catch (_) {
+      return false;
+    }
   }
 
   //
@@ -57,7 +80,8 @@ export class Cognito {
   //
 
   /**
-   * Identify a user by its email address, returning its attributes.
+   * The local account that signs in with an email, with its attributes. A federated account with the same email isn't
+   * found: `listUsersByEmail` lists it.
    */
   async getUserByEmail(email: string, userPoolId: string): Promise<CognitoUserGeneric> {
     const command = new CognitoIP.AdminGetUserCommand({ UserPoolId: userPoolId, Username: email });
@@ -79,6 +103,29 @@ export class Cognito {
     const { Users } = await this.client.send(command);
     if (Users.length < 1) throw new Error('User not found');
     return this.mapCognitoUserAttributesAsPlainObject(Users[0]);
+  }
+
+  /**
+   * Every account with an email: the local one that signs in with it, and the federated ones whose provider sent it.
+   * The listing is eventually consistent: an account just created may be missing, one just deleted still listed;
+   * `getUserByEmail` tells for sure whether the local one exists.
+   */
+  async listUsersByEmail(email: string, userPoolId: string): Promise<CognitoUserGeneric[]> {
+    if (isEmpty(email, 'email')) throw new Error('Invalid email');
+
+    const users: CognitoUserGeneric[] = [];
+    let pagination: string;
+    do {
+      const params: CognitoIP.ListUsersCommandInput = {
+        UserPoolId: userPoolId,
+        Filter: `email = "${email.replace(/["\\]/g, '\\$&')}"`,
+        PaginationToken: pagination
+      };
+      const { Users, PaginationToken } = await this.client.send(new CognitoIP.ListUsersCommand(params));
+      users.push(...(Users ?? []).map(u => this.mapCognitoUserAttributesAsPlainObject(u)));
+      pagination = PaginationToken;
+    } while (pagination);
+    return users;
   }
 
   /**
@@ -240,14 +287,48 @@ export class Cognito {
   }
 
   /**
-   * Delete a user, in the pool specified, by its email or by another name Cognito knows the account by: the `sub` of a
-   * local account, or the username of a federated one (`<provider>_<id>`), which has no email to be found by.
+   * Delete an account: a local one by its email or its `sub`, a federated one by its `federatedUsername`.
    */
   async deleteUser(username: string, userPoolId: string): Promise<void> {
     if (isEmpty(username, 'string')) throw new Error('Invalid username');
 
     const command = new CognitoIP.AdminDeleteUserCommand({ UserPoolId: userPoolId, Username: username });
     await this.client.send(command);
+  }
+
+  /**
+   * Link the local account that signs in with an email to a person's identity in an external provider of the pool:
+   * their sign-ins through the provider then sign in that account. Whoever presents that identity gets the account:
+   * link only on a provider, and on an attribute, that the person can't set by themselves. A federated account that
+   * holds the identity already must be deleted first.
+   */
+  async linkProviderForUser(email: string, userPoolId: string, identity: ExternalIdentity): Promise<void> {
+    if (isEmpty(email, 'email')) throw new Error('Invalid email');
+
+    // the link names the account by Cognito's own username, not by the email
+    const username = await this.getUsernameOf(email, userPoolId);
+    const command = new CognitoIP.AdminLinkProviderForUserCommand({
+      UserPoolId: userPoolId,
+      DestinationUser: { ProviderName: 'Cognito', ProviderAttributeValue: username },
+      SourceUser: {
+        ProviderName: identity.providerName,
+        ProviderAttributeName: identity.attributeName,
+        ProviderAttributeValue: identity.attributeValue
+      }
+    });
+    await this.client.send(command);
+  }
+  /**
+   * Cognito's own username of an account, by any name it's known by.
+   */
+  private async getUsernameOf(username: string, userPoolId: string): Promise<string> {
+    const command = new CognitoIP.AdminGetUserCommand({ UserPoolId: userPoolId, Username: username });
+    try {
+      return (await this.client.send(command)).Username;
+    } catch (error) {
+      if ((error as Error).name === 'UserNotFoundException') throw new Error('User not found');
+      throw error;
+    }
   }
 
   //
@@ -297,14 +378,18 @@ export class Cognito {
   }
 
   /**
-   * Change the email address (== username) associated to a user.
+   * Change the email of an account, marked as verified: a local one by its email or its `sub`, a federated one by its
+   * `federatedUsername`. With `globalSignOut`, the account is signed out of every device too.
    */
-  async updateEmail(email: string, newEmail: string, userPoolId: string, globalSignOut = false): Promise<void> {
+  async updateEmail(username: string, newEmail: string, userPoolId: string, globalSignOut = false): Promise<void> {
     if (isEmpty(newEmail, 'email')) throw new Error('Invalid new email');
+
+    // the old email names the account no more, and the new one may name another account, or none
+    const accountUsername = globalSignOut ? await this.getUsernameOf(username, userPoolId) : null;
 
     const command = new CognitoIP.AdminUpdateUserAttributesCommand({
       UserPoolId: userPoolId,
-      Username: email,
+      Username: username,
       UserAttributes: [
         { Name: 'email', Value: newEmail },
         { Name: 'email_verified', Value: 'true' }
@@ -312,11 +397,10 @@ export class Cognito {
     });
     await this.client.send(command);
 
-    // sign out the user from all its devices
-    if (globalSignOut) await this.globalSignOut(newEmail, userPoolId);
+    if (globalSignOut) await this.globalSignOut(accountUsername, userPoolId);
   }
   /**
-   * Verify the email address (== username) associated to a user.
+   * Mark as verified (or not, with `unverify`) the email of the local account that signs in with it.
    */
   async verifyEmail(email: string, userPoolId: string, unverify = false): Promise<void> {
     const command = new CognitoIP.AdminUpdateUserAttributesCommand({
@@ -400,25 +484,26 @@ export class Cognito {
   }
 
   /**
-   * Disable a cognito user.
+   * Disable an account: a local one by its email or its `sub`, a federated one by its `federatedUsername`.
    */
-  async disableUser(email: string, userPoolId: string): Promise<void> {
-    const command = new CognitoIP.AdminDisableUserCommand({ UserPoolId: userPoolId, Username: email });
+  async disableUser(username: string, userPoolId: string): Promise<void> {
+    const command = new CognitoIP.AdminDisableUserCommand({ UserPoolId: userPoolId, Username: username });
     await this.client.send(command);
   }
   /**
-   * Enable a cognito user.
+   * Enable an account: a local one by its email or its `sub`, a federated one by its `federatedUsername`.
    */
-  async enableUser(email: string, userPoolId: string): Promise<void> {
-    const command = new CognitoIP.AdminEnableUserCommand({ UserPoolId: userPoolId, Username: email });
+  async enableUser(username: string, userPoolId: string): Promise<void> {
+    const command = new CognitoIP.AdminEnableUserCommand({ UserPoolId: userPoolId, Username: username });
     await this.client.send(command);
   }
 
   /**
-   * Sign out the user from all devices.
+   * Sign out an account from all devices: a local one by its email or its `sub`, a federated one by its
+   * `federatedUsername`.
    */
-  async globalSignOut(email: string, userPoolId: string): Promise<void> {
-    const command = new CognitoIP.AdminUserGlobalSignOutCommand({ Username: email, UserPoolId: userPoolId });
+  async globalSignOut(username: string, userPoolId: string): Promise<void> {
+    const command = new CognitoIP.AdminUserGlobalSignOutCommand({ Username: username, UserPoolId: userPoolId });
     await this.client.send(command);
   }
 
@@ -534,9 +619,15 @@ export interface CognitoUserGeneric {
    */
   userId: string;
   /**
-   * The email (=== username).
+   * The email: what a local account signs in with, and the name the methods find it by. A federated account has the
+   * one its provider sent, if any, but isn't found by it.
    */
   email: string;
+  /**
+   * Only for a federated account: the only name it answers to, `<provider>_<id>`. Not available when the user comes
+   * from the authorizer claims.
+   */
+  federatedUsername?: string;
   /**
    * Whether the user has been disabled.
    */
@@ -577,6 +668,26 @@ export interface CreateUserOptions {
    * How the invitation with the temporary password is sent, e.g. `['EMAIL']`: Cognito's default is a text message.
    */
   deliveryMediums?: CognitoIP.DeliveryMediumType[];
+}
+
+/**
+ * A person's identity in an external provider of a user pool: the attribute, and its value, by which a link recognizes
+ * them when they sign in.
+ */
+export interface ExternalIdentity {
+  /**
+   * The name of the provider in the user pool.
+   */
+  providerName: string;
+  /**
+   * `Cognito_Subject` (the person's ID in the provider: the only choice for a social provider), or, for SAML and OIDC,
+   * the user pool attribute a claim of the provider is mapped to (e.g. `email`).
+   */
+  attributeName: string;
+  /**
+   * The value of the attribute for the person.
+   */
+  attributeValue: string;
 }
 
 /**
