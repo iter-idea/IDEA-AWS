@@ -55,9 +55,10 @@ export class DynamoDB {
       });
 
       return result;
-    } catch (_) {
-      // ID exists, try again
-      await this.IUNIDHelper(project, attempt + 1, maxAttempts);
+    } catch (error) {
+      // the SDK has retried the transient failures already: only an id that exists is worth another one
+      if ((error as Error)?.name !== 'ConditionalCheckFailedException') throw error;
+      return await this.IUNIDHelper(project, attempt + 1, maxAttempts);
     }
   }
 
